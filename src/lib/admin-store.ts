@@ -1,4 +1,23 @@
 import { useState, useEffect } from "react";
+import { db, storage } from "@/firebase";
+import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+export async function uploadImageToFirebase(file: File, pathFolder = "admin_uploads"): Promise<string> {
+  try {
+    const fileRef = ref(storage, `${pathFolder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`);
+    const snapshot = await uploadBytes(fileRef, file);
+    const downloadUrl = await getDownloadURL(snapshot.ref);
+    return downloadUrl;
+  } catch (err) {
+    console.warn("Firebase Storage Upload fallback to base64:", err);
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.readAsDataURL(file);
+    });
+  }
+}
 
 // ============================================================================
 // TYPES
@@ -668,13 +687,17 @@ export function setStoredData<T>(key: string, data: T): void {
     window.dispatchEvent(new Event("admin_store_updated"));
   } catch (e: any) {
     console.error("LocalStorage save error:", e);
-    // If quota exceeded due to old legacy heavy images, attempt saving
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (e2) {
-      console.warn("Storage quota full, maintaining in-memory session update.");
-    }
     window.dispatchEvent(new Event("admin_store_updated"));
+  }
+
+  // Asynchronously sync to Firestore Database
+  try {
+    const docRef = doc(db, "app_data", key);
+    setDoc(docRef, { data }, { merge: true }).catch((err) => {
+      console.warn("Firestore sync warning for", key, err);
+    });
+  } catch (err) {
+    console.warn("Firestore connection warning:", err);
   }
 }
 
@@ -716,6 +739,7 @@ export function useAdminStore() {
   );
 
   useEffect(() => {
+    // 1. Listen to LocalStorage updates
     const handleUpdate = () => {
       setSiteDataState(getStoredData(STORAGE_KEYS.site, initialSiteData));
       setAboutDataState(getStoredData(STORAGE_KEYS.about, initialAboutData));
@@ -730,7 +754,63 @@ export function useAdminStore() {
     };
 
     window.addEventListener("admin_store_updated", handleUpdate);
-    return () => window.removeEventListener("admin_store_updated", handleUpdate);
+
+    // 2. Listen to Firestore real-time snapshots
+    const unsubscribes: (() => void)[] = [];
+
+    try {
+      const siteUnsub = onSnapshot(doc(db, "app_data", STORAGE_KEYS.site), (snapshot) => {
+        if (snapshot.exists() && snapshot.data()?.data) {
+          const val = snapshot.data().data;
+          setSiteDataState(val);
+          try { localStorage.setItem(STORAGE_KEYS.site, JSON.stringify(val)); } catch (e) {}
+        }
+      });
+      unsubscribes.push(siteUnsub);
+
+      const aboutUnsub = onSnapshot(doc(db, "app_data", STORAGE_KEYS.about), (snapshot) => {
+        if (snapshot.exists() && snapshot.data()?.data) {
+          const val = snapshot.data().data;
+          setAboutDataState(val);
+          try { localStorage.setItem(STORAGE_KEYS.about, JSON.stringify(val)); } catch (e) {}
+        }
+      });
+      unsubscribes.push(aboutUnsub);
+
+      const galleryUnsub = onSnapshot(doc(db, "app_data", STORAGE_KEYS.gallery), (snapshot) => {
+        if (snapshot.exists() && snapshot.data()?.data) {
+          const val = snapshot.data().data;
+          setGalleryState(val);
+          try { localStorage.setItem(STORAGE_KEYS.gallery, JSON.stringify(val)); } catch (e) {}
+        }
+      });
+      unsubscribes.push(galleryUnsub);
+
+      const inquiriesUnsub = onSnapshot(doc(db, "app_data", STORAGE_KEYS.inquiries), (snapshot) => {
+        if (snapshot.exists() && snapshot.data()?.data) {
+          const val = snapshot.data().data;
+          setInquiriesState(val);
+          try { localStorage.setItem(STORAGE_KEYS.inquiries, JSON.stringify(val)); } catch (e) {}
+        }
+      });
+      unsubscribes.push(inquiriesUnsub);
+
+      const brochuresUnsub = onSnapshot(doc(db, "app_data", STORAGE_KEYS.brochures), (snapshot) => {
+        if (snapshot.exists() && snapshot.data()?.data) {
+          const val = snapshot.data().data;
+          setBrochuresState(val);
+          try { localStorage.setItem(STORAGE_KEYS.brochures, JSON.stringify(val)); } catch (e) {}
+        }
+      });
+      unsubscribes.push(brochuresUnsub);
+    } catch (err) {
+      console.warn("Firestore listener warning:", err);
+    }
+
+    return () => {
+      window.removeEventListener("admin_store_updated", handleUpdate);
+      unsubscribes.forEach((unsub) => unsub());
+    };
   }, []);
 
   const updateSiteData = (newSite: Partial<SiteData>) => {

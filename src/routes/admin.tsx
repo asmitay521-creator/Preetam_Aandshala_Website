@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAdminStore, BrochureItem, PackageItem } from "@/lib/admin-store";
-
-
+import { useAdminStore, BrochureItem, PackageItem, uploadImageToFirebase } from "@/lib/admin-store";
+import { auth, signInWithEmailAndPassword } from "@/firebase";
 
 type TabKey =
   | "dashboard"
@@ -38,11 +37,12 @@ function AdminPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanUser = userInput.trim().toLowerCase().replace(/\s+/g, "");
     const cleanPass = passInput.trim();
 
+    // 1. Default Admin Passcode / Quick Login
     if (
       (cleanUser === "admin123@gmail.com" || cleanUser === "admin123" || cleanUser === "admin") &&
       cleanPass === "admin123"
@@ -50,8 +50,17 @@ function AdminPage() {
       setIsLoggedIn(true);
       setLoginError("");
       localStorage.setItem("preetam_admin_auth", "true");
-    } else {
-      setLoginError("❌ युझरनेम (admin 123@gmail.com) किंवा पासवर्ड (admin123) चुकीचा आहे!");
+      return;
+    }
+
+    // 2. Firebase Auth Attempt
+    try {
+      await signInWithEmailAndPassword(auth, userInput.trim(), cleanPass);
+      setIsLoggedIn(true);
+      setLoginError("");
+      localStorage.setItem("preetam_admin_auth", "true");
+    } catch (err: any) {
+      setLoginError("❌ युझरनेम (admin123@gmail.com) किंवा पासवर्ड (admin123) चुकीचा आहे!");
     }
   };
 
@@ -286,6 +295,66 @@ function AdminPage() {
     setTimeout(() => setSaveSuccessMsg(""), 3000);
   };
 
+  // Helper for computer file upload (single file with Firebase Storage upload)
+  const handleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    callback: (dataUrl: string, fileType: "pdf" | "image") => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const isPdf = file.type.includes("pdf");
+    try {
+      const firebaseUrl = await uploadImageToFirebase(file, isPdf ? "brochures" : "photos");
+      callback(firebaseUrl, isPdf ? "pdf" : "image");
+    } catch (err) {
+      console.warn("Fallback upload:", err);
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const rawUrl = (ev.target?.result as string) || URL.createObjectURL(file);
+        const finalUrl = isPdf ? rawUrl : await compressImage(rawUrl);
+        callback(finalUrl, isPdf ? "pdf" : "image");
+      };
+      reader.readAsDataURL(file);
+    }
+    if (e.target) e.target.value = "";
+  };
+
+  // Helper for multiple computer file upload (with Firebase Storage upload)
+  const handleMultipleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    callback: (urls: string[]) => void
+  ) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    try {
+      const uploadPromises = fileArray.map((file) => uploadImageToFirebase(file, "photos"));
+      const uploadedUrls = await Promise.all(uploadPromises);
+      callback(uploadedUrls);
+    } catch (err) {
+      console.warn("Fallback batch upload:", err);
+      const readPromises = fileArray.map(
+        (file) =>
+          new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+              const rawUrl = (ev.target?.result as string) || URL.createObjectURL(file);
+              const compressed = await compressImage(rawUrl);
+              resolve(compressed);
+            };
+            reader.onerror = () => {
+              resolve(URL.createObjectURL(file));
+            };
+            reader.readAsDataURL(file);
+          })
+      );
+      const compressedUrls = await Promise.all(readPromises);
+      callback(compressedUrls);
+    }
+    if (e.target) e.target.value = "";
+  };
+
   const handleAddVideoTestimonial = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newVideoTestObj.name || (!newVideoTestObj.videoUrl && !newVideoTestObj.videoThumbnail)) return;
@@ -334,55 +403,6 @@ function AdminPage() {
       img.onerror = () => {
         resolve(dataUrl);
       };
-    });
-  };
-
-  // Helper for computer file upload (single file with auto compression)
-  const handleFileUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    callback: (dataUrl: string, fileType: "pdf" | "image") => void
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const isPdf = file.type.includes("pdf");
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      const rawUrl = (ev.target?.result as string) || URL.createObjectURL(file);
-      const finalUrl = isPdf ? rawUrl : await compressImage(rawUrl);
-      callback(finalUrl, isPdf ? "pdf" : "image");
-      if (e.target) e.target.value = "";
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // Helper for multiple computer file upload (with auto compression & instant storage)
-  const handleMultipleFileUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    callback: (urls: string[]) => void
-  ) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const fileArray = Array.from(files);
-    const readPromises = fileArray.map(
-      (file) =>
-        new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = async (ev) => {
-            const rawUrl = (ev.target?.result as string) || URL.createObjectURL(file);
-            const compressed = await compressImage(rawUrl);
-            resolve(compressed);
-          };
-          reader.onerror = () => {
-            resolve(URL.createObjectURL(file));
-          };
-          reader.readAsDataURL(file);
-        })
-    );
-
-    Promise.all(readPromises).then((urls) => {
-      callback(urls);
-      if (e.target) e.target.value = "";
     });
   };
 

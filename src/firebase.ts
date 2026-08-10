@@ -8,6 +8,8 @@ import {
   signOut, 
   onAuthStateChanged 
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -24,6 +26,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 export let analytics: Analytics | undefined;
 if (typeof window !== "undefined") {
@@ -42,7 +46,11 @@ export {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
 };
 
 export default app;
