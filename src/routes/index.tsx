@@ -538,10 +538,18 @@ function IndexComponent() {
               <span className="inline-block size-2 rounded-full bg-amber-400 animate-ping" />
               <span>✨ {isEn ? "Sangli's Grand Landmark Project" : "सांगलीतील भव्य मानचिन्ह प्रकल्प"}</span>
             </div>
-            <h1 className="font-display font-black text-xl sm:text-3xl lg:text-4xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 via-rose-200 to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(251,191,36,0.7)] leading-tight py-0.5 mt-3 sm:mt-5">
-              {isEn
-                ? "Preetam Senior Citizen Anandshala & Sports Fitness Club"
-                : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा व स्पोर्ट्स अँड फिटनेस क्लब"}
+            <h1 className="font-display font-black text-lg sm:text-3xl lg:text-4xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 via-rose-200 to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(251,191,36,0.7)] leading-snug py-0.5 mt-2.5 sm:mt-5 max-w-3xl mx-auto">
+              {isEn ? (
+                <>
+                  <span className="block">Preetam Senior Citizen Anandshala</span>
+                  <span className="block text-amber-200 mt-0.5">& Sports Fitness Club</span>
+                </>
+              ) : (
+                <>
+                  <span className="block">प्रीतम ज्येष्ठ नागरिक आनंदशाळा</span>
+                  <span className="block text-amber-200 mt-0.5">व स्पोर्ट्स अँड फिटनेस क्लब</span>
+                </>
+              )}
             </h1>
             <div className="flex items-center justify-center gap-1.5 pt-1">
               <span className="text-amber-300 text-sm sm:text-base animate-bounce">📍</span>
