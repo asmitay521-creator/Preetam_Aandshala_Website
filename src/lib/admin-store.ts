@@ -1072,10 +1072,16 @@ export function useAdminStore() {
         setDoc(doc(db, "app_data", STORAGE_KEYS.homeNews), { data: homeNews }, { merge: true }),
         setDoc(doc(db, "app_data", STORAGE_KEYS.schedule), { data: scheduleConfig }, { merge: true }),
         setDoc(doc(db, "app_data", STORAGE_KEYS.sportsSchedule), { data: sportsScheduleConfig }, { merge: true }),
+        // Top-level collections for easy viewing in Firebase Console
+        setDoc(doc(db, "site_settings", "general"), { siteData }, { merge: true }),
+        setDoc(doc(db, "about_settings", "general"), { aboutData }, { merge: true }),
+        setDoc(doc(db, "gallery_collection", "all"), { items: gallery }, { merge: true }),
+        setDoc(doc(db, "inquiries_collection", "all"), { items: inquiries }, { merge: true }),
+        setDoc(doc(db, "brochures_collection", "all"), { items: brochures }, { merge: true }),
       ]);
       console.log("🔥 Successfully synced all data to Firestore Cloud Database!");
       return true;
-    } catch (err) {
+    } catch (err: any) {
       console.error("🔥 Error syncing to Firestore Cloud Database:", err);
       throw err;
     }

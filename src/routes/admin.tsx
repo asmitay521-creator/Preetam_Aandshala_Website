@@ -71,6 +71,10 @@ function AdminPage() {
 
   const store = useAdminStore();
 
+  // Firebase Syncing State
+  const [isSyncingFirebase, setIsSyncingFirebase] = useState(false);
+  const [showRulesGuide, setShowRulesGuide] = useState(false);
+
   // Local Form States
   const [siteForm, setSiteForm] = useState(store.siteData);
   const [aboutForm, setAboutForm] = useState(store.aboutData);
@@ -652,30 +656,101 @@ function AdminPage() {
                   🔥
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-base">
-                    Firebase Cloud Database & Storage Sync
+                  <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                    <span>Firebase Cloud Database & Storage Sync</span>
+                    <button
+                      onClick={() => setShowRulesGuide(true)}
+                      className="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold hover:bg-amber-300 transition-colors"
+                    >
+                      ❓ नाविन्यपूर्ण नियम मदत
+                    </button>
                   </h3>
                   <p className="text-xs text-slate-600 font-semibold mt-0.5">
                     सर्व फोटो, माहिती व ब्रोशर्स थेट Firebase क्लाऊड डेटाबेसमध्ये (Cloud Firestore & Storage) सेव्ह व सिंक करा.
                   </p>
                 </div>
               </div>
-              <button
-                onClick={async () => {
-                  try {
-                    await store.syncAllToFirebaseCloud();
-                    setSaveSuccessMsg("🔥 सर्व डेटा व फोटो यशस्वीरित्या Firebase Cloud मध्ये सेव्ह झाले!");
-                    setTimeout(() => setSaveSuccessMsg(""), 4000);
-                  } catch (err: any) {
-                    alert("Firebase Security Rules Error: कृपया तुमच्या Firebase Console -> Cloud Firestore -> Rules टॅबमध्ये 'allow read, write: if true;' सेट करा!");
-                  }
-                }}
-                className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-pink-600 text-white font-black text-xs sm:text-sm hover:scale-[1.02] transition-all shadow-md flex items-center gap-2 shrink-0 cursor-pointer"
-              >
-                <span>⚡</span>
-                <span>सर्व फोटो व माहिती Firebase Cloud वर सेव्ह करा</span>
-              </button>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  disabled={isSyncingFirebase}
+                  onClick={async () => {
+                    setIsSyncingFirebase(true);
+                    try {
+                      await store.syncAllToFirebaseCloud();
+                      setSaveSuccessMsg("🔥 सर्व डेटा व फोटो यशस्वीरित्या Firebase Cloud मधील Collections मध्ये सेव्ह झाले!");
+                      setTimeout(() => setSaveSuccessMsg(""), 5000);
+                    } catch (err: any) {
+                      setShowRulesGuide(true);
+                    } finally {
+                      setIsSyncingFirebase(false);
+                    }
+                  }}
+                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-pink-600 text-white font-black text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isSyncingFirebase ? (
+                    <>
+                      <span className="animate-spin">⏳</span>
+                      <span>Firebase मधील डेटा सेव्ह होत आहे...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>⚡</span>
+                      <span>सर्व फोटो व माहिती Firebase Cloud वर सेव्ह करा</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* FIREBASE RULES MODAL */}
+            {showRulesGuide && (
+              <div className="fixed inset-0 z-[99999] bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white max-w-lg w-full rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4 animate-scale-in">
+                  <div className="flex items-center justify-between border-b pb-3">
+                    <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                      <span>🔥</span>
+                      <span>Firebase Rules ऑन करण्याची सोपी पद्धत</span>
+                    </h3>
+                    <button
+                      onClick={() => setShowRulesGuide(false)}
+                      className="size-8 rounded-full bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 grid place-items-center"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3 text-xs font-medium text-slate-700">
+                    <p className="font-bold text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                      ⚠️ Firebase Console मधील Security Rules बाय-डिफॉल्ट डेटा सेव्ह करणे ब्लॉक ठेवतात. खालील २ पायऱ्या पूर्ण करा:
+                    </p>
+                    
+                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                      <strong className="text-slate-900 text-sm block">1️⃣ Cloud Firestore Rules:</strong>
+                      <p>Firebase Console ➔ Firestore ➔ Rules टॅबवर जा आणि कोड बदलून ठेवा:</p>
+                      <pre className="bg-slate-900 text-emerald-400 p-2 rounded-lg text-[11px] overflow-x-auto">
+{`allow read, write: if true;`}
+                      </pre>
+                    </div>
+
+                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
+                      <strong className="text-slate-900 text-sm block">2️⃣ Storage Rules (फोटोंसाठी):</strong>
+                      <p>Firebase Console ➔ Storage ➔ Rules टॅबवर जा आणि कोड बदलून ठेवा:</p>
+                      <pre className="bg-slate-900 text-emerald-400 p-2 rounded-lg text-[11px] overflow-x-auto">
+{`allow read, write: if true;`}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setShowRulesGuide(false)}
+                    className="w-full py-3 rounded-xl bg-[#810B38] text-white font-bold text-sm hover:bg-[#68092D] transition-colors"
+                  >
+                    समजले! मी Rules बदलून Publish करतो 👍
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* METRICS CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
