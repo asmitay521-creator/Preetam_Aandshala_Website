@@ -645,6 +645,38 @@ function AdminPage() {
               </p>
             </div>
 
+            {/* FIREBASE CLOUD DATABASE SYNC BANNER */}
+            <div className="bg-gradient-to-r from-amber-500/10 via-pink-500/10 to-purple-500/10 border-2 border-amber-400/40 p-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="size-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white grid place-items-center text-2xl font-bold shadow-md shrink-0">
+                  🔥
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-base">
+                    Firebase Cloud Database & Storage Sync
+                  </h3>
+                  <p className="text-xs text-slate-600 font-semibold mt-0.5">
+                    सर्व फोटो, माहिती व ब्रोशर्स थेट Firebase क्लाऊड डेटाबेसमध्ये (Cloud Firestore & Storage) सेव्ह व सिंक करा.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={async () => {
+                  try {
+                    await store.syncAllToFirebaseCloud();
+                    setSaveSuccessMsg("🔥 सर्व डेटा व फोटो यशस्वीरित्या Firebase Cloud मध्ये सेव्ह झाले!");
+                    setTimeout(() => setSaveSuccessMsg(""), 4000);
+                  } catch (err: any) {
+                    alert("Firebase Security Rules Error: कृपया तुमच्या Firebase Console -> Cloud Firestore -> Rules टॅबमध्ये 'allow read, write: if true;' सेट करा!");
+                  }
+                }}
+                className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-pink-600 text-white font-black text-xs sm:text-sm hover:scale-[1.02] transition-all shadow-md flex items-center gap-2 shrink-0 cursor-pointer"
+              >
+                <span>⚡</span>
+                <span>सर्व फोटो व माहिती Firebase Cloud वर सेव्ह करा</span>
+              </button>
+            </div>
+
             {/* METRICS CARDS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">

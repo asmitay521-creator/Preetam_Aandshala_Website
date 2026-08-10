@@ -1052,12 +1052,27 @@ export function useAdminStore() {
     setStoredData(STORAGE_KEYS.sportsSchedule, updated);
   };
 
-  const activeBrochures = brochures.filter(
-    (b) => b.id !== "broch-2" && b.category !== "स्पोर्ट्स क्लब ब्रोशर" && !b.category.includes("स्पोर्ट्स")
-  );
-
-  const sportsInquiries = inquiries.filter(isSportsInquiryItem);
-  const anandshalaInquiries = inquiries.filter((i) => !isSportsInquiryItem(i));
+  const syncAllToFirebaseCloud = async () => {
+    try {
+      await Promise.all([
+        setDoc(doc(db, "app_data", STORAGE_KEYS.site), { data: siteData }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.about), { data: aboutData }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.gallery), { data: gallery }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.inquiries), { data: inquiries }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.testimonials), { data: testimonials }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.packages), { data: packages }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.brochures), { data: brochures }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.homeNews), { data: homeNews }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.schedule), { data: scheduleConfig }, { merge: true }),
+        setDoc(doc(db, "app_data", STORAGE_KEYS.sportsSchedule), { data: sportsScheduleConfig }, { merge: true }),
+      ]);
+      console.log("🔥 Successfully synced all data to Firestore Cloud Database!");
+      return true;
+    } catch (err) {
+      console.error("🔥 Error syncing to Firestore Cloud Database:", err);
+      throw err;
+    }
+  };
 
   return {
     siteData,
@@ -1072,6 +1087,7 @@ export function useAdminStore() {
     homeNews,
     scheduleConfig,
     sportsScheduleConfig,
+    syncAllToFirebaseCloud,
     unreadInquiriesCount: inquiries.filter((i) => !i.read).length,
     unreadSportsInquiriesCount: sportsInquiries.filter((i) => !i.read).length,
     unreadAnandshalaInquiriesCount: anandshalaInquiries.filter((i) => !i.read).length,
