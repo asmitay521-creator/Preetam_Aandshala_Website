@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAdminStore, BrochureItem, PackageItem, uploadImageToFirebase } from "@/lib/admin-store";
-import { auth, signInWithEmailAndPassword } from "@/firebase";
+import { auth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "@/firebase";
 
 type TabKey =
   | "dashboard"
@@ -37,6 +37,17 @@ function AdminPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
 
+  // Listen to Firebase Authentication status live
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        localStorage.setItem("preetam_admin_auth", "true");
+      }
+    });
+    return () => unsub();
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanUser = userInput.trim().toLowerCase().replace(/\s+/g, "");
@@ -53,7 +64,7 @@ function AdminPage() {
       return;
     }
 
-    // 2. Firebase Auth Attempt
+    // 2. Firebase Auth Login Attempt
     try {
       await signInWithEmailAndPassword(auth, userInput.trim(), cleanPass);
       setIsLoggedIn(true);
@@ -64,7 +75,10 @@ function AdminPage() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {}
     setIsLoggedIn(false);
     localStorage.removeItem("preetam_admin_auth");
   };
@@ -678,12 +692,12 @@ function AdminPage() {
                     setIsSyncingFirebase(true);
                     try {
                       await store.syncAllToFirebaseCloud();
-                    } catch (err) {
-                      console.log("Silent cloud sync fallback active.");
+                      setSaveSuccessMsg("🔥 सर्व डेटा व फोटो यशस्वीरित्या Firebase Cloud मधील Collections मध्ये सेव्ह झाले!");
+                      setTimeout(() => setSaveSuccessMsg(""), 5000);
+                    } catch (err: any) {
+                      setShowRulesGuide(true);
                     } finally {
                       setIsSyncingFirebase(false);
-                      setSaveSuccessMsg("🔥 सर्व माहिती व इमेजेस यशस्वीरित्या सेव्ह व सिंक झाल्या!");
-                      setTimeout(() => setSaveSuccessMsg(""), 5000);
                     }
                   }}
                   className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-pink-600 text-white font-black text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
