@@ -726,18 +726,32 @@ function AdminPage() {
                     </p>
                     
                     <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
-                      <strong className="text-slate-900 text-sm block">1️⃣ Cloud Firestore Rules:</strong>
-                      <p>Firebase Console ➔ Firestore ➔ Rules टॅबवर जा आणि कोड बदलून ठेवा:</p>
-                      <pre className="bg-slate-900 text-emerald-400 p-2 rounded-lg text-[11px] overflow-x-auto">
-{`allow read, write: if true;`}
+                      <strong className="text-slate-900 text-sm block">1️⃣ Cloud Firestore Rules (तुम्ही ओपन केलेल्या स्क्रीनसाठी):</strong>
+                      <p>Firestore Rules मधील सर्व कोड काढून हा संपूर्ण कोड पेस्ट करा (service cloud.firestore आवश्यक आहे):</p>
+                      <pre className="bg-slate-900 text-emerald-400 p-3 rounded-lg text-[11px] overflow-x-auto font-mono">
+{`rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}`}
                       </pre>
                     </div>
 
                     <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
-                      <strong className="text-slate-900 text-sm block">2️⃣ Storage Rules (फोटोंसाठी):</strong>
-                      <p>Firebase Console ➔ Storage ➔ Rules टॅबवर जा आणि कोड बदलून ठेवा:</p>
-                      <pre className="bg-slate-900 text-emerald-400 p-2 rounded-lg text-[11px] overflow-x-auto">
-{`allow read, write: if true;`}
+                      <strong className="text-slate-900 text-sm block">2️⃣ Storage Rules (फोटोंच्या सेव्हिंगसाठी):</strong>
+                      <p>डाव्या बाजूच्या Storage मेनू ➔ Rules मध्ये हा संपूर्ण कोड पेस्ट करा:</p>
+                      <pre className="bg-slate-900 text-emerald-400 p-3 rounded-lg text-[11px] overflow-x-auto font-mono">
+{`rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}`}
                       </pre>
                     </div>
                   </div>
