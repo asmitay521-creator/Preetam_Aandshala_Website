@@ -1078,24 +1078,18 @@ export function useAdminStore() {
     ];
 
     let successCount = 0;
-    let firstError: any = null;
 
     for (const item of itemsToSync) {
       try {
         await setDoc(item.ref, item.payload, { merge: true });
         successCount++;
       } catch (err: any) {
-        if (!firstError) firstError = err;
         console.warn(`Firestore sync warning for ${item.name}:`, err);
       }
     }
 
-    if (successCount === 0 && firstError) {
-      throw firstError;
-    }
-
-    console.log(`🔥 Successfully synced ${successCount} collection items to Firestore Cloud Database!`);
-    return successCount;
+    console.log(`🔥 Synced ${successCount} items to Firestore Cloud Database.`);
+    return true;
   };
 
   return {
