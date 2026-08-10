@@ -15,24 +15,21 @@ export const HomeHero: React.FC = () => {
   const { isEn } = useLanguage();
   const store = useAdminStore();
 
-  const customAnandImg = store.siteData.aanandshalaImages && store.siteData.aanandshalaImages[0];
-  const customSportsImg = store.siteData.sportsImages && store.siteData.sportsImages[0];
-
   const heroSlides = [
     {
-      image: customAnandImg || "/images/slider1.JPG",
+      image: "/images/slider1.JPG",
       tag: isEn ? "🏛️ Main Anandshala Campus" : "🏛️ मुख्य आनंदशाळा वास्तू",
       title: isEn ? "1.5 Acre Scenic Campus" : "१.५ एकर निसर्गरम्य परिसर",
       subtitle: isEn ? "Sangli's premier & fully equipped senior citizen hub" : "सांगली जिल्ह्यातील भव्य व सर्व सोयींनी युक्त ज्येष्ठ नागरिक संकूल",
     },
     {
-      image: customSportsImg || "/images/slider2.JPG",
+      image: "/images/slider2.JPG",
       tag: isEn ? "🏊‍♂️ Preetam Sports & Fitness Club" : "🏊‍♂️ प्रीतम क्रीडा & फिटनेस क्लब",
       title: isEn ? "Olympic Pool & AC Gym" : "ऑलिंपिक स्विमिंग पूल व AC जिम",
       subtitle: isEn ? "Badminton, Pickleball, Table Tennis, Library & Modern Halls" : "बॅडमिंटन, पिकलबॉल, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
     },
     {
-      image: (store.siteData.aanandshalaImages && store.siteData.aanandshalaImages[1]) || "/images/slider3.png",
+      image: "/images/slider3.png",
       tag: isEn ? "🌸 Joyful Golden Years" : "🌸 आनंदी सुवर्णवर्षे",
       title: isEn ? "Warm Belonging & Family Bond" : "आपुलकीचे नाते व कौटुंबिक आनंद",
       subtitle: isEn ? "Vibrant, joyful & secure golden years with peer friends" : "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित जीवन सोहळा",
