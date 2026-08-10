@@ -1052,6 +1052,13 @@ export function useAdminStore() {
     setStoredData(STORAGE_KEYS.sportsSchedule, updated);
   };
 
+  const activeBrochures = brochures.filter(
+    (b) => b.id !== "broch-2" && b.category !== "स्पोर्ट्स क्लब ब्रोशर" && !b.category.includes("स्पोर्ट्स")
+  );
+
+  const sportsInquiries = inquiries.filter(isSportsInquiryItem);
+  const anandshalaInquiries = inquiries.filter((i) => !isSportsInquiryItem(i));
+
   const syncAllToFirebaseCloud = async () => {
     try {
       await Promise.all([
