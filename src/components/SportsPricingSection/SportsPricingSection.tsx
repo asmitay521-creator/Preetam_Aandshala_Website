@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import { useAdminStore } from "@/lib/admin-store";
 import { 
   CalendarDays, 
   Activity, 
@@ -24,7 +25,8 @@ import {
   PhoneCall,
   ArrowRight,
   Info,
-  Check
+  Check,
+  Gift
 } from "lucide-react";
 import "./SportsPricingSection.css";
 
@@ -41,9 +43,12 @@ interface PackageDetail {
 }
 
 const SportsPricingSection = () => {
+  const store = useAdminStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>("12 Months Package");
   const [selectedDetail, setSelectedDetail] = useState<PackageDetail | null>(null);
+
+  const [durationFilter, setDurationFilter] = useState<"all" | "day" | "month" | "year">("all");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -66,10 +71,48 @@ const SportsPricingSection = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) return;
+    store.addInquiry({
+      name: formData.name,
+      phone: formData.phone,
+      email: "",
+      subject: `🏋️ स्पोर्ट्स क्लब मेंबरशिप चौकशी (${formData.package})`,
+      message: `प्रवेश / मेंबरशिप चौकशी: ${formData.package} साठी ऑनलाईन नाव नोंदवले आहे.`,
+      category: "sports",
+    });
     setIsSubmitted(true);
   };
 
   // Package Data Objects for easy re-use
+  const pkgDayPass: PackageDetail = {
+    title: "स्पोर्ट्स क्लब डे पास (Day Pass)",
+    duration: "१ दिवस (Day Pass)",
+    rackRate: "₹ ५००",
+    offerPrice: "₹ ३००",
+    savings: "सर्व क्रीडा सोयी एका दिवसासाठी!",
+    facilityNote: "ऑलिंपिक स्विमिंग पूल, २४x७ जीम व सर्व इनडोअर गेम्स एका दिवसासाठी वापरा",
+    benefits: [
+      "ऑलिंपिक स्विमिंग पूल अमर्याद १ दिवस वापर",
+      "२४x७ जिम व इनडोअर गेम्स वापर",
+      "चहा व अल्पोपहार सोय विनामूल्य"
+    ]
+  };
+
+  const pkgFreeTrialPass: PackageDetail = {
+    title: "१-दिवसाचा फ्री ट्रायअल पास (Free 1-Day Trial Pass)",
+    duration: "१ दिवस (विनामूल्य १-दिवस ट्रायल डेमो पास)",
+    rackRate: "₹ ५००",
+    offerPrice: "₹ ० (मोफत १-दिवस ट्रायअल)",
+    savings: "१००% मोफत पास • शून्य शुल्क, शून्य अट!",
+    facilityNote: "ऑलिंपिक स्विमिंग पूल, २४x७ जीम व क्रीडा सोयींचा प्रत्यक्ष विनामूल्य अनुभव घ्या",
+    benefits: [
+      "विनामूल्य ऑलिंपिक स्विमिंग पूल अमर्याद entry",
+      "२४x७ हायटेक AC जिम व फिटनेस असेसमेंट मोफत",
+      "प्रमाणित फिटनेस तज्ञांसोबत १-ऑन-१ विनामूल्य सल्लागार",
+      "ग्रंथालय, जॉगिंग ट्रॅक व म्युझिक हॉल ॲक्सेस विनामूल्य",
+      "चहा व अल्पोपहार सोय विनामूल्य"
+    ]
+  };
+
   const pkg12Months: PackageDetail = {
     title: "१२ महिने (१ वर्ष) मेंबरशिप पॅकेज",
     duration: "१२ महिने (12 Months / 1 Year)",
@@ -216,313 +259,529 @@ const SportsPricingSection = () => {
           </div>
         </div>
 
-        {/* 4 MODERN VISUAL PRICING CARDS */}
-        <div className="sp-visual-cards-grid my-6">
-          
-          {/* 12 Months */}
-          <div 
-            className="sp-price-card popular cursor-pointer group"
-            onClick={() => handleOpenDetailModal(pkg12Months)}
+        {/* DURATION FILTER TABS (DAYWISE, MONTHWISE, YEARWISE, ALL) */}
+        <div className="flex items-center justify-center gap-2 flex-wrap my-6 p-2.5 rounded-2xl bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 border border-pink-500/30 backdrop-blur-md shadow-xl">
+          <button
+            type="button"
+            onClick={() => setDurationFilter("all")}
+            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              durationFilter === "all"
+                ? "bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 text-white shadow-lg shadow-pink-500/40 scale-105"
+                : "bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white"
+            }`}
           >
-            <div className="sp-pop-badge">🔥 सर्वोत्कृष्ट बचत • MOST POPULAR</div>
-            <div>
-              <div className="sp-card-dur">
-                <CalendarDays className="text-pink-500" size={22}/>
-                <span>१२ महिने (१ वर्ष)</span>
-              </div>
-              <div className="sp-rack-price">
-                मूळ दर (Rack Rate): <span className="sp-rack-num">₹ १८,०००</span>
-              </div>
-              <div className="sp-offer-price">
-                ₹ ११,९९९ <span className="text-xs text-slate-500 font-bold">/-</span>
-              </div>
-              <div className="sp-save-badge">
-                <Sparkles size={14}/> ₹ ६,००१ ची बचत! (33% OFF)
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 mt-2">
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg12Months); }}
-                className="w-full py-2.5 rounded-full bg-pink-100 hover:bg-pink-200 text-pink-700 font-black text-xs flex items-center justify-center gap-1.5 transition"
-              >
-                <Info size={15}/>
-                <span>तपशीलवार माहिती पहा 👁️</span>
-              </button>
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenModal("12 Months Package (₹11,999)"); }}
-                className="sp-card-btn"
-              >
-                आजच प्रवेश नोंदणी करा →
-              </button>
-            </div>
-          </div>
-
-          {/* 6 Months */}
-          <div 
-            className="sp-price-card cursor-pointer group"
-            onClick={() => handleOpenDetailModal(pkg6Months)}
+            🌟 सर्व योजना (All Plans)
+          </button>
+          <button
+            type="button"
+            onClick={() => setDurationFilter("day")}
+            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              durationFilter === "day"
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/40 scale-105"
+                : "bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white"
+            }`}
           >
-            <div>
-              <div className="sp-card-dur">
-                <CalendarDays className="text-purple-500" size={22}/>
-                <span>६ महिने</span>
-              </div>
-              <div className="sp-rack-price">
-                मूळ दर (Rack Rate): <span className="sp-rack-num">₹ १२,०००</span>
-              </div>
-              <div className="sp-offer-price">
-                ₹ ६,९९९ <span className="text-xs text-slate-500 font-bold">/-</span>
-              </div>
-              <div className="sp-save-badge">
-                <Sparkles size={14}/> ₹ ५,००१ ची बचत! (42% OFF)
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 mt-2">
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg6Months); }}
-                className="w-full py-2.5 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-700 font-black text-xs flex items-center justify-center gap-1.5 transition"
-              >
-                <Info size={15}/>
-                <span>तपशीलवार माहिती पहा 👁️</span>
-              </button>
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenModal("6 Months Package (₹6,999)"); }}
-                className="sp-card-btn"
-              >
-                आजच प्रवेश नोंदणी करा →
-              </button>
-            </div>
-          </div>
-
-          {/* 3 Months */}
-          <div 
-            className="sp-price-card cursor-pointer group"
-            onClick={() => handleOpenDetailModal(pkg3Months)}
+            ☀️ दिवसवार (Day Pass)
+          </button>
+          <button
+            type="button"
+            onClick={() => setDurationFilter("month")}
+            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              durationFilter === "month"
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/40 scale-105"
+                : "bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white"
+            }`}
           >
-            <div>
-              <div className="sp-card-dur">
-                <CalendarDays className="text-indigo-500" size={22}/>
-                <span>३ महिने</span>
-              </div>
-              <div className="sp-rack-price">
-                मूळ दर (Rack Rate): <span className="sp-rack-num">₹ ७,५००</span>
-              </div>
-              <div className="sp-offer-price">
-                ₹ ३,९९९ <span className="text-xs text-slate-500 font-bold">/-</span>
-              </div>
-              <div className="sp-save-badge">
-                <Sparkles size={14}/> ₹ ३,५०१ ची बचत! (47% OFF)
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 mt-2">
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg3Months); }}
-                className="w-full py-2.5 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-black text-xs flex items-center justify-center gap-1.5 transition"
-              >
-                <Info size={15}/>
-                <span>तपशीलवार माहिती पहा 👁️</span>
-              </button>
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenModal("3 Months Package (₹3,999)"); }}
-                className="sp-card-btn"
-              >
-                आजच प्रवेश नोंदणी करा →
-              </button>
-            </div>
-          </div>
-
-          {/* 1 Month */}
-          <div 
-            className="sp-price-card cursor-pointer group"
-            onClick={() => handleOpenDetailModal(pkg1Month)}
+            📆 महिनेवार (1, 3 & 6 Months)
+          </button>
+          <button
+            type="button"
+            onClick={() => setDurationFilter("year")}
+            className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              durationFilter === "year"
+                ? "bg-gradient-to-r from-pink-600 to-amber-600 text-white shadow-lg shadow-pink-500/40 scale-105"
+                : "bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white"
+            }`}
           >
-            <div>
-              <div className="sp-card-dur">
-                <CalendarDays className="text-blue-500" size={22}/>
-                <span>१ महिना</span>
-              </div>
-              <div className="sp-rack-price">
-                मूळ दर (Rack Rate): <span className="sp-rack-num">₹ ३,५००</span>
-              </div>
-              <div className="sp-offer-price">
-                ₹ १,४९९ <span className="text-xs text-slate-500 font-bold">/-</span>
-              </div>
-              <div className="sp-save-badge">
-                <Sparkles size={14}/> ₹ २,००१ ची बचत! (57% OFF)
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 mt-2">
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg1Month); }}
-                className="w-full py-2.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-black text-xs flex items-center justify-center gap-1.5 transition"
-              >
-                <Info size={15}/>
-                <span>तपशीलवार माहिती पहा 👁️</span>
-              </button>
-              <button 
-                onClick={(e) => { e.stopPropagation(); handleOpenModal("1 Month Package (₹1,499)"); }}
-                className="sp-card-btn"
-              >
-                आजच प्रवेश नोंदणी करा →
-              </button>
-            </div>
-          </div>
-
+            👑 वार्षिक (1 Year Annual)
+          </button>
         </div>
 
-        {/* Rate Grid with Classic Interactive Table & Special Offer */}
-        <div className="sp-rate-grid">
+        {/* MODERN VISUAL PRICING CARDS GRID */}
+        <div className="sp-visual-cards-grid my-8">
           
-          {/* Interactive Classic Table */}
-          <div className="sp-table-wrapper">
-            <table className="sp-rate-table">
-              <thead>
-                <tr>
-                  <th>कालावधी (Membership Duration)</th>
-                  <th>मूळ दर (Rack Rate)</th>
-                  <th>प्री-लाँच ऑफर दर</th>
-                  <th>बचत (Savings)</th>
-                  <th>तपशील (Details)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr 
-                  onClick={() => handleOpenDetailModal(pkg12Months)}
-                  className="cursor-pointer hover:bg-pink-50/90 transition group"
-                >
-                  <td>
-                    <div className="flex items-center gap-2 font-black text-slate-900">
-                      <CalendarDays className="text-pink-500 shrink-0" size={20}/>
-                      <span>१२ महिने (12 Months)</span>
-                      <span className="bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full text-[10px] font-black hidden sm:inline-block border border-pink-200 animate-pulse">🔥 पॉप्युलर</span>
-                    </div>
-                  </td>
-                  <td className="line-through text-slate-400 font-bold">₹ १८,०००</td>
-                  <td className="text-pink-600 font-black text-lg">₹ ११,९९९</td>
-                  <td><span className="bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">₹ ६,००१ बचत</span></td>
-                  <td>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg12Months); }}
-                      className="px-3.5 py-1.5 rounded-full bg-pink-600 hover:bg-pink-700 text-white font-black text-xs shadow-xs group-hover:scale-105 transition flex items-center gap-1 cursor-pointer"
-                    >
-                      <Info size={14}/>
-                      <span>माहिती उघडा</span>
-                    </button>
-                  </td>
-                </tr>
+          {/* 1. DAY PASS (REPRESENTATIVE FOR DAYWISE & ALL) */}
+          {(durationFilter === "all" || durationFilter === "day") && (
+            <div 
+              className="sp-price-card cursor-pointer group bg-white border-2 border-emerald-400 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all relative flex flex-col justify-between hover:-translate-y-1.5"
+              onClick={() => handleOpenDetailModal(pkgDayPass)}
+            >
+              <div className="sp-pop-badge bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md z-10">
+                🔥 विशेष डे-पास ऑफर
+              </div>
+              <div>
+                <div className="sp-card-dur flex items-center gap-2 text-emerald-900 font-black text-lg mb-1">
+                  <CalendarDays className="text-emerald-600 shrink-0" size={22}/>
+                  <span>१ दिवस (Day Pass)</span>
+                </div>
+                <div className="sp-rack-price text-xs font-bold text-slate-500 mb-1">
+                  मूळ दर: <span className="sp-rack-num line-through text-slate-400">₹ ५००</span>
+                </div>
+                <div className="sp-offer-price text-2xl sm:text-3xl font-black text-emerald-600 mb-2">
+                  ₹ ३०० <span className="text-xs text-slate-500 font-bold">/ दिवस</span>
+                </div>
+                <div className="sp-save-badge bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-xs px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1">
+                  <Sparkles size={13}/> सर्व क्रीडा सोयी वापरा!
+                </div>
 
-                <tr 
-                  onClick={() => handleOpenDetailModal(pkg6Months)}
-                  className="cursor-pointer hover:bg-purple-50/90 transition group"
-                >
-                  <td>
-                    <div className="flex items-center gap-2 font-black text-slate-900">
-                      <CalendarDays className="text-purple-500 shrink-0" size={20}/>
-                      <span>६ महिने (6 Months)</span>
-                    </div>
-                  </td>
-                  <td className="line-through text-slate-400 font-bold">₹ १२,०००</td>
-                  <td className="text-pink-600 font-black text-lg">₹ ६,९९९</td>
-                  <td><span className="bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">₹ ५,००१ बचत</span></td>
-                  <td>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg6Months); }}
-                      className="px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-black text-xs shadow-xs group-hover:scale-105 transition flex items-center gap-1 cursor-pointer"
-                    >
-                      <Info size={14}/>
-                      <span>माहिती उघडा</span>
-                    </button>
-                  </td>
-                </tr>
+                <ul className="mt-3 space-y-2 text-xs font-bold text-slate-800 border-t border-slate-200 pt-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                    <span>ऑलिंपिक स्विमिंग पूल अमर्याद १ दिवस</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                    <span>२४x७ जिम व इनडोअर गेम्स</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
+                    <span>चहा व अल्पोपहार सोय विनामूल्य</span>
+                  </li>
+                </ul>
+              </div>
 
-                <tr 
-                  onClick={() => handleOpenDetailModal(pkg3Months)}
-                  className="cursor-pointer hover:bg-indigo-50/90 transition group"
+              <div className="mt-5 flex flex-col gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkgDayPass); }}
+                  className="w-full py-2.5 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-black text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
                 >
-                  <td>
-                    <div className="flex items-center gap-2 font-black text-slate-900">
-                      <CalendarDays className="text-indigo-500 shrink-0" size={20}/>
-                      <span>३ महिने (3 Months)</span>
-                    </div>
-                  </td>
-                  <td className="line-through text-slate-400 font-bold">₹ ७,५००</td>
-                  <td className="text-pink-600 font-black text-lg">₹ ३,९९९</td>
-                  <td><span className="bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">₹ ३,५०१ बचत</span></td>
-                  <td>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg3Months); }}
-                      className="px-3.5 py-1.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs shadow-xs group-hover:scale-105 transition flex items-center gap-1 cursor-pointer"
-                    >
-                      <Info size={14}/>
-                      <span>माहिती उघडा</span>
-                    </button>
-                  </td>
-                </tr>
+                  <Info size={15}/>
+                  <span>संपूर्ण माहिती व नोंदणी उघडा 👁️</span>
+                </button>
+              </div>
+            </div>
+          )}
 
-                <tr 
-                  onClick={() => handleOpenDetailModal(pkg1Month)}
-                  className="cursor-pointer hover:bg-blue-50/90 transition group"
+          {/* 2. 1 MONTH (REPRESENTATIVE FOR MONTHWISE & ALL) */}
+          {(durationFilter === "all" || durationFilter === "month") && (
+            <div 
+              className="sp-price-card cursor-pointer group bg-white border-2 border-blue-200 hover:border-blue-400 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all relative flex flex-col justify-between hover:-translate-y-1.5"
+              onClick={() => handleOpenDetailModal(pkg1Month)}
+            >
+              <div>
+                <div className="sp-card-dur flex items-center gap-2 text-blue-900 font-black text-lg mb-1">
+                  <CalendarDays className="text-blue-500 shrink-0" size={22}/>
+                  <span>१ महिना मेंबरशिप</span>
+                </div>
+                <div className="sp-rack-price text-xs font-bold text-slate-500 mb-1">
+                  मूळ दर: <span className="sp-rack-num line-through text-slate-400">₹ ३,५००</span>
+                </div>
+                <div className="sp-offer-price text-2xl sm:text-3xl font-black text-blue-600 mb-2">
+                  ₹ १,४९९ <span className="text-xs text-slate-500 font-bold">/ महिना</span>
+                </div>
+                <div className="sp-save-badge bg-blue-100 text-blue-800 border border-blue-300 font-extrabold text-xs px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1">
+                  <Sparkles size={13}/> ₹ २,००१ ची बचत! (57% OFF)
+                </div>
+
+                <ul className="mt-3 space-y-2 text-xs font-bold text-slate-800 border-t border-slate-200 pt-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
+                    <span>निवडलेल्या एका मुख्य सोयीचा १ महिना वापर</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
+                    <span>ग्रंथालय व म्युझिक हॉल मोफत</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
+                    <span>फिटनेस गार्डन व जॉगिंग ट्रॅक मोफत</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg1Month); }}
+                  className="w-full py-2.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-900 font-black text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
                 >
-                  <td>
-                    <div className="flex items-center gap-2 font-black text-slate-900">
-                      <CalendarDays className="text-blue-500 shrink-0" size={20}/>
-                      <span>१ महिना (1 Month)</span>
-                    </div>
-                  </td>
-                  <td className="line-through text-slate-400 font-bold">₹ ३,५००</td>
-                  <td className="text-pink-600 font-black text-lg">₹ १,४९९</td>
-                  <td><span className="bg-emerald-100 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-black">₹ २,००१ बचत</span></td>
-                  <td>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg1Month); }}
-                      className="px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-xs group-hover:scale-105 transition flex items-center gap-1 cursor-pointer"
-                    >
-                      <Info size={14}/>
-                      <span>माहिती उघडा</span>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                  <Info size={15}/>
+                  <span>संपूर्ण माहिती व नोंदणी उघडा 👁️</span>
+                </button>
+              </div>
+            </div>
+          )}
 
-          {/* Special Offer Box */}
-          <div className="sp-special-offer">
-            <div className="sp-special-badge">✨ SPECIAL ANNUAL OFFER</div>
-            
-            <div className="pt-3">
-              <div className="flex items-center justify-center gap-2 mb-3 mt-1">
-                <span className="text-3xl">💰</span>
-                <div className="text-left font-black text-slate-900 leading-tight text-xs sm:text-sm">
-                  एकावेळी १ वर्षाचे शुल्क भरल्यास<br/>
-                  <span className="text-pink-600 text-sm sm:text-base font-black">दरमहा दर फक्त ₹१,००० / महिना!</span>
+          {/* 3. 3 MONTHS (SHOWN IN MONTHWISE TAB) */}
+          {durationFilter === "month" && (
+            <div 
+              className="sp-price-card cursor-pointer group bg-white border-2 border-indigo-200 hover:border-indigo-400 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all relative flex flex-col justify-between hover:-translate-y-1.5"
+              onClick={() => handleOpenDetailModal(pkg3Months)}
+            >
+              <div>
+                <div className="sp-card-dur flex items-center gap-2 text-indigo-900 font-black text-lg mb-1">
+                  <CalendarDays className="text-indigo-500 shrink-0" size={22}/>
+                  <span>३ महिने मेंबरशिप</span>
+                </div>
+                <div className="sp-rack-price text-xs font-bold text-slate-500 mb-1">
+                  मूळ दर: <span className="sp-rack-num line-through text-slate-400">₹ ७,५००</span>
+                </div>
+                <div className="sp-offer-price text-2xl sm:text-3xl font-black text-indigo-600 mb-2">
+                  ₹ ३,९९९ <span className="text-xs text-slate-500 font-bold">/ ३ महिने</span>
+                </div>
+                <div className="sp-save-badge bg-indigo-100 text-indigo-800 border border-indigo-300 font-extrabold text-xs px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1">
+                  <Sparkles size={13}/> ₹ ३,५०१ ची बचत! (47% OFF)
+                </div>
+
+                <ul className="mt-3 space-y-2 text-xs font-bold text-slate-800 border-t border-slate-200 pt-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-indigo-600 shrink-0" />
+                    <span>निवडलेल्या एका सोयीचा ३ महिने अमर्याद प्रवेश</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-indigo-600 shrink-0" />
+                    <span>ग्रंथालय व म्युझिक हॉल मोफत</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-indigo-600 shrink-0" />
+                    <span>इनडोअर गेम्स सोयी मोफत</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg3Months); }}
+                  className="w-full py-2.5 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-900 font-black text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                >
+                  <Info size={15}/>
+                  <span>संपूर्ण माहिती व नोंदणी उघडा 👁️</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 4. 6 MONTHS (SHOWN IN MONTHWISE TAB) */}
+          {durationFilter === "month" && (
+            <div 
+              className="sp-price-card cursor-pointer group bg-white border-2 border-purple-200 hover:border-purple-400 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all relative flex flex-col justify-between hover:-translate-y-1.5"
+              onClick={() => handleOpenDetailModal(pkg6Months)}
+            >
+              <div>
+                <div className="sp-card-dur flex items-center gap-2 text-purple-900 font-black text-lg mb-1">
+                  <CalendarDays className="text-purple-500 shrink-0" size={22}/>
+                  <span>६ महिने मेंबरशिप</span>
+                </div>
+                <div className="sp-rack-price text-xs font-bold text-slate-500 mb-1">
+                  मूळ दर: <span className="sp-rack-num line-through text-slate-400">₹ १२,०००</span>
+                </div>
+                <div className="sp-offer-price text-2xl sm:text-3xl font-black text-purple-600 mb-2">
+                  ₹ ६,९९९ <span className="text-xs text-slate-500 font-bold">/ ६ महिने</span>
+                </div>
+                <div className="sp-save-badge bg-purple-100 text-purple-800 border border-purple-300 font-extrabold text-xs px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1">
+                  <Sparkles size={13}/> ₹ ५,००१ ची बचत! (42% OFF)
+                </div>
+
+                <ul className="mt-3 space-y-2 text-xs font-bold text-slate-800 border-t border-slate-200 pt-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-purple-600 shrink-0" />
+                    <span>मुख्य सोयीचा ६ महिने अमर्याद प्रवेश</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-purple-600 shrink-0" />
+                    <span>स्टीम बाथ सुविधा उपलब्ध</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-purple-600 shrink-0" />
+                    <span>प्रमाणित फिटनेस ट्रेनर्स सल्ला</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg6Months); }}
+                  className="w-full py-2.5 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-900 font-black text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                >
+                  <Info size={15}/>
+                  <span>संपूर्ण माहिती व नोंदणी उघडा 👁️</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 5. 12 MONTHS / 1 YEAR (REPRESENTATIVE FOR YEARWISE & ALL) */}
+          {(durationFilter === "all" || durationFilter === "year") && (
+            <div 
+              className="sp-price-card popular cursor-pointer group bg-gradient-to-b from-pink-50 via-white to-pink-50/40 border-2 border-pink-500 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all relative flex flex-col justify-between hover:-translate-y-1.5"
+              onClick={() => handleOpenDetailModal(pkg12Months)}
+            >
+              <div className="sp-pop-badge bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-md z-10">
+                🔥 सर्वोत्कृष्ट बचत • MOST POPULAR
+              </div>
+              <div>
+                <div className="sp-card-dur flex items-center gap-2 text-pink-900 font-black text-lg mb-1">
+                  <CalendarDays className="text-pink-600 shrink-0" size={22}/>
+                  <span>१२ महिने (१ वर्ष)</span>
+                </div>
+                <div className="sp-rack-price text-xs font-bold text-slate-500 mb-1">
+                  मूळ दर: <span className="sp-rack-num line-through text-slate-400">₹ १८,०००</span>
+                </div>
+                <div className="sp-offer-price text-2xl sm:text-3xl font-black text-pink-600 mb-2">
+                  ₹ ११,९९९ <span className="text-xs text-slate-500 font-bold">/ वर्ष</span>
+                </div>
+                <div className="sp-save-badge bg-pink-100 text-pink-800 border border-pink-300 font-extrabold text-xs px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1">
+                  <Sparkles size={13}/> ₹ ६,००१ ची बचत! (33% OFF)
+                </div>
+
+                <ul className="mt-3 space-y-2 text-xs font-bold text-slate-800 border-t border-slate-200 pt-3">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-pink-600 shrink-0" />
+                    <span>मुख्य सोयीचा १ वर्ष अमर्याद प्रवेश</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-pink-600 shrink-0" />
+                    <span>ग्रंथालय, म्युझिक हॉल व स्टीम बाथ मोफत</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-pink-600 shrink-0" />
+                    <span>पर्सनल फिटनेस ट्रेनर व डाएट चार्ट</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleOpenDetailModal(pkg12Months); }}
+                  className="w-full py-2.5 rounded-full bg-pink-100 hover:bg-pink-200 text-pink-900 font-black text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                >
+                  <Info size={15}/>
+                  <span>संपूर्ण माहिती व नोंदणी उघडा 👁️</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* DYNAMIC SPORTS PACKAGES FROM ADMIN STORE (SHOWN ON SPECIFIC TABS) */}
+          {durationFilter !== "all" && store.siteData.sportsPackages?.map((spk) => {
+            const isDay = spk.title.includes("दिवस") || spk.title.toLowerCase().includes("day");
+            const isYear = spk.title.includes("वर्ष") || spk.title.toLowerCase().includes("year") || spk.title.includes("वार्षिक");
+            const isMonth = !isDay && !isYear;
+
+            if (durationFilter === "day" && !isDay) return null;
+            if (durationFilter === "month" && !isMonth) return null;
+            if (durationFilter === "year" && !isYear) return null;
+
+            const spkDetail: PackageDetail = {
+              title: spk.title,
+              duration: spk.title,
+              rackRate: spk.price,
+              offerPrice: spk.price,
+              savings: spk.subtitle || "विशेष स्पोर्ट्स ऑफर",
+              benefits: spk.features || ["विशेष क्रीडा सोयी"],
+            };
+
+            return (
+              <div 
+                key={spk.id}
+                className="sp-price-card cursor-pointer group border-2 border-purple-300 bg-white text-slate-900 rounded-3xl p-6 shadow-xl relative overflow-visible flex flex-col justify-between hover:-translate-y-1.5 transition-all"
+                onClick={() => handleOpenDetailModal(spkDetail)}
+              >
+                <div className="sp-pop-badge bg-gradient-to-r from-purple-600 to-pink-600 text-white z-10 shadow-md">
+                  ✨ विशेष स्पोर्ट्स ऑफर
+                </div>
+                <div>
+                  <div className="sp-card-dur text-purple-900 font-black flex items-center gap-2 text-lg mb-1">
+                    <CalendarDays className="text-purple-600 shrink-0" size={22}/>
+                    <span>{spk.title}</span>
+                  </div>
+                  <div className="sp-offer-price text-purple-700 font-black text-2xl mb-2">
+                    {spk.price}
+                  </div>
+                  {spk.subtitle && (
+                    <div className="sp-save-badge bg-purple-100 text-purple-800 border border-purple-200 font-extrabold text-xs px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1">
+                      <Sparkles size={13}/> {spk.subtitle}
+                    </div>
+                  )}
+
+                  <ul className="mt-3 space-y-2 text-xs text-slate-800 font-bold border-t border-slate-200 pt-3">
+                    {(spk.features || []).map((feat, fIdx) => (
+                      <li key={fIdx} className="flex items-start gap-2">
+                        <CheckCircle2 size={16} className="text-purple-600 shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="mt-5 flex flex-col gap-2">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenDetailModal(spkDetail);
+                    }}
+                    className="w-full py-2.5 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-900 font-black text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  >
+                    <Info size={15}/>
+                    <span>संपूर्ण माहिती व नोंदणी उघडा 👁️</span>
+                  </button>
                 </div>
               </div>
-              
-              <div className="sp-special-price-btn">
-                ₹ १२,००० + GST
+            );
+          })}
+        </div>
+
+        {/* ULTRA-MODERN SPECIAL VIP OFFER SHOWCASE & TIER CARDS - ZERO TABLE CLUTTER */}
+        <div className="my-10 space-y-6">
+
+          {/* HERO VIP ANNUAL OFFER BANNER */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-950 via-pink-900 to-rose-950 p-6 sm:p-8 text-white shadow-2xl border-2 border-amber-400/40">
+            <div className="absolute -top-12 -right-12 size-48 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-12 -left-12 size-48 rounded-full bg-pink-500/20 blur-3xl pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="space-y-2 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 font-extrabold text-xs">
+                  <Sparkles size={14} className="text-amber-300 animate-spin" />
+                  <span>✨ SPECIAL VIP ANNUAL DISCOUNT DEAL</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-white leading-snug">
+                  एकावेळी १ वर्षाचे मेंबरशिप शुल्क भरल्यास<br />
+                  <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent drop-shadow-md">
+                    दरमहा दर फक्त ₹१,००० / महिना!
+                  </span>
+                </h3>
+                <p className="text-xs sm:text-sm text-pink-200/90 font-semibold max-w-xl">
+                  जिम, ऑलिंपिक पूल, टेनिस व सर्व सोयींसह १ वर्षाचा अमर्याद VIP स्पोर्ट्स क्लब एक्सेस.
+                </p>
               </div>
+
+              <div className="flex flex-col sm:flex-row lg:flex-col items-center gap-3 shrink-0 text-center">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 px-5 py-3 rounded-2xl">
+                  <div className="text-[11px] text-pink-200 font-bold uppercase tracking-wider">वार्षिक स्पेशल सवलत दर</div>
+                  <div className="text-2xl sm:text-3xl font-black text-amber-300">₹ १२,००० <span className="text-xs text-white font-bold">+ GST</span></div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleOpenModal("Annual Special Offer (₹12,000 + GST)")}
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-500 hover:to-yellow-500 text-slate-950 font-black text-sm shadow-xl hover:scale-105 transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span>🔥 या VIP ऑफरची नोंदणी करा</span>
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* EXCITING ATTRACTIVE REPLACEMENT: 1-DAY FREE DEMO PASS & WHY PREETAM HUB */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 my-10">
+
+            {/* LEFT 7 COLS: WHY CHOOSE PREETAM SPORTS CLUB FEATURE MATRIX */}
+            <div className="lg:col-span-7 bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-purple-500/30 relative overflow-hidden flex flex-col justify-between">
+              <div className="absolute -top-24 -left-24 size-60 rounded-full bg-pink-600/20 blur-3xl pointer-events-none" />
               
-              <div className="w-full border-t border-dashed border-pink-300 my-3"></div>
-              
-              <div className="text-slate-600 font-bold text-xs mb-1">एकूण वार्षिक शुल्क (Annual Total Fee)</div>
-              <div className="sp-special-price-btn bg-gradient-to-r from-pink-600 to-purple-600">
-                ₹ १,३२,००० /-
+              <div className="relative z-10 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-pink-500/20 border border-pink-500/40 text-pink-300 font-extrabold text-xs">
+                  <Sparkles size={14} className="text-pink-400" />
+                  <span>🏆 सांगलीतील नंबर १ आंतरराष्ट्रीय दर्जाचे क्रीडा संकुल</span>
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                  प्रीतम स्पोर्ट्स क्लबच का निवडावा?<br />
+                  <span className="bg-gradient-to-r from-pink-400 via-rose-300 to-purple-400 bg-clip-text text-transparent">
+                    जागतिक दर्जाच्या क्रीडा सोयी एकाच छताखाली!
+                  </span>
+                </h3>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
+                  <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 hover:bg-white/15 transition group">
+                    <div className="text-2xl mb-1">🏊‍♂️</div>
+                    <div className="font-black text-white text-sm">ऑलिंपिक स्विमिंग पूल</div>
+                    <div className="text-xs text-slate-300 font-medium mt-0.5">तापमान नियंत्रित ५० मी. आंतरराष्ट्रीय ट्रॅक व वॉटर प्युरिफायर सोय.</div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 hover:bg-white/15 transition group">
+                    <div className="text-2xl mb-1">🏋️‍♀️</div>
+                    <div className="font-black text-white text-sm">२४x७ हायटेक AC जिम</div>
+                    <div className="text-xs text-slate-300 font-medium mt-0.5">USA इम्पोर्टेड आधुनिक व्यायाम उपकरणे व बायोमेट्रिक ॲक्सेस.</div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 hover:bg-white/15 transition group">
+                    <div className="text-2xl mb-1">👨‍🏫</div>
+                    <div className="font-black text-white text-sm">प्रमाणित पर्सनल ट्रेनर्स</div>
+                    <div className="text-xs text-slate-300 font-medium mt-0.5">राष्ट्रीय खेळाडू व फिटनेस तज्ञांचे मोफत वैयक्तिक मार्गदर्शन.</div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 hover:bg-white/15 transition group">
+                    <div className="text-2xl mb-1">♨️</div>
+                    <div className="font-black text-white text-sm">स्टीम बाथ व स्पा सोय</div>
+                    <div className="text-xs text-slate-300 font-medium mt-0.5">वर्कआऊटनंतर संपूर्ण ताणतणाव मुक्तीसाठी मोफत स्टीम बाथ.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative z-10 pt-6 mt-6 border-t border-white/10 flex items-center justify-between gap-4">
+                <div className="text-xs text-purple-200 font-bold">
+                  📍 आनंदशाळा, सांगली-मिरज रोड • <span className="text-amber-300 font-black">५०००+ समाधानी सभासद</span>
+                </div>
               </div>
             </div>
 
-            <button 
-              onClick={() => handleOpenModal("Annual Special Offer (₹12,000 + GST)")}
-              className="mt-3 w-full py-3.5 rounded-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white font-black text-xs sm:text-sm transition cursor-pointer shadow-lg"
+            {/* RIGHT 5 COLS: FREE 1-DAY DEMO TRIAL PASS BOOKING CARD */}
+            <div 
+              onClick={() => handleOpenDetailModal(pkgFreeTrialPass)}
+              className="lg:col-span-5 bg-gradient-to-br from-pink-600 via-rose-600 to-purple-700 rounded-3xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between cursor-pointer group hover:scale-[1.01] transition-all"
             >
-              🔥 या ऑफरची नोंदणी करा →
-            </button>
-          </div>
+              <div className="absolute -bottom-16 -right-16 size-48 rounded-full bg-amber-400/20 blur-3xl pointer-events-none" />
 
+              <div className="relative z-10 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs shadow-md animate-pulse">
+                  <Gift size={15} className="text-slate-950" />
+                  <span>LIMITED PERIOD GIFT PASS</span>
+                </div>
+
+                <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                  🎁 १-दिवसाचा फ्री ट्रायअल डेमो पास क्लेम करा!
+                </h3>
+
+                <p className="text-xs sm:text-sm text-pink-100 font-medium leading-relaxed">
+                  पॅकेज घेण्यापूर्वी स्वतः येऊन जिम, ऑलिंपिक पूल व क्रीडा सोयींचा प्रत्यक्ष अनुभव घ्या! शून्य शुल्क, शून्य अट!
+                </p>
+
+                <ul className="space-y-2 text-xs font-extrabold text-white bg-black/20 p-4 rounded-2xl border border-white/20">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-amber-300 shrink-0" />
+                    <span>विनामूल्य ऑलिंपिक स्विमिंग पूल entry</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-amber-300 shrink-0" />
+                    <span>जिम व फिटनेस असेसमेंट मोफत</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-amber-300 shrink-0" />
+                    <span>फिटनेस तज्ञांसोबत १-ऑन-१ सल्लागार</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="relative z-10 pt-6 mt-6 border-t border-white/20">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenDetailModal(pkgFreeTrialPass);
+                  }}
+                  className="w-full py-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm shadow-2xl transition-all hover:scale-105 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Sparkles size={18} className="text-slate-950" />
+                  <span>माझा मोफत १-दिवस पास माहिती उघडा 👁️</span>
+                </button>
+                <div className="text-center text-[11px] text-pink-200 font-bold mt-2.5">
+                  ⚡ आजच ५० पास शिल्लक आहेत!
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         {/* II and III Two Columns */}
@@ -901,6 +1160,8 @@ const SportsPricingSection = () => {
                       onChange={(e) => setFormData({ ...formData, package: e.target.value })}
                       className="bg-[#0f172a] text-white font-bold"
                     >
+                      <option value="१-दिवसाचा फ्री ट्रायअल पास (Free 1-Day Trial Pass)" className="bg-[#0f172a] text-white font-bold">१-दिवसाचा फ्री ट्रायअल पास (मोफत)</option>
+                      <option value="1 Day Pass (₹300)" className="bg-[#0f172a] text-white font-bold">१ दिवस डे-पास (₹३००)</option>
                       <option value="12 Months Package" className="bg-[#0f172a] text-white font-bold">१२ महिने पॅकेज (₹११,९९९)</option>
                       <option value="6 Months Package" className="bg-[#0f172a] text-white font-bold">६ महिने पॅकेज (₹६,९९९)</option>
                       <option value="3 Months Package" className="bg-[#0f172a] text-white font-bold">३ महिने पॅकेज (₹३,९९९)</option>

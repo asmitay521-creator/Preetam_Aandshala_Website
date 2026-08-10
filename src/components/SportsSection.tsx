@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { ArrowRight, PhoneCall } from "lucide-react";
 import "./SportsSection.css";
 import { site, sportsClub } from "../lib/site-info";
+import { useLanguage } from "@/lib/use-language";
 
 interface FacilityDetail {
   id: string;
@@ -158,7 +159,7 @@ const facilityItems: FacilityDetail[] = [
 
 export const SportsSection: React.FC = () => {
   const [activeNav, setActiveNav] = useState("home");
-  const [lang, setLang] = useState<"mr" | "en">("mr");
+  const { isEn } = useLanguage();
   const [selectedFacility, setSelectedFacility] = useState<FacilityDetail | null>(null);
 
   const [showRegModal, setShowRegModal] = useState(false);

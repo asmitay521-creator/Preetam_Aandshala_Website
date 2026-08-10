@@ -15,8 +15,8 @@ function Contact() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !phone) return;
-    addInquiry({ name, phone, email, subject, message });
+    const inquiryCategory = subject.includes("स्पोर्ट्स") || subject.includes("Sports") ? "sports" : "anandshala";
+    addInquiry({ name, phone, email, subject, message, category: inquiryCategory });
     setSubmitted(true);
     setName("");
     setPhone("");

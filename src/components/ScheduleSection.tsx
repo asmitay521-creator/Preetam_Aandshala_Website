@@ -1,96 +1,113 @@
-import React from "react";
+import React, { useState } from "react";
+import { useAdminStore } from "@/lib/admin-store";
 
-const scheduleData = [
-  {
-    icon: "🧘‍♂️",
-    time: "सकाळी ०५:३० ते ०६:१५",
-    mon: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-    tue: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-    wed: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-    thu: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-    fri: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-  },
-  {
-    icon: "🧠",
-    time: "सकाळी ०६:१५ ते ०७:००",
-    mon: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-    tue: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-    wed: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-    thu: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-    fri: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-  },
-  {
-    icon: "🚶‍♂️",
-    time: "सकाळी ०७:०० ते ०७:४५",
-    mon: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-    tue: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-    wed: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-    thu: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-    fri: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-  },
-  {
-    icon: "☕",
-    time: "सकाळी ०७:४५ ते ०८:१५",
-    mon: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-    tue: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-    wed: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-    thu: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-    fri: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-  },
-  {
-    icon: "💪",
-    time: "सकाळी ०८:१५ ते ०९:००",
-    mon: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-    tue: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-    wed: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-    thu: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-    fri: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-  },
-  {
-    icon: "🥗",
-    time: "सकाळी ०९:०० ते ०९:३०",
-    mon: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-    tue: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-    wed: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-    thu: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-    fri: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-  },
-];
+interface ScheduleSectionProps {
+  type?: "anandshala" | "sports";
+}
 
-const rules = [
-  "क्लबाचे वेळापत्रक हे सदस्यांनी नियमित पाळावे.",
-  "वेळेवर हजेरी लावणे सर्व सदस्यांसाठी अनिवार्य आहे.",
-  "योग वर्गात योग ड्रेस व स्वच्छ चटई आणणे आवश्यक आहे.",
-  "वेट ट्रेनिंग करताना प्रशिक्षकांच्या मार्गदर्शनाखाली व्यायाम करावा.",
-  "जिम मध्ये मोबाईल वापरण्यास संपूर्ण बंदी आहे.",
-  "क्लब परिसर स्वच्छ व नीटनेटका ठेवणे ही सर्वांची जबाबदारी आहे.",
-  "क्लबांमध्ये धुम्रपान, तंबाखू व मद्यपान सक्त मनाई आहे.",
-  "जिममध्ये मोठ्याने बोलणे किंवा गोंधळ करणे टाळावे.",
-  "कोणत्याही प्रकारची दुखापत झाल्यास व्यवस्थापन जबाबदार राहणार नाही.",
-  "वैयक्तिक वस्तूंची काळजी स्वतः घ्यावी."
-];
+export default function ScheduleSection({ type = "anandshala" }: ScheduleSectionProps) {
+  const store = useAdminStore();
+  const config = type === "sports" ? store.sportsScheduleConfig : store.scheduleConfig;
+  const items = config.items?.length ? config.items : [];
+  const rules = config.rules?.length ? config.rules : [];
+  const [showPosterModal, setShowPosterModal] = useState(false);
 
-export default function ScheduleSection() {
   return (
     <section className="w-full bg-[#fdfafb] py-16 px-4 md:px-8 font-sans" id="schedule">
       <div className="max-w-7xl mx-auto">
         
         {/* HEADER AREA */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="flex items-center gap-4 mb-2">
-            <span className="text-xl sm:text-2xl font-black text-[#1a1a40]">प्रीतम स्पोर्ट्स अँड फिटनेस क्लब आनंदशाळा</span>
+        <div className="flex flex-col items-center text-center mb-10">
+          <div className="mb-3">
+            <span className={`inline-flex items-center gap-2 px-5 py-2 rounded-full font-black text-xs sm:text-sm shadow-sm border ${
+              type === "sports" 
+                ? "bg-indigo-50 border-indigo-200 text-[#1A05A2]" 
+                : "bg-pink-50 border-pink-200 text-[#810B38]"
+            }`}>
+              <span>{type === "sports" ? "🏋️‍♂️ प्रीतम स्पोर्ट्स अँड फिटनेस क्लब" : "🌸 प्रीतम ज्येष्ठ नागरिक आनंदशाळा"}</span>
+            </span>
           </div>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-[#f472b6] drop-shadow-sm flex items-center justify-center flex-wrap gap-2 md:gap-4">
-            <span className="text-pink-400 opacity-60">❦</span>
-            प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक
-            <span className="text-pink-400 opacity-60">❦</span>
+
+          <h2 className={`text-2xl sm:text-4xl md:text-5xl font-black tracking-tight drop-shadow-md flex items-center justify-center flex-wrap gap-2 md:gap-3 py-1.5 bg-gradient-to-r bg-clip-text text-transparent ${
+            type === "sports"
+              ? "from-[#1A05A2] via-purple-700 to-[#db2777]"
+              : "from-[#810B38] via-rose-700 to-amber-700"
+          }`}>
+            <span className="text-amber-500 opacity-90 text-2xl sm:text-3xl">✨</span>
+            <span>{config.headerTitle || (type === "sports" ? "प्रीतम स्पोर्ट्स क्लब वेळापत्रक" : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक")}</span>
+            <span className="text-amber-500 opacity-90 text-2xl sm:text-3xl">✨</span>
           </h2>
-          <p className="mt-3 text-[#1a1a40] font-black sm:text-xl flex items-center justify-center flex-wrap gap-2">
-            <span className="text-[#f472b6]">❤</span> 
-            आनंदी जीवन, सुंदर विचार... आरोग्य, मनोरंजन, संस्कार आणि सहवास यांचं आदर्श केंद्र. 
-            <span className="text-[#f472b6]">❤</span>
+
+          <p className="mt-3 text-slate-800 font-black text-sm sm:text-lg md:text-xl flex items-center justify-center flex-wrap gap-2 max-w-4xl leading-relaxed">
+            <span className="text-pink-600 text-base sm:text-xl">💖</span> 
+            <span>{config.subtitle || (type === "sports" ? "फिटनेस, क्रीडा आणि आरोग्याचा परिपूर्ण अनुभव... आधुनिक जिम, स्विमिंग पुल व सर्व खेळांची सोय." : "आनंदी जीवन, सुंदर विचार... आरोग्य, मनोरंजन, संस्कार आणि सहवास यांचं आदर्श केंद्र.")}</span>
+            <span className="text-pink-600 text-base sm:text-xl">💖</span>
           </p>
+
+          {/* UPLOADED TIMETABLE POSTER / DOCUMENT BANNER BUTTON (IF UPLOADED BY ADMIN) */}
+          {config.posterUrl && (
+            <div className="mt-6">
+              <button
+                onClick={() => setShowPosterModal(true)}
+                className={`inline-flex items-center gap-3 px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base shadow-xl hover:scale-105 transition-all cursor-pointer border-2 border-white/40 ${
+                  type === "sports"
+                    ? "bg-gradient-to-r from-[#1A05A2] to-purple-700 hover:shadow-indigo-500/40"
+                    : "bg-gradient-to-r from-[#810B38] to-pink-700 hover:shadow-pink-500/40"
+                }`}
+              >
+                <span>📜</span>
+                <span>ॲडमिनद्वारे अपलोड केलेले अधिकृत वेळापत्रक (पहा / डाउनलोड करा)</span>
+                <span className="bg-amber-400 text-slate-900 text-xs px-2.5 py-0.5 rounded-full font-black">पहा</span>
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* TIMETABLE POSTER LIGHTBOX MODAL */}
+        {showPosterModal && config.posterUrl && (
+          <div className="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-md p-4 sm:p-8 flex items-center justify-center overflow-y-auto">
+            <div className="relative max-w-4xl w-full bg-white rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 my-auto">
+              <div className="flex items-center justify-between border-b pb-3">
+                <h3 className="text-lg font-black text-[#1a1a40]">
+                  📜 अधिकृत आनंदशाळा वेळापत्रक (Timetable Poster)
+                </h3>
+                <button
+                  onClick={() => setShowPosterModal(false)}
+                  className="size-9 rounded-full bg-slate-100 text-slate-700 font-extrabold hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {config.posterType === "pdf" ? (
+                <iframe src={config.posterUrl} className="w-full h-[70vh] rounded-2xl border" title="Schedule PDF" />
+              ) : (
+                <div className="max-h-[75vh] overflow-y-auto rounded-2xl border border-slate-200">
+                  <img src={config.posterUrl} alt="Official Timetable Schedule" className="w-full h-auto object-contain rounded-2xl" />
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-2">
+                <a
+                  href={config.posterUrl}
+                  download="anandshala_timetable.png"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs flex items-center gap-2 shadow-md"
+                >
+                  <span>📥</span>
+                  <span>डाऊनलोड करा</span>
+                </a>
+                <button
+                  onClick={() => setShowPosterModal(false)}
+                  className="px-5 py-2.5 rounded-xl bg-slate-200 text-slate-800 font-extrabold text-xs hover:bg-slate-300 transition-colors"
+                >
+                  बंद करा
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* DATE & TIME BADGES */}
         <div className="flex flex-col sm:flex-row items-center justify-between bg-white rounded-t-3xl border-b-4 border-[#1A05A2] shadow-sm p-4 px-6 md:px-12 z-10 relative mt-8">
@@ -100,13 +117,13 @@ export default function ScheduleSection() {
             </div>
             <div>
               <div className="text-[#f472b6] font-extrabold text-sm">वेळापत्रक</div>
-              <div className="text-[#1a1a40] font-black text-base sm:text-lg">सोमवार ते शुक्रवार (दैनिक हजेरी)</div>
+              <div className="text-[#1a1a40] font-black text-base sm:text-lg">{config.daysText || "सोमवार ते शुक्रवार (दैनिक हजेरी)"}</div>
             </div>
           </div>
           
           <div className="hidden lg:flex bg-[#1A05A2] text-white rounded-full px-8 py-2.5 items-center gap-2 shadow-md">
             <span className="opacity-70">🌿</span>
-            <span className="font-black text-lg">प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक</span>
+            <span className="font-black text-lg">{config.headerTitle || "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक"}</span>
             <span className="opacity-70">🌿</span>
           </div>
 
@@ -116,7 +133,7 @@ export default function ScheduleSection() {
             </div>
             <div>
               <div className="text-[#1A05A2] font-extrabold text-sm">सकाळी वेळ</div>
-              <div className="text-[#1a1a40] font-black text-base sm:text-lg">05:30 ते 09:30</div>
+              <div className="text-[#1a1a40] font-black text-base sm:text-lg">{config.timeRange || "05:30 ते 09:30"}</div>
             </div>
           </div>
         </div>
@@ -126,43 +143,42 @@ export default function ScheduleSection() {
           <table className="w-full min-w-[900px] text-center border-collapse">
             <thead>
               <tr className="bg-gradient-to-r from-[#f472b6] via-[#1A05A2] to-[#6a0dad] text-white">
-                <th className="py-4 px-2 font-black text-lg border-r border-white/20 w-[15%]">वेळ</th>
-                <th className="py-4 px-2 font-black text-lg border-r border-white/20">सोमवार</th>
-                <th className="py-4 px-2 font-black text-lg border-r border-white/20">मंगळवार</th>
-                <th className="py-4 px-2 font-black text-lg border-r border-white/20">बुधवार</th>
-                <th className="py-4 px-2 font-black text-lg border-r border-white/20">गुरुवार</th>
-                <th className="py-4 px-2 font-black text-lg">शुक्रवार</th>
+                <th className="py-2.5 px-2 font-black text-base border-r border-white/20 w-[15%]">वेळ</th>
+                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">सोमवार</th>
+                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">मंगळवार</th>
+                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">बुधवार</th>
+                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">गुरुवार</th>
+                <th className="py-2.5 px-2 font-black text-base">शुक्रवार</th>
               </tr>
             </thead>
             <tbody>
-              {scheduleData.map((row, i) => (
-                <tr key={i} className={`border-b border-slate-200 hover:bg-slate-50 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]'}`}>
-                  <td className="py-5 px-3 border-r border-slate-200">
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-3xl text-[#1A05A2]">{row.icon}</span>
-                      <span className="font-extrabold text-[#1A05A2] text-sm mt-1">सकाळी</span>
-                      <span className="font-black text-[#1a1a40] text-base">{row.time.replace('सकाळी ', '')}</span>
+              {items.map((row, i) => (
+                <tr key={row.id || i} className={`border-b border-slate-200 hover:bg-pink-50/40 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]'}`}>
+                  <td className="py-2.5 px-2 border-r border-slate-200">
+                    <div className="flex flex-col items-center justify-center gap-0.5">
+                      <span className="text-xl text-[#1A05A2]">{row.icon}</span>
+                      <span className="font-extrabold text-[#1a1a40] text-xs sm:text-sm">{row.time}</span>
                     </div>
                   </td>
-                  <td className="py-4 px-2 border-r border-slate-200">
-                    <div className="font-black text-[#1a1a40] text-base sm:text-lg mb-1">{row.mon.main}</div>
-                    <div className="text-sm font-bold text-slate-600">{row.mon.sub}</div>
+                  <td className="py-2 px-2 border-r border-slate-200">
+                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.mon?.main || ""}</div>
+                    <div className="text-xs font-medium text-slate-500">{row.mon?.sub || ""}</div>
                   </td>
-                  <td className="py-4 px-2 border-r border-slate-200">
-                    <div className="font-black text-[#1a1a40] text-base sm:text-lg mb-1">{row.tue.main}</div>
-                    <div className="text-sm font-bold text-slate-600">{row.tue.sub}</div>
+                  <td className="py-2 px-2 border-r border-slate-200">
+                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.tue?.main || ""}</div>
+                    <div className="text-xs font-medium text-slate-500">{row.tue?.sub || ""}</div>
                   </td>
-                  <td className="py-4 px-2 border-r border-slate-200">
-                    <div className="font-black text-[#1a1a40] text-base sm:text-lg mb-1">{row.wed.main}</div>
-                    <div className="text-sm font-bold text-slate-600">{row.wed.sub}</div>
+                  <td className="py-2 px-2 border-r border-slate-200">
+                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.wed?.main || ""}</div>
+                    <div className="text-xs font-medium text-slate-500">{row.wed?.sub || ""}</div>
                   </td>
-                  <td className="py-4 px-2 border-r border-slate-200">
-                    <div className="font-black text-[#1a1a40] text-base sm:text-lg mb-1">{row.thu.main}</div>
-                    <div className="text-sm font-bold text-slate-600">{row.thu.sub}</div>
+                  <td className="py-2 px-2 border-r border-slate-200">
+                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.thu?.main || ""}</div>
+                    <div className="text-xs font-medium text-slate-500">{row.thu?.sub || ""}</div>
                   </td>
-                  <td className="py-4 px-2">
-                    <div className="font-black text-[#1a1a40] text-base sm:text-lg mb-1">{row.fri.main}</div>
-                    <div className="text-sm font-bold text-slate-600">{row.fri.sub}</div>
+                  <td className="py-2 px-2">
+                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.fri?.main || ""}</div>
+                    <div className="text-xs font-medium text-slate-500">{row.fri?.sub || ""}</div>
                   </td>
                 </tr>
               ))}
@@ -170,10 +186,10 @@ export default function ScheduleSection() {
           </table>
         </div>
 
-        {/* BOTTOM 3 SECTIONS (ENLARGED CONTRAST TYPOGRAPHY & FIXED CARD LAYOUT) */}
+        {/* BOTTOM 3 SECTIONS */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
           
-          {/* Features (Left Card - Responsive Grid Wrap & Balanced Card Padding) */}
+          {/* Features */}
           <div className="col-span-1 lg:col-span-4 bg-white rounded-[24px] shadow-lg border-2 border-pink-200 overflow-hidden relative flex flex-col justify-between">
             <div className="bg-[#f472b6] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-8 rounded-b-xl absolute top-0 inset-x-0 shadow-sm z-10">
               <span className="text-xs">✦</span> आमच्या वैशिष्ट्ये <span className="text-xs">✦</span>
@@ -202,7 +218,7 @@ export default function ScheduleSection() {
             </div>
           </div>
 
-          {/* Rules (Middle Card - Enlarged List Text) */}
+          {/* Rules */}
           <div className="col-span-1 lg:col-span-5 bg-white rounded-[24px] shadow-lg border-2 border-indigo-200 relative pt-16 pb-6 px-5 sm:px-6">
             <div className="bg-[#1A05A2] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-8 sm:px-10 rounded-b-xl absolute top-0 inset-x-0 shadow-sm z-10">
               <span className="text-xs">🌿</span> क्लबचे नियम व सूचना <span className="text-xs">🌿</span>
@@ -219,14 +235,14 @@ export default function ScheduleSection() {
             </div>
           </div>
 
-          {/* Happy Moments (Right Card) */}
-          <div className="col-span-1 lg:col-span-3 bg-white rounded-[24px] shadow-lg border-2 border-pink-200 overflow-hidden relative flex flex-col justify-between">
+          {/* Happy Moments */}
+          <div className="col-span-1 lg:col-span-3 bg-white rounded-[24px] shadow-lg border-2 border-pink-200 overflow-hidden relative flex flex-col justify-between min-h-[300px]">
              <div className="bg-[#f472b6] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-6 rounded-b-xl absolute top-0 inset-x-0 z-10 shadow-sm">
               <span className="text-xs">✦</span> आनंदी जीवनाचे सुंदर क्षण <span className="text-xs">✦</span>
             </div>
-            <div className="w-full h-full min-h-[200px] pt-14 p-3 flex">
-               <div className="w-full h-full rounded-2xl overflow-hidden border-2 border-pink-100 relative shadow-inner">
-                  <img src="/images/aandmelav 10.jpeg" alt="Happy Seniors" className="w-full h-full object-cover" />
+            <div className="w-full flex-1 pt-14 p-3 flex flex-col">
+               <div className="w-full flex-1 min-h-[220px] rounded-2xl overflow-hidden border-2 border-pink-100 relative shadow-inner">
+                  <img src="/images/aandmelav 10.jpeg" alt="Happy Seniors" className="absolute inset-0 w-full h-full object-cover" />
                </div>
             </div>
           </div>

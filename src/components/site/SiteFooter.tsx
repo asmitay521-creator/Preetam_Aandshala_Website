@@ -6,7 +6,7 @@ export function SiteFooter() {
   const { isEn } = useLanguage();
 
   return (
-    <footer className="relative mt-24 overflow-hidden text-slate-100 bg-slate-900 border-t border-slate-800">
+    <footer className="relative mt-0 overflow-hidden text-slate-100 bg-slate-900 border-t border-slate-800">
       {/* TOP ACCENT LINE */}
       <div
         className="h-1 w-full"

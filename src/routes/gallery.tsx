@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
@@ -9,27 +8,40 @@ import {
   Pause,
   Sparkles,
   Calendar,
-  Maximize2
+  Maximize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw
 } from "lucide-react";
 
 // ===== Gallery Data =====
 const galleryImages = [
-  { id: 1,  title: "आनंदभवन",            category: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 जानेवारी 2000",    image: "/images/Screenshot 2026-07-31 103107.png" },
-  { id: 2,  title: "आनंद मेळावा",         category: "आनंद मेळावा",             date: "15 ऑगस्ट 2023",     image: "/images/aandmelav 10.jpeg" },
-  { id: 3,  title: "भूमिपूजन सोहळा",      category: "भूमिपूजन",               date: "09 जानेवारी 2024",  image: "/images/ropya mahotsv1.jpg" },
-  { id: 4,  title: "वार्षिक स्नेहसंमेलन", category: "वार्षिक स्नेहसंमेलन",   date: "25 डिसेंबर 2023",   image: "/images/aandshala sahal 1.jpeg" },
-  { id: 5,  title: "सांस्कृतिक उत्सव",    category: "आनंद मेळावा",             date: "14 नोव्हेंबर 2023", image: "/images/aandmelava1.jpg" },
-  { id: 6,  title: "योगा व प्राणायाम",    category: "ज्येष्ठ नागरिक आनंदशाळा", date: "21 जून 2023",      image: "/images/Screenshot 2026-07-31 103659.png" },
-  { id: 7,  title: "संगीत संध्या",         category: "ज्येष्ठ नागरिक आनंदशाळा", date: "05 मार्च 2023",   image: "/images/aandmelav 5.jpg" },
-  { id: 8,  title: "गार्डन व लॉन",         category: "बांधकाम",                date: "10 फेब्रुवारी 2024", image: "/images/Screenshot 2026-07-31 103213.png" },
-  { id: 9,  title: "रौप्य महोत्सव",        category: "भूमिपूजन",               date: "26 जानेवारी 2024",  image: "/images/ropya mahotsv 2.jpg" },
-  { id: 10, title: "सामाजिक कार्य",        category: "सामाजिक कार्य",           date: "02 ऑक्टोबर 2023",  image: "/images/samajik karya1.jpeg" },
-  { id: 11, title: "आरोग्य शिबिर",         category: "सामाजिक कार्य",           date: "15 ऑगस्ट 2023",    image: "/images/samajik karya 2.jpeg" },
-  { id: 12, title: "मान्यवर सत्कार",        category: "मान्यवर भेट",             date: "01 जानेवारी 2024",  image: "/images/vyavsaik mahiti 1.jpeg" },
-  { id: 13, title: "मान्यवर भेट",          category: "मान्यवर भेट",             date: "20 डिसेंबर 2023",   image: "/images/vyavsaik mahiti 2.jpeg" },
-  { id: 14, title: "खेळ व मनोरंजन",        category: "ज्येष्ठ नागरिक आनंदशाळा", date: "18 नोव्हेंबर 2023", image: "/images/Screenshot 2026-07-31 103517.png" },
-  { id: 15, title: "आनंद निवास",           category: "ज्येष्ठ नागरिक आनंदशाळा", date: "10 जानेवारी 2024",  image: "/images/Screenshot 2026-07-31 103842.png" },
-  { id: 16, title: "व्यावसायिक माहिती",    category: "मान्यवर भेट",             date: "05 मे 2023",        image: "/images/vyavsaik mahiti 1.jpeg" },
+  { id: 1,  title: "आनंदशाळा संकुल गॅलरी १", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 जानेवारी 2026", image: "/images/gallery imgage1.JPG" },
+  { id: 2,  title: "आनंदशाळा परिसर चित्र २", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 जानेवारी 2026", image: "/images/gallery image2.JPG" },
+  { id: 3,  title: "आनंदशाळा उपक्रम चित्र ३", category: "विशेष कार्यक्रम", date: "26 जानेवारी 2026", image: "/images/gallery image3.JPG" },
+  { id: 4,  title: "आनंदशाळा सोहळा चित्र ४", category: "वार्षिक स्नेहसंमेलन", date: "26 जानेवारी 2026", image: "/images/gallery image4.JPG" },
+  { id: 5,  title: "आनंदशाळा कार्यक्रम ५", category: "आनंद मेळावा", date: "26 जानेवारी 2026", image: "/images/gallery image5.JPG" },
+  { id: 6,  title: "आनंदशाळा क्रीडा & गॅलरी ६", category: "विशेष कार्यक्रम", date: "26 जानेवारी 2026", image: "/images/gallery image6.JPG" },
+  { id: 7,  title: "आनंदशाळा परिसर दृश्य ७", category: "बांधकाम", date: "26 जानेवारी 2026", image: "/images/gallery image7.JPG" },
+  { id: 8,  title: "आनंदशाळा विशेष सोहळा ८", category: "मान्यवर भेट", date: "26 जानेवारी 2026", image: "/images/gallery image8.JPG" },
+  { id: 9,  title: "आनंदभवन परिसर", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 जानेवारी 2024", image: "/images/Screenshot 2026-07-31 103107.png" },
+  { id: 10, title: "आनंद मेळावा सोहळा", category: "आनंद मेळावा", date: "15 ऑगस्ट 2023", image: "/images/aandmelav 10.jpeg" },
+  { id: 11, title: "भूमिपूजन कार्यक्रम", category: "भूमिपूजन", date: "09 जानेवारी 2024", image: "/images/ropya mahotsv1.jpg" },
+  { id: 12, title: "वार्षिक स्नेहसंमेलन", category: "वार्षिक स्नेहसंमेलन", date: "25 डिसेंबर 2023", image: "/images/aandshala sahal 1.jpeg" },
+  { id: 13, title: "सांस्कृतिक महोत्सव", category: "आनंद मेळावा", date: "14 नोव्हेंबर 2023", image: "/images/aandmelava1.jpg" },
+  { id: 14, title: "योगा व ध्यान कक्ष", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "21 जून 2023", image: "/images/Screenshot 2026-07-31 103545.png" },
+  { id: 15, title: "संगीत संध्या व सांस्कृतिक", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "05 मार्च 2023", image: "/images/aandmelav 5.jpg" },
+  { id: 16, title: "गार्डन, लॉन व संकुल", category: "बांधकाम", date: "10 फेब्रुवारी 2024", image: "/images/Screenshot 2026-07-31 103213.png" },
+  { id: 17, title: "रौप्य महोत्सव भूमिपूजन", category: "भूमिपूजन", date: "26 जानेवारी 2024", image: "/images/ropya mahotsv 2.jpg" },
+  { id: 18, title: "सामाजिक कार्य शिबिर", category: "सामाजिक कार्य", date: "02 ऑक्टोबर 2023", image: "/images/samajik karya 2.jpeg" },
+  { id: 21, title: "मान्यवर सत्कार भेट", category: "मान्यवर भेट", date: "20 डिसेंबर 2023", image: "/images/vyavsaik mahiti 3.jpeg" },
+  { id: 22, title: "खेळ व विरंगुळा केंद्र", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "18 नोव्हेंबर 2023", image: "/images/Screenshot 2026-07-31 103517.png" },
+  { id: 23, title: "आनंद निवास संकुल", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "10 जानेवारी 2024", image: "/images/Screenshot 2026-07-31 103842.png" },
+  { id: 24, title: "आनंद सहल २", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 2.jpg" },
+  { id: 25, title: "आनंद सहल ३", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 3.jpg" },
+  { id: 26, title: "आनंद सहल ४", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 4.jpg" },
+  { id: 27, title: "आनंद सहल ५", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 5.jpeg" },
+  { id: 28, title: "आनंद मेळावा ९", category: "आनंद मेळावा", date: "2023", image: "/images/aandmelava 9.jpg" },
 ];
 
 const categories = [
@@ -48,6 +60,7 @@ function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState("सर्व");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const filteredImages =
@@ -58,22 +71,30 @@ function Gallery() {
   const openImage = (index: number) => {
     setSelectedIndex(index);
     setIsPlaying(false);
+    setZoomLevel(1);
   };
 
   const closeImage = () => {
     setSelectedIndex(null);
     setIsPlaying(false);
+    setZoomLevel(1);
   };
 
   const nextImage = () => {
     if (selectedIndex === null) return;
     setSelectedIndex((prev) => (prev !== null ? (prev + 1) % filteredImages.length : 0));
+    setZoomLevel(1);
   };
 
   const prevImage = () => {
     if (selectedIndex === null) return;
     setSelectedIndex((prev) => (prev !== null ? (prev - 1 + filteredImages.length) % filteredImages.length : 0));
+    setZoomLevel(1);
   };
+
+  const zoomIn = () => setZoomLevel((prev) => Math.min(Number((prev + 0.25).toFixed(2)), 3.5));
+  const zoomOut = () => setZoomLevel((prev) => Math.max(Number((prev - 0.25).toFixed(2)), 0.5));
+  const resetZoom = () => setZoomLevel(1);
 
   // Keyboard navigation
   useEffect(() => {
@@ -109,6 +130,57 @@ function Gallery() {
       {/* Ambient background glows */}
       <div className="fixed top-0 left-0 w-96 h-96 bg-pink-200/30 rounded-full blur-[120px] pointer-events-none" />
       <div className="fixed bottom-0 right-0 w-96 h-96 bg-purple-200/30 rounded-full blur-[120px] pointer-events-none" />
+
+      <style>{`
+        @keyframes galBorderRotate {
+          0% { background-position: 0% 0%, 0% 50%; }
+          50% { background-position: 0% 0%, 100% 50%; }
+          100% { background-position: 0% 0%, 0% 50%; }
+        }
+        .gallery-card-anim {
+          position: relative;
+          background: #0f172a;
+          border-radius: 1.25rem;
+          overflow: hidden;
+          border: 2.5px solid transparent;
+          background-image: linear-gradient(#0f172a, #0f172a), 
+                            linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6, #f59e0b, #ec4899);
+          background-origin: border-box;
+          background-clip: padding-box, border-box;
+          background-size: 100% 100%, 300% 300%;
+          animation: galBorderRotate 6s linear infinite;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        }
+        .gallery-card-anim:hover {
+          transform: translateY(-8px) scale(1.02);
+          box-shadow: 0 20px 45px rgba(236, 72, 153, 0.3), 0 0 25px rgba(139, 92, 246, 0.2);
+          animation-duration: 2.5s;
+        }
+        .gal-img-wrapper::after {
+          content: "";
+          position: absolute;
+          top: -50%;
+          left: -60%;
+          width: 50%;
+          height: 200%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.45),
+            transparent
+          );
+          transform: rotate(25deg);
+          transition: all 0.75s ease;
+          pointer-events: none;
+          opacity: 0;
+          z-index: 10;
+        }
+        .gallery-card-anim:hover .gal-img-wrapper::after {
+          left: 130%;
+          opacity: 1;
+        }
+      `}</style>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
 
@@ -170,52 +242,50 @@ function Gallery() {
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.04 }}
-                onClick={() => openImage(index)}
-                className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl border border-slate-200/80 transition-all duration-300 cursor-pointer flex flex-col"
+                transition={{ duration: 0.4, delay: index * 0.03 }}
+                onClick={() => {
+                  setSelectedIndex(index);
+                  setIsPlaying(false);
+                  setZoomLevel(1);
+                }}
+                className="gallery-card-anim gal-img-wrapper group cursor-pointer relative w-full h-[260px] sm:h-[300px] rounded-2xl overflow-hidden shadow-md"
               >
-                {/* PHOTO CONTAINER (CLEAN & CLEAR PHOTO) */}
-                <div className="relative w-full h-64 overflow-hidden bg-slate-100">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108"
-                  />
+                {/* 100% PURE FULL-COVERAGE CRYSTAL CLEAR PHOTO */}
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/images/gallery imgage1.JPG";
+                  }}
+                />
 
-                  {/* BOTTOM SUBTLE GRADIENT OVERLAY FOR TEXT */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+                {/* MINIMAL SLIM BOTTOM GRADIENT OVERLAY ONLY FOR TEXT READABILITY */}
+                <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none z-10" />
 
-                  {/* TOP BADGES */}
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-pink-600/90 text-white text-[11px] font-extrabold px-3 py-1 rounded-full backdrop-blur-md shadow-sm">
-                      {item.category}
-                    </span>
+                {/* TOP BADGES */}
+                <div className="absolute top-3 left-3 z-20">
+                  <span className="bg-pink-600/95 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-md border border-white/20">
+                    {item.category}
+                  </span>
+                </div>
+
+                <div className="absolute top-3 right-3 z-20">
+                  <span className="bg-black/60 text-white text-[10.5px] font-bold px-2.5 py-1 rounded-full border border-white/20">
+                    📸 HD
+                  </span>
+                </div>
+
+                {/* CRISP MINIMALIST TEXT OVERLAY AT BOTTOM EDGE */}
+                <div className="absolute bottom-2.5 inset-x-3 text-white z-20">
+                  <div className="flex items-center gap-1.5 text-pink-300 text-[11px] font-bold mb-0.5">
+                    <Calendar size={12} />
+                    <span>{item.date}</span>
                   </div>
-
-                  <div className="absolute top-3 right-3">
-                    <span className="bg-black/40 text-white text-[10.5px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md border border-white/20">
-                      📸 HD
-                    </span>
-                  </div>
-
-                  {/* BOTTOM CONTENT OVER PHOTO */}
-                  <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col justify-end text-white">
-                    <div className="flex items-center gap-1.5 text-pink-300 text-[11.5px] font-bold mb-1">
-                      <Calendar size={13} />
-                      <span>{item.date}</span>
-                    </div>
-                    <h3 className="text-lg font-black text-white line-clamp-1 group-hover:text-pink-300 transition-colors">
-                      {item.title}
-                    </h3>
-                  </div>
-
-                  {/* HOVER SLIDER ICON HINT */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 backdrop-blur-[2px]">
-                    <span className="bg-white/90 text-pink-600 font-extrabold text-xs px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5 transform scale-95 group-hover:scale-100 transition-transform">
-                      <Maximize2 size={14} /> फुल स्क्रीन स्लाइडर पहा
-                    </span>
-                  </div>
+                  <h3 className="text-sm sm:text-base font-extrabold text-white line-clamp-1 group-hover:text-pink-300 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+                    {item.title}
+                  </h3>
                 </div>
               </motion.div>
             ))}
@@ -223,133 +293,116 @@ function Gallery() {
         )}
       </div>
 
-      {/* ===== INTERACTIVE FULLSCREEN SLIDER MODAL ===== */}
+      {/* ===== INTERACTIVE FULLSCREEN PURE PHOTO MODAL ===== */}
       <AnimatePresence>
-        {activePhoto && typeof document !== "undefined" && createPortal(
+        {selectedIndex !== null && activePhoto && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[999999] bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6"
-            onClick={closeImage}
+            className="fixed inset-0 z-[999999] bg-black/95 backdrop-blur-lg flex flex-col items-center justify-between p-4 sm:p-6 select-none overflow-hidden"
           >
-            {/* TOP HEADER BAR */}
+            {/* TOP FLOATING TOOLBAR */}
             <div 
-              className="w-full max-w-6xl flex items-center justify-between text-white z-10 py-2"
+              className="w-full max-w-7xl flex items-center justify-end gap-3 z-30 py-2"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* PHOTO INDEX COUNTER */}
-              <div className="flex items-center gap-3">
-                <span className="bg-pink-600/30 text-pink-300 border border-pink-500/40 text-xs sm:text-sm font-extrabold px-3.5 py-1.5 rounded-full backdrop-blur">
-                  फोटो {selectedIndex! + 1} / {filteredImages.length}
-                </span>
-                <span className="hidden sm:inline-block text-slate-400 text-xs font-semibold">
-                  (बाण कळा ⬅️ ➡️ चा वापर करू शकता)
-                </span>
-              </div>
-
-              {/* ACTION BUTTONS */}
-              <div className="flex items-center gap-2">
-                {/* SLIDESHOW TOGGLE */}
+              {/* ZOOM CONTROLS */}
+              <div className="flex items-center gap-1 bg-white/10 p-1 rounded-full border border-white/20 backdrop-blur shadow-lg">
                 <button
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition ${
-                    isPlaying 
-                      ? "bg-amber-500 text-slate-950 font-black" 
-                      : "bg-white/10 hover:bg-white/20 text-white"
-                  }`}
-                  title="स्लाइडशो चालू/बंद करा"
+                  onClick={zoomOut}
+                  disabled={zoomLevel <= 0.5}
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-white/20 text-white flex items-center justify-center transition disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
+                  title="Zoom Out (-)"
                 >
-                  {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-                  <span>{isPlaying ? "थांबा (Pause)" : "स्लाइडशो (Play)"}</span>
+                  <ZoomOut size={18} />
                 </button>
 
-                {/* CLOSE BUTTON */}
                 <button
-                  onClick={closeImage}
-                  className="w-10 h-10 rounded-full bg-white/15 hover:bg-rose-600 text-white flex items-center justify-center transition border border-white/20"
-                  aria-label="Close"
+                  onClick={resetZoom}
+                  className="px-2.5 py-0.5 text-xs font-extrabold text-pink-300 hover:text-white transition cursor-pointer"
+                  title="Reset Zoom"
                 >
-                  <X size={20} />
+                  {Math.round(zoomLevel * 100)}%
                 </button>
+
+                <button
+                  onClick={zoomIn}
+                  disabled={zoomLevel >= 3.5}
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-white/20 text-white flex items-center justify-center transition disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
+                  title="Zoom In (+)"
+                >
+                  <ZoomIn size={18} />
+                </button>
+
+                {zoomLevel !== 1 && (
+                  <button
+                    onClick={resetZoom}
+                    className="p-1.5 text-slate-300 hover:text-white transition cursor-pointer"
+                    title="Reset"
+                  >
+                    <RotateCcw size={16} />
+                  </button>
+                )}
               </div>
+
+              {/* CLOSE BUTTON */}
+              <button
+                onClick={closeImage}
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/15 hover:bg-rose-600 text-white flex items-center justify-center transition border border-white/25 shadow-lg cursor-pointer"
+                aria-label="Close"
+              >
+                <X size={22} />
+              </button>
             </div>
 
-            {/* MAIN IMAGE DISPLAY AREA */}
+            {/* MAIN PURE PHOTO DISPLAY AREA */}
             <div 
-              className="relative w-full max-w-5xl flex-1 flex items-center justify-center my-2 select-none"
+              className="relative w-full max-w-6xl flex-1 flex items-center justify-center select-none overflow-hidden my-auto"
               onClick={(e) => e.stopPropagation()}
             >
               {/* PREV BUTTON */}
               <button
                 onClick={prevImage}
-                className="absolute left-1 sm:-left-12 z-20 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-pink-600 text-white border border-white/20 backdrop-blur flex items-center justify-center shadow-xl transition transform hover:scale-110 active:scale-95"
-                title="मागील फोटो (Left Arrow)"
+                className="absolute left-2 sm:left-4 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-pink-600 text-white border border-white/20 backdrop-blur flex items-center justify-center shadow-2xl transition transform hover:scale-110 active:scale-95 cursor-pointer"
+                title="मागील फोटो"
               >
-                <ChevronLeft size={22} className="sm:size-7" />
+                <ChevronLeft size={24} className="sm:size-8" />
               </button>
 
-              {/* CURRENT PHOTO */}
+              {/* 100% PURE PHOTO */}
               <motion.div
                 key={activePhoto.id}
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.92 }}
                 transition={{ duration: 0.3 }}
-                className="relative max-h-[72vh] max-w-full rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center bg-black"
+                className="relative max-h-[85vh] max-w-[90vw] rounded-2xl overflow-auto shadow-2xl border border-white/10 flex items-center justify-center bg-black/90 p-2"
               >
                 <img
                   src={activePhoto.image}
-                  alt={activePhoto.title}
-                  className="max-h-[72vh] max-w-full object-contain select-none"
+                  alt=""
+                  style={{
+                    transform: `scale(${zoomLevel})`,
+                    transformOrigin: "center center",
+                    transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)"
+                  }}
+                  className="max-h-[82vh] max-w-[88vw] object-contain select-none transition-transform"
                 />
               </motion.div>
 
               {/* NEXT BUTTON */}
               <button
                 onClick={nextImage}
-                className="absolute right-1 sm:-right-12 z-20 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-pink-600 text-white border border-white/20 backdrop-blur flex items-center justify-center shadow-xl transition transform hover:scale-110 active:scale-95"
-                title="पुढील फोटो (Right Arrow)"
+                className="absolute right-2 sm:right-4 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-pink-600 text-white border border-white/20 backdrop-blur flex items-center justify-center shadow-2xl transition transform hover:scale-110 active:scale-95 cursor-pointer"
+                title="पुढील फोटो"
               >
-                <ChevronRight size={22} className="sm:size-7" />
+                <ChevronRight size={24} className="sm:size-8" />
               </button>
             </div>
 
-            {/* BOTTOM PHOTO INFO & THUMBNAIL STRIP */}
-            <div 
-              className="w-full max-w-4xl flex flex-col items-center gap-3 z-10"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* PHOTO INFO CAPTION */}
-              <div className="text-center">
-                <span className="bg-pink-500/20 text-pink-300 text-[11px] font-extrabold px-3 py-0.5 rounded-full border border-pink-500/30">
-                  {activePhoto.category} • {activePhoto.date}
-                </span>
-                <h3 className="text-white text-lg sm:text-xl font-black mt-1">
-                  {activePhoto.title}
-                </h3>
-              </div>
-
-              {/* THUMBNAIL INDICATORS STRIP */}
-              <div className="flex items-center gap-2 overflow-x-auto max-w-full py-1 px-2 scrollbar-none">
-                {filteredImages.map((img, idx) => (
-                  <button
-                    key={img.id}
-                    onClick={() => setSelectedIndex(idx)}
-                    className={`relative w-12 h-9 rounded-lg overflow-hidden flex-shrink-0 transition-all ${
-                      idx === selectedIndex
-                        ? "ring-2 ring-pink-500 scale-110 opacity-100"
-                        : "opacity-40 hover:opacity-80"
-                    }`}
-                  >
-                    <img src={img.image} alt="" className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
-          </motion.div>,
-          document.body
+            <div className="h-2" />
+          </motion.div>
         )}
       </AnimatePresence>
 

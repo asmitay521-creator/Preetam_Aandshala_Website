@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/use-language";
 import "./AnandshalaStory.css";
 
 import {
@@ -21,6 +22,8 @@ import {
 import buildingImage from "../assets/anandshala-building.png";
 
 const AnandshalaStory: React.FC = () => {
+  const { isEn } = useLanguage();
+
   const [selectedPillar, setSelectedPillar] = useState<{
     title: string;
     subtitle: string;
@@ -34,85 +37,117 @@ const AnandshalaStory: React.FC = () => {
     {
       id: "establishment",
       icon: <Landmark className="as-pillar-icon-svg" />,
-      title: "स्थापना",
-      subtitle: "२६ जानेवारी २००० पासून",
+      title: isEn ? "Foundation" : "स्थापना",
+      subtitle: isEn ? "Since 26 January 2000" : "२६ जानेवारी २००० पासून",
       image: "/images/aandshala_img.png",
-      desc: "२६ जानेवारी २००० रोजी व्यवसायाची पायाभरणी झाली. दरवर्षी वाढदिवस दिन व भव्य नागरिक मेळावा आयोजनाची २६ वर्षांची परंपरा.",
-      badge: "इतिहास व परंपरा",
+      desc: isEn
+        ? "Business foundation laid on 26 January 2000. 26-year legacy of organizing annual foundation day & senior citizen meetups."
+        : "२६ जानेवारी २००० रोजी व्यवसायाची पायाभरणी झाली. दरवर्षी वाढदिवस दिन व भव्य नागरिक मेळावा आयोजनाची २६ वर्षांची परंपरा.",
+      badge: isEn ? "History & Legacy" : "इतिहास व परंपरा",
       color: "from-pink-500 to-rose-600",
-      details: [
-        "२६ जानेवारी २००० रोजी श्री. अभिनव काकाणी यांच्या हस्ते पायाभरणी.",
-        "गेल्या २६ वर्षांपासून अविरत सामाजिक, वैद्यकीय व सेवा कार्य.",
-        "दरवर्षी हजारो ज्येष्ठ नागरिकांचा उत्स्फूर्त सहभाग सोहळा."
-      ]
+      details: isEn
+        ? [
+            "Foundation laid on 26 January 2000 by Mr. Abhinav Kakani.",
+            "26+ years of continuous social, medical & community service.",
+            "Enthusiastic annual participation of thousands of senior citizens."
+          ]
+        : [
+            "२६ जानेवारी २००० रोजी श्री. अभिनव काकाणी यांच्या हस्ते पायाभरणी.",
+            "गेल्या २६ वर्षांपासून अविरत सामाजिक, वैद्यकीय व सेवा कार्य.",
+            "दरवर्षी हजारो ज्येष्ठ नागरिकांचा उत्स्फूर्त सहभाग सोहळा."
+          ]
     },
     {
       id: "service",
       icon: <HeartHandshake className="as-pillar-icon-svg" />,
-      title: "सेवा",
-      subtitle: "समर्पण आणि आपुलकी",
+      title: isEn ? "Service" : "सेवा",
+      subtitle: isEn ? "Dedication & Warmth" : "समर्पण आणि आपुलकी",
       image: "/images/aandshala sahal 1.jpeg",
-      desc: "सेवा, संस्कार आणि उत्कृष्ट उपक्रमांची समृद्ध संस्कृती. ज्येष्ठ नागरिकांच्या उत्तम आरोग्यासाठी आणि आनंदासाठी अविरत कार्य.",
-      badge: "संस्कार व आपुलकी",
+      desc: isEn
+        ? "Rich culture of service, values and excellent activities. Tireless dedication for senior citizens' health and happiness."
+        : "सेवा, संस्कार आणि उत्कृष्ट उपक्रमांची समृद्ध संस्कृती. ज्येष्ठ नागरिकांच्या उत्तम आरोग्यासाठी आणि आनंदासाठी अविरत कार्य.",
+      badge: isEn ? "Values & Belonging" : "संस्कार व आपुलकी",
       color: "from-purple-500 to-indigo-600",
-      details: [
-        "२४×७ प्रशिक्षित नर्स व केअरटेकर स्टाफ सेवा.",
-        "सकस, सेंद्रिय, घरगुती पद्धतीचा शाकाहारी आहार.",
-        "मायेचे, आपुलकीचे व कौटुंबिक विश्वासाचे वातावरण."
-      ]
+      details: isEn
+        ? [
+            "24×7 trained nurse & caretaker staff service.",
+            "Nutritious, organic, home-cooked pure vegetarian food.",
+            "Warm, affectionate & family-like trustworthy atmosphere."
+          ]
+        : [
+            "२४×७ प्रशिक्षित नर्स व केअरटेकर स्टाफ सेवा.",
+            "सकस, सेंद्रिय, घरगुती पद्धतीचा शाकाहारी आहार.",
+            "मायेचे, आपुलकीचे व कौटुंबिक विश्वासाचे वातावरण."
+          ]
     },
     {
       id: "participation",
       icon: <Users className="as-pillar-icon-svg" />,
-      title: "सहभाग",
-      subtitle: "एकत्र येण्याचा आनंद",
+      title: isEn ? "Participation" : "सहभाग",
+      subtitle: isEn ? "Joy of Togetherness" : "एकत्र येण्याचा आनंद",
       image: "/images/aandmelav 10.jpeg",
-      desc: "दरवर्षी विविध सोहळे व मेळाव्यात हजारो ज्येष्ठ नागरिकांचा उत्स्फूर्त सहभाग. आपुलकीचे नाते जपणारी अखंड चळवळ.",
-      badge: "लोकसहभाग",
+      desc: isEn
+        ? "Thousands of senior citizens actively participate in annual events & meetups. A continuous movement preserving togetherness."
+        : "दरवर्षी विविध सोहळे व मेळाव्यात हजारो ज्येष्ठ नागरिकांचा उत्स्फूर्त सहभाग. आपुलकीचे नाते जपणारी अखंड चळवळ.",
+      badge: isEn ? "Community Spirit" : "लोकसहभाग",
       color: "from-blue-500 to-cyan-600",
-      details: [
-        "दररोज इनडोअर गेम्स, बुद्धिबळ, कॅरम व संगीत.",
-        "सण, उत्सव, भजने, कीर्तने व संस्कृती सोहळे.",
-        "समविचारी मित्र-मैत्रिणींसोबत आनंदी जीवन."
-      ]
+      details: isEn
+        ? [
+            "Daily indoor games, chess, carrom & music sessions.",
+            "Festivals, cultural events, bhajan & spiritual gatherings.",
+            "Joyful living with like-minded friends of your age."
+          ]
+        : [
+            "दररोज इनडोअर गेम्स, बुद्धिबळ, कॅरम व संगीत.",
+            "सण, उत्सव, भजने, कीर्तने व संस्कृती सोहळे.",
+            "समविचारी मित्र-मैत्रिणींसोबत आनंदी जीवन."
+          ]
     },
     {
       id: "mission",
       icon: <Target className="as-pillar-icon-svg" />,
-      title: "ध्येय",
-      subtitle: "सकारात्मक जीवनशैली",
+      title: isEn ? "Mission" : "ध्येय",
+      subtitle: isEn ? "Positive Lifestyle" : "सकारात्मक जीवनशैली",
       image: "/images/anandshala_hero_bg.png",
-      desc: "१.५ एकर निसर्गरम्य परिसरात भारतातील पहिला भव्य प्रकल्प. आयुष्याच्या प्रत्येक टप्प्यावर उत्साह व निरामय आनंद देणे हेच ध्येय.",
-      badge: "उद्दिष्ट",
+      desc: isEn
+        ? "India's premier 1.5-acre digital campus. Our mission is providing enthusiasm & boundless joy at every stage of life."
+        : "१.५ एकर निसर्गरम्य परिसरात भारतातील पहिला भव्य प्रकल्प. आयुष्याच्या प्रत्येक टप्प्यावर उत्साह व निरामय आनंद देणे हेच ध्येय.",
+      badge: isEn ? "Core Vision" : "उद्दिष्ट",
       color: "from-amber-500 to-pink-600",
-      details: [
-        "१.५ एकर निसर्गरम्य हक्काचा डिजिटल प्रकल्प परिसर.",
-        "५५ फुटांची भव्य राधाकृष्ण मूर्ती व सत्संग केंद्र.",
-        "ज्येष्ठ नागरिकांचा सन्मान, स्वाभिमान व आनंद."
-      ]
+      details: isEn
+        ? [
+            "1.5-acre scenic digital sanctuary campus.",
+            "55-foot grand Radha Krishna idol & Satsang center.",
+            "Dignity, self-respect & happiness for every senior citizen."
+          ]
+        : [
+            "१.५ एकर निसर्गरम्य हक्काचा डिजिटल प्रकल्प परिसर.",
+            "५५ फुटांची भव्य राधाकृष्ण मूर्ती व सत्संग केंद्र.",
+            "ज्येष्ठ नागरिकांचा सन्मान, स्वाभिमान व आनंद."
+          ]
     }
   ];
 
   const stats = [
     {
       icon: <Calendar className="as-stat-icon" />,
-      value: "२६+ वर्षे",
-      label: "सामाजिक सेवेचा वारसा"
+      value: isEn ? "26+ Yrs" : "२६+ वर्षे",
+      label: isEn ? "Legacy of Service" : "सामाजिक सेवेचा वारसा"
     },
     {
       icon: <Trees className="as-stat-icon" />,
-      value: "१.५ एकर",
-      label: "निसर्गरम्य परिसर"
+      value: isEn ? "1.5 Acres" : "१.५ एकर",
+      label: isEn ? "Scenic Campus" : "निसर्गरम्य परिसर"
     },
     {
       icon: <Users className="as-stat-icon" />,
-      value: "हजारो",
-      label: "ज्येष्ठ नागरिक सहभाग"
+      value: isEn ? "Thousands" : "हजारो",
+      label: isEn ? "Senior Members" : "ज्येष्ठ नागरिक सहभाग"
     },
     {
       icon: <Award className="as-stat-icon" />,
-      value: "१ लाच",
-      label: "भारतातील भव्य प्रकल्प"
+      value: isEn ? "#1" : "१ लाच",
+      label: isEn ? "Grand Project in India" : "भारतातील भव्य प्रकल्प"
     }
   ];
 
@@ -136,7 +171,7 @@ const AnandshalaStory: React.FC = () => {
             transition={{ duration: 0.5 }}
           >
             <Sparkles className="as-badge-icon" />
-            <span>आपली परंपरा • आमची प्रेरणा</span>
+            <span>{isEn ? "Our Legacy • Our Inspiration" : "आपली परंपरा • आमची प्रेरणा"}</span>
           </motion.div>
 
           <motion.h2 
@@ -146,7 +181,10 @@ const AnandshalaStory: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            आनंदशाळेची <span className="as-title-gradient">प्रेरणादायी कहाणी</span>
+            {isEn ? "The Inspiring " : "आनंदशाळेची "}
+            <span className="as-title-gradient">
+              {isEn ? "Story of Anandshala" : "प्रेरणादायी कहाणी"}
+            </span>
           </motion.h2>
 
           <motion.div className="as-title-underline" />
@@ -178,7 +216,7 @@ const AnandshalaStory: React.FC = () => {
               >
                 <Flower2 className="as-flower-icon" />
               </motion.div>
-              <span>स्वप्नातून साकारलेली सृष्टी</span>
+              <span>{isEn ? "A World Built From Dreams" : "स्वप्नातून साकारलेली सृष्टी"}</span>
             </motion.div>
 
             <motion.h3 

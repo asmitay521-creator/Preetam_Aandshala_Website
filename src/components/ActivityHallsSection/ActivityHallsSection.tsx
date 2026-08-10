@@ -26,6 +26,7 @@ import {
   Stethoscope
 } from "lucide-react";
 import { Reveal } from "@/components/site/Reveal";
+import { useLanguage } from "@/lib/use-language";
 import "./ActivityHallsSection.css";
 
 interface HallDetail {
@@ -122,6 +123,7 @@ const hallsData: HallDetail[] = [
 
 const ActivityHallsSection = () => {
   const [selectedHall, setSelectedHall] = useState<HallDetail | null>(null);
+  const { isEn } = useLanguage();
 
   return (
     <section className="ah-section" id="activity-halls">
@@ -137,17 +139,22 @@ const ActivityHallsSection = () => {
           {/* Right Badge */}
           <div className="ah-badge-right">
             <Award size={30} />
-            <span>आनंद, आरोग्य<br/>आणि संस्कार<br/>यांचा संगम</span>
+            <span>
+              {isEn ? "Joy, Health\n& Values" : "आनंद, आरोग्य\nआणि संस्कार\nयांचा संगम"}
+            </span>
           </div>
 
           <div className="ah-header-subtitle">
-            <span style={{ color: '#f472b6' }}>❖</span> आनंदशाळेतील <span style={{ color: '#f472b6' }}>❖</span>
+            <span style={{ color: '#f472b6' }}>❖</span> {isEn ? "Anandshala's" : "आनंदशाळेतील"} <span style={{ color: '#f472b6' }}>❖</span>
           </div>
           <h2 className="ah-header-title">
-            १५ विशेष <span className="blue-text">उपक्रम हॉल्स</span>
+            {isEn ? "15 Specialized " : "१५ विशेष "}
+            <span className="blue-text">{isEn ? "Activity Halls" : "उपक्रम हॉल्स"}</span>
           </h2>
           <div className="ah-header-desc">
-            आनंदशाळेत दररोज तुमच्या आवडीनुसार मनोरंजक आनंद घेता येईल असे 15 समृद्ध आणि सुसज्जीत हॉल्स! (माहिती पाहण्यासाठी कार्डवर क्लीक करा)
+            {isEn
+              ? "15 fully equipped luxury activity halls for daily joy, recreation and wellness! (Click card to view details)"
+              : "आनंदशाळेत दररोज तुमच्या आवडीनुसार मनोरंजक आनंद घेता येईल असे 15 समृद्ध आणि सुसज्जीत हॉल्स! (माहिती पाहण्यासाठी कार्डवर क्लीक करा)"}
           </div>
         </div>
       </Reveal>

@@ -561,4 +561,19 @@ img, video, canvas, svg {
     overflow-wrap: break-word;
     word-break: break-word;
   }
+
+  /* Tables horizontally scrollable with smooth touch scrolling */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Full screen modal adjustments for mobile */
+  .fixed.inset-0 {
+    padding: 0.75rem !important;
+  }
+
+  /* Ensure inputs & buttons fit within container padding */
+  input, select, textarea, button {
+    max-width: 100%;
+  }
 }

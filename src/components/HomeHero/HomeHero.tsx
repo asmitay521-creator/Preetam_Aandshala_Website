@@ -1,84 +1,75 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./HomeHero.css";
-import { site } from "../../lib/site-info";
+import { useLanguage } from "@/lib/use-language";
 
-const slides = [
-  {
-    image: "/images/aandshala_img.png",
-    tag: "🏛️ मुख्य परिसर",
-    title: "१.५ एकर निसर्गरम्य आनंदशाळा परिसर",
-    sub: "सांगली जिल्ह्यातील सर्वात भव्य व सुसज्ज ज्येष्ठ नागरिक केंद्र",
-  },
-  {
-    image: "/images/aandmelav 10.jpeg",
-    tag: "🎉 सांस्कृतिक कार्यक्रम",
-    title: "आनंदी वातावरण व सण-उत्सव सोहळे",
-    sub: "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही जीवन",
-  },
-  {
-    image: "/images/Screenshot 2026-07-31 103517.png",
-    tag: "🏸 इनडोअर स्पोर्ट्स",
-    title: "अत्याधुनिक उपक्रम व क्रीडा हॉल्स",
-    sub: "कॅरम, बॅडमिंटन, तबला, कॉम्प्युटर व ध्यान कक्ष",
-  },
-  {
-    image: "/images/aandshala sahal 1.jpeg",
-    tag: "🚌 आनंद सहल",
-    title: "पर्यटन, सहली व आनंददायी उपक्रम",
-    sub: "जीवनाची सायंकाळ मनसोक्त जगण्याचा आनंद",
-  },
-];
-
-const featureCards = [
-  {
-    icon: "👥",
-    num: "५००+",
-    label: "आनंदी सदस्य परिवार",
-    desc: "सांगली जिल्ह्यातील विश्वासू कुटुंब",
-    color: "#f472b6",
-    bg: "#FFF0F6",
-  },
-  {
-    icon: "📅",
-    num: "२६, २७, २८",
-    label: "जानेवारी २०२६ नोंदणी",
-    desc: "भव्य प्रवेश व नोंदणी सोहळा",
-    color: "#1A05A2",
-    bg: "#EEF2FF",
-  },
-  {
-    icon: "⏰",
-    num: "११ ते ५",
-    label: "भेट देण्याची वेळ",
-    desc: "सकाळी ११ ते सायंकाळी ५ वाजेपर्यंत",
-    color: "#EA580C",
-    bg: "#FFF7ED",
-  },
-  {
-    icon: "🛡️",
-    num: "२४×७",
-    label: "सुरक्षा व काळजी",
-    desc: "वैद्यकीय सेवा व ॲम्बुलन्स सुविधा",
-    color: "#16A34A",
-    bg: "#F0FDF4",
-  },
-];
-
-const HomeHero: React.FC = () => {
+export const HomeHero: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { isEn } = useLanguage();
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 3800);
-    return () => clearInterval(timer);
-  }, []);
+  const slides = [
+    {
+      image: "/images/slider1.JPG",
+      tag: isEn ? "🏛️ Main Campus" : "🏛️ मुख्य परिसर",
+      title: isEn ? "1.5 Acre Scenic Anandshala Campus" : "१.५ एकर निसर्गरम्य आनंदशाळा परिसर",
+      sub: isEn
+        ? "Sangli's premier & fully equipped senior citizen hub"
+        : "सांगली जिल्ह्यातील सर्वात भव्य व सुसज्ज ज्येष्ठ नागरिक केंद्र",
+    },
+    {
+      image: "/images/slider2.JPG",
+      tag: isEn ? "🏊‍♂️ Sports & Fitness Club" : "🏊‍♂️ क्रीडा & फिटनेस क्लब",
+      title: isEn ? "Olympic Pool & AC Gym" : "ऑलिंपिक स्विमिंग पूल व AC जीम",
+      sub: isEn
+        ? "Badminton, Pickleball, Table Tennis, Library & Modern Halls"
+        : "बॅडमिंटन, पिकलबॉल, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
+    },
+    {
+      image: "/images/slider3.png",
+      tag: isEn ? "🌸 Blissful Atmosphere" : "🌸 आनंदी वातावरण",
+      title: isEn ? "Warm Belonging & Family Bond" : "आपुलकीचे नाते व कौटुंबिक सोहळा",
+      sub: isEn
+        ? "Vibrant, joyful & secure golden years with peer friends"
+        : "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित सुवर्णवर्षे",
+    },
+  ];
+
+  const featureCards = [
+    {
+      icon: "👥",
+      num: "500+",
+      label: isEn ? "Community Members" : "समुदाय सदस्य",
+      desc: isEn ? "Our beloved family" : "आमच्या परिवाराचा भाग",
+      color: "#f472b6",
+      bg: "#FFF0F6",
+    },
+    {
+      icon: "📅",
+      num: "26/27/28",
+      label: isEn ? "January 2026" : "जानेवारी २०२६",
+      desc: isEn ? "Grand Launch Meetup" : "भव्य प्रवेश व मित्र मेळावा",
+      color: "#1A05A2",
+      bg: "#EEF2FF",
+    },
+    {
+      icon: "⏰",
+      num: "11+",
+      label: isEn ? "Activity Sessions" : "उपक्रमाची बैठक",
+      desc: isEn ? "5+ monthly activities" : "दर महिन्याला ५+ उपक्रम",
+      color: "#EA580C",
+      bg: "#FFF7ED",
+    },
+    {
+      icon: "🛡️",
+      num: "24×7",
+      label: isEn ? "Safety & Care" : "सुरक्षा & काळजी",
+      desc: isEn ? "Medical service & CCTV" : "वैद्यकीय सेवा व CCTV",
+      color: "#16A34A",
+      bg: "#F0FDF4",
+    },
+  ];
 
   return (
     <div className="home-page-unique">
-      {/* ══════════════════════════════════════════════════════════════
-          HERO BANNER — CREATIVE LUXURY SHOWCASE
-         ══════════════════════════════════════════════════════════════ */}
       <section className="unique-hero-sec">
         <div className="unique-bg-blob-1" />
         <div className="unique-bg-blob-2" />
@@ -88,17 +79,26 @@ const HomeHero: React.FC = () => {
           <div className="unique-hero-left">
             <div className="unique-pill-badge">
               <span className="pulse-dot" />
-              <span>🌸 भारतातील पहिली ज्येष्ठ नागरिक आनंदशाळा • सांगली</span>
+              <span>
+                {isEn
+                  ? "🌸 India's First Senior Citizen Anandshala • Sangli"
+                  : "🌸 भारतातील पहिली ज्येष्ठ नागरिक आनंदशाळा • सांगली"}
+              </span>
             </div>
 
             <h1 className="unique-title">
-              <span className="text-navy">प्रीतम ज्येष्ठ नागरिक</span>
-              <span className="text-pink">आनंदशाळा • सांगली</span>
+              <span className="text-navy">
+                {isEn ? "Preetam Senior Citizen " : "प्रीतम ज्येष्ठ नागरिक "}
+              </span>
+              <span className="text-pink">
+                {isEn ? "Anandshala • Sangli" : "आनंदशाळा • सांगली"}
+              </span>
             </h1>
 
             <p className="unique-subtitle">
-              ज्येष्ठ नागरिकांच्या निरोगी आरोग्य, आनंददायी आयुष्य व स्वाभिमानी
-              जीवनासाठी सांगलीतील १.५ एकर निसर्गरम्य संकुल!
+              {isEn
+                ? "A beautiful blend of love, service, security and values for senior citizens' healthy, happy and dignified living!"
+                : "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य, आनंददायी आयुष्य व स्वाभिमानी जीवनासाठी प्रेम, सेवा, सुरक्षा आणि संस्कार यांचा सुंदर संगम!"}
             </p>
 
             {/* 4 FEATURE CARDS */}
@@ -123,16 +123,21 @@ const HomeHero: React.FC = () => {
             {/* CTA BUTTONS */}
             <div className="unique-cta-row">
               <a href="tel:9370237633" className="unique-btn-primary">
-                <span>📞 आजच प्रवेश घ्या (9370237633)</span>
+                <span>
+                  📞 {isEn ? "Book Admission Now (9370237633)" : "आजच संपर्क व प्रवेश नोंदणी करा 📞 9370237633"}
+                </span>
               </a>
 
               <a
-                href="https://wa.me/919370237633"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#sections"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById("sections");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="unique-btn-glass"
               >
-                <span>💬 WhatsApp वर चौकशी करा</span>
+                <span>{isEn ? "🏛️ Select Section" : "🏛️ विभाग निवडा"}</span>
                 <span className="arrow-down">→</span>
               </a>
             </div>
@@ -150,13 +155,6 @@ const HomeHero: React.FC = () => {
                   }`}
                 >
                   <img src={slide.image} alt={slide.title} />
-                  <div className="slide-overlay" />
-
-                  <div className="slide-content-box">
-                    <span className="slide-tag">{slide.tag}</span>
-                    <h3>{slide.title}</h3>
-                    <p>{slide.sub}</p>
-                  </div>
                 </div>
               ))}
 

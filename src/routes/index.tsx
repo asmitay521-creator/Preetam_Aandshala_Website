@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Reveal } from "@/components/site/Reveal";
 import { brochurePages } from "@/lib/brochure-pages";
@@ -15,6 +15,7 @@ import PricingSection from "@/components/PricingSection/PricingSection";
 import SportsPricingSection from "@/components/SportsPricingSection/SportsPricingSection";
 import ScheduleSection from "@/components/ScheduleSection";
 import ActivityHallsSection from "@/components/ActivityHallsSection/ActivityHallsSection";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 
 const publicImages = [
@@ -204,30 +205,53 @@ function IndexComponent() {
   const [showIntroBanner, setShowIntroBanner] = useState(true);
   const [selectedGalleryCategory, setSelectedGalleryCategory] = useState("सर्व");
   const { isEn } = useLanguage();
+  const store = useAdminStore();
+
+  const welcomePosterUrl = store.siteData.welcomePosterUrl || "/images/preetam-welcome.png";
 
   // Clean Pure Architectural Renders & Photos (ZERO brochure/poster text)
-  const card1Images = [
-    "/images/anandashram_building_card.png",
-    "/images/aandshala_img.png",
-    "/images/Screenshot 2026-07-31 103107.png"
-  ];
-  const card2Images = [
-    "/images/sports_club_building_card.png",
-    "/images/epic_sports_gym_bg.png",
-    "/images/pickleball-court.png"
-  ];
+  const card1Images = useMemo(() => {
+    return store.siteData.aanandshalaImages && store.siteData.aanandshalaImages.length > 0
+      ? store.siteData.aanandshalaImages
+      : [
+          "/images/anandashram_building_card.png",
+          "/images/aandshala_img.png",
+          "/images/Screenshot 2026-07-31 103107.png"
+        ];
+  }, [JSON.stringify(store.siteData.aanandshalaImages)]);
+
+  const card2Images = useMemo(() => {
+    return store.siteData.sportsImages && store.siteData.sportsImages.length > 0
+      ? store.siteData.sportsImages
+      : [
+          "/images/sports_club_building_card.png",
+          "/images/epic_sports_gym_bg.png",
+          "/images/pickleball-court.png"
+        ];
+  }, [JSON.stringify(store.siteData.sportsImages)]);
 
   const [card1Idx, setCard1Idx] = useState(0);
   const [card2Idx, setCard2Idx] = useState(0);
 
+  const c1Len = card1Images.length;
+  const c2Len = card2Images.length;
+
   // Auto slide images in background of section cards
   useEffect(() => {
+    if (c1Len <= 1) return;
     const timer = setInterval(() => {
-      setCard1Idx((prev) => (prev + 1) % card1Images.length);
-      setCard2Idx((prev) => (prev + 1) % card2Images.length);
-    }, 4000);
+      setCard1Idx((prev) => (prev + 1) % c1Len);
+    }, 3500);
     return () => clearInterval(timer);
-  }, []);
+  }, [c1Len]);
+
+  useEffect(() => {
+    if (c2Len <= 1) return;
+    const timer = setInterval(() => {
+      setCard2Idx((prev) => (prev + 1) % c2Len);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, [c2Len]);
 
   useEffect(() => {
     const handleReset = () => {
@@ -293,13 +317,6 @@ function IndexComponent() {
   const [sportsLightboxIndex, setSportsLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setSportsBgIdx((prev) => (prev + 1) % sportsHeroImages.length);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [sportsHeroImages.length]);
-
-  useEffect(() => {
     if (sportsLightboxIndex === null) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setSportsLightboxIndex(null);
@@ -318,146 +335,221 @@ function IndexComponent() {
   };
 
   return (
-    <div className="min-h-screen bg-background animate-fade-up">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a0429] via-[#2d0739] to-[#150424] animate-fade-up">
 
-      {/* ── INTRO BANNER MODAL (100% MOBILE & DESKTOP RESPONSIVE) ── */}
-      <AnimatePresence mode="wait">
-        {showIntroBanner && (
+      <AnimatePresence>
+        {showIntroBanner && store.siteData.showWelcomePoster !== false && (
           <motion.div
-            key="intro-banner-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="fixed inset-0 w-screen h-screen h-[100dvh] z-[99999999] bg-[#0c0216] flex flex-col items-center justify-between py-2 sm:py-5 px-2 sm:px-6 overflow-hidden select-none touch-none"
+            key="preetam-intro"
+
+            initial={{
+              opacity: 0,
+              y: "100%",
+              scale: 0.98,
+            }}
+
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+
+            exit={{
+              opacity: 0,
+              y: "-100%",
+              scale: 0.95,
+            }}
+
+            transition={{
+              duration: 1.2,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+
+            className="
+              fixed
+              inset-0
+              z-[999999]
+
+              w-screen
+              h-screen
+              h-[100dvh]
+
+              flex
+              flex-col
+              items-center
+              justify-center
+              gap-4
+              sm:gap-6
+
+              overflow-y-auto
+              overflow-x-hidden
+
+              bg-[#0c0216]
+
+              p-3
+              sm:p-6
+              py-4
+              sm:py-8
+            "
           >
-            {/* 1. STABLE MAIN HEADER SECTION (RESPONSIVE TOP WELCOME TEXT) */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative max-w-sm sm:max-w-4xl lg:max-w-6xl w-full text-center pt-0.5 pb-1 sm:pb-2 px-1 flex-shrink-0 flex flex-col items-center justify-center gap-1 sm:gap-1.5 z-20"
+
+            {/* TOP RIGHT CLOSE BUTTON */}
+            <button
+              onClick={() => setShowIntroBanner(false)}
+              aria-label="Close"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-[101] size-9 sm:size-11 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white font-extrabold text-base sm:text-lg flex items-center justify-center border border-white/30 cursor-pointer shadow-lg transition-all hover:scale-110 active:scale-95"
             >
-              {/* GLOWING AMBIENT LIGHT ORB */}
-              <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 size-[250px] sm:size-[450px] rounded-full bg-[#db2777]/35 blur-[100px] animate-pulse" />
+              ✕
+            </button>
 
-              {/* BADGE ROW */}
-              <div className="relative z-20 inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-pink-300 font-extrabold text-[10px] sm:text-xs shadow-lg">
-                <Sparkles size={12} className="text-amber-300 animate-pulse sm:size-[13px]" />
-                <span>{isEn ? "Official Digital Hub • Sangli" : "सांगलीतील भव्य मानचिन्ह प्रकल्प"}</span>
+            {/* ========================================= */}
+            {/* TOP WELCOME HEADER TEXT ABOVE IMAGE       */}
+            {/* ========================================= */}
+            <div className="relative z-10 text-center px-2 max-w-4xl shrink-0 space-y-1 mb-1 sm:mb-3 pt-1 sm:pt-2">
+              <div>
+                <h2
+                  onClick={() => setShowIntroBanner(false)}
+                  className="font-serif italic font-black text-base sm:text-2xl lg:text-3xl tracking-wide bg-gradient-to-r from-amber-200 via-yellow-300 to-rose-300 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(251,191,36,0.5)] leading-snug cursor-pointer transition-all duration-500 hover:scale-105 hover:drop-shadow-[0_0_35px_rgba(251,191,36,0.85)] inline-block"
+                >
+                  <span className="block">Welcome to Preetam Anandshala &amp;</span>
+                  <span className="block text-amber-300 font-extrabold not-italic mt-0.5">Sports Fitness Club</span>
+                </h2>
               </div>
+              <p className="text-[10px] sm:text-xs font-black text-amber-200/90 tracking-widest uppercase drop-shadow-[0_2px_10px_rgba(245,158,11,0.4)] mt-1">
+                आपले सहर्ष स्वागत आहे • सांगली
+              </p>
+            </div>
 
-              {/* BOLD LARGE 3-LINE WELCOME HEADING */}
-              <div className="relative z-20 font-display text-center tracking-tight px-1 space-y-0.5">
-                {/* LINE 1: Welcome to the */}
-                <span className="block text-[10px] sm:text-base lg:text-lg font-extrabold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-pink-300 drop-shadow-[0_2px_10px_rgba(219,39,119,0.8)]">
-                  {isEn ? "Welcome to the" : "आपले सहर्ष स्वागत आहे"}
-                </span>
+            {/* ========================================= */}
+            {/* EXACT GENERATED POSTER - PERFECT FIT     */}
+            {/* ========================================= */}
 
-                {/* LINE 2: Preetam Anandshala & Fitness Club */}
-                <h1 className="block text-xs sm:text-2xl lg:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-amber-200 bg-clip-text text-transparent leading-tight drop-shadow-[0_4px_25px_rgba(236,72,153,0.9)]">
-                  {isEn ? "Preetam Anandshala & Fitness Club" : "प्रीतम आनंदशाळा व स्पोर्ट्स अँड फिटनेस क्लब"}
-                </h1>
-
-                {/* LINE 3: Sangli */}
-                <span className="block text-[11px] sm:text-xl lg:text-2xl font-black uppercase tracking-[0.25em] sm:tracking-[0.3em] bg-gradient-to-r from-amber-200 via-pink-300 to-amber-400 bg-clip-text text-transparent drop-shadow-[0_3px_15px_rgba(251,191,36,0.8)]">
-                  {isEn ? "Sangli" : "सांगली"}
-                </span>
-              </div>
-            </motion.div>
-
-            {/* 2. RESPONSIVE SLIDING BANNER IMAGE CARD (SNUG ON MOBILE, ENLARGED ON DESKTOP) */}
             <motion.div
-              key="intro-modal-card-banner-responsive"
-              initial={{ y: "100vh", opacity: 0, scale: 0.95 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: "100vh", opacity: 0, scale: 0.95 }}
+              initial={{
+                opacity: 0,
+                scale: 0.96,
+              }}
+
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+
               transition={{
-                duration: 1.8,
+                duration: 0.8,
                 delay: 0.15,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="relative w-[96vw] sm:w-[98vw] lg:w-[99vw] max-w-[1600px] h-auto sm:h-[74vh] lg:h-[78vh] rounded-[1.2rem] sm:rounded-[2.4rem] border-2 sm:border-4 border-white/40 shadow-[0_35px_110px_rgba(219,39,119,0.95)] overflow-hidden bg-black flex flex-col items-center justify-center text-center my-auto p-0 z-10"
-            >
-              {/* IMAGE WRAPPER - SNUG FIT WITH ZERO BLACK GAPS ABOVE/BELOW ON MOBILE */}
-              <div className="relative z-10 w-full h-auto sm:h-full overflow-hidden rounded-[1.1rem] sm:rounded-[2.3rem] bg-black flex items-center justify-center">
-                <motion.img
-                  src="/images/homebanner.png"
-                  alt="Preetam Anandshala Official Home Banner"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{
-                    duration: 6,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="w-full h-auto sm:h-full object-cover object-top block max-h-[68vh] sm:max-h-none"
-                />
 
-                {/* FLOATING "VISIT NOW" BUTTON OVERLAY AT THE BOTTOM EDGE (MOVED UP FOR MOBILE & COMPACT) */}
-                <div className="absolute bottom-2.5 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 w-full px-2 sm:px-3 text-center">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => setShowIntroBanner(false)}
-                    className="group inline-flex items-center gap-2 sm:gap-2.5 rounded-full bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 px-4 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm lg:text-base font-black text-white shadow-[0_15px_45px_rgba(219,39,119,0.85)] border-2 border-white/60 cursor-pointer transition-all duration-300 backdrop-blur-md"
-                  >
-                    <Sparkles size={14} className="text-amber-300 animate-pulse sm:size-5" />
-                    <span>{isEn ? "Visit Now (Enter Website)" : "Visit Now (वेबसाईटवर प्रवेश करा)"}</span>
-                    <span className="grid size-4 sm:size-6 place-items-center rounded-full bg-white text-pink-600 font-black text-[11px] sm:text-sm group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </motion.button>
-                </div>
-              </div>
+              className="
+                relative
+
+                w-full
+                max-w-[1100px]
+                max-h-[65vh]
+                sm:max-h-[75vh]
+
+                mx-auto
+
+                flex
+                items-center
+                justify-center
+                shrink-0
+                py-1
+              "
+            >
+
+              <img
+                src={welcomePosterUrl}
+                alt="Preetam Anandshala and Sports Fitness Club"
+                onClick={() => setShowIntroBanner(false)}
+
+                className="
+                  block
+
+                  max-w-full
+                  max-h-full
+
+                  w-auto
+                  h-auto
+
+                  object-contain
+                  object-center
+
+                  select-none
+                  rounded-2xl
+                  drop-shadow-[0_15px_50px_rgba(219,39,119,0.35)]
+                  cursor-pointer
+                  transition-all
+                  duration-500
+                  hover:scale-[1.02]
+                  hover:drop-shadow-[0_20px_60px_rgba(219,39,119,0.55)]
+                "
+              />
+
+              {/* ================= TRANSPARENT VISIT CLICK OVERLAY ================= */}
+
+              <button
+                onClick={() => setShowIntroBanner(false)}
+                aria-label="Visit Website"
+                className="
+                  absolute
+
+                  bottom-0
+
+                  left-1/2
+                  -translate-x-1/2
+
+                  z-[100]
+
+                  w-full
+                  max-w-[450px]
+
+                  h-[65px]
+                  sm:h-[85px]
+
+                  bg-transparent
+                  border-none
+                  outline-none
+                  cursor-pointer
+                "
+              />
+
             </motion.div>
+
           </motion.div>
         )}
       </AnimatePresence>
       {/* ============================================================== */}
       {selectedSection === null && !showIntroBanner && (
-        <section id="sections" className="relative py-3 sm:py-5 px-4 overflow-hidden bg-gradient-to-br from-[#1a0429] via-[#2d0739] to-[#0c0216] border-b border-pink-500/20 min-h-[calc(100vh-70px)] lg:min-h-0 flex flex-col justify-center items-center">
-          {/* DOT GRID BACKGROUND DECORATION */}
-          <div className="pointer-events-none absolute top-6 left-10 opacity-15 hidden md:block">
-            <div className="grid grid-cols-6 gap-2.5">
-              {Array.from({ length: 24 }).map((_, i) => (
-                <span key={i} className="size-1.5 rounded-full bg-pink-400" />
-              ))}
-            </div>
-          </div>
-          <div className="pointer-events-none absolute top-6 right-10 opacity-15 hidden md:block">
-            <div className="grid grid-cols-6 gap-2.5">
-              {Array.from({ length: 24 }).map((_, i) => (
-                <span key={i} className="size-1.5 rounded-full bg-pink-400" />
-              ))}
-            </div>
-          </div>
-
+        <section id="sections" className="relative py-4 sm:py-7 px-3 sm:px-4 overflow-hidden bg-gradient-to-br from-[#1a0429] via-[#2d0739] to-[#150424] min-h-screen min-h-[100dvh] w-full flex flex-col justify-center items-center">
           {/* FLOATING RICH AMBIENT LIGHT ORBS */}
           <div className="pointer-events-none absolute top-10 left-10 size-[450px] rounded-full bg-[#db2777]/25 blur-[120px] animate-pulse" />
           <div className="pointer-events-none absolute bottom-10 right-10 size-[450px] rounded-full bg-[#7c3aed]/25 blur-[120px] animate-float" />
           <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] rounded-full bg-[#f472b6]/15 blur-[140px]" />
 
           {/* BRAND HEADER */}
-          <div className="animate-fade-up text-center max-w-4xl mx-auto mb-2 sm:mb-4 relative z-10 px-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-pink-300 font-extrabold text-[11px] sm:text-xs mb-1.5 shadow-lg">
-              <span className="inline-block size-2 rounded-full bg-pink-400 animate-ping" />
-              ✨ सांगलीतील भव्य मानचिन्ह प्रकल्प
+          <div className="animate-fade-up text-center max-w-5xl mx-auto mb-2 sm:mb-4 relative z-10 px-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-purple-500/20 backdrop-blur-xl border border-amber-300/40 text-amber-200 font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(251,191,36,0.3)] tracking-wide">
+              <span className="inline-block size-2 rounded-full bg-amber-400 animate-ping" />
+              <span>✨ सांगलीतील भव्य मानचिन्ह प्रकल्प</span>
             </div>
-            <h1 className="font-display text-xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight drop-shadow-[0_5px_15px_rgba(0,0,0,0.6)] mb-1">
-              {isEn 
-                ? "Preetam Senior Citizen Anandshala & Sports Fitness Club" 
+            <h1 className="font-display font-black text-xl sm:text-3xl lg:text-4xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 via-rose-200 to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(251,191,36,0.7)] leading-tight py-0.5 mt-3 sm:mt-5">
+              {isEn
+                ? "Preetam Senior Citizen Anandshala & Sports Fitness Club"
                 : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा व स्पोर्ट्स अँड फिटनेस क्लब"}
             </h1>
-            <p className="font-display text-[11px] sm:text-xs lg:text-sm font-black text-pink-300 drop-shadow-sm">
-              {isEn 
-                ? "Please select one of our premier projects below for complete details" 
-                : "संपूर्ण माहिती व सुविधा पाहण्यासाठी खालीलपैकी एका प्रकल्पावर क्लिक करा"}
-            </p>
+            <div className="flex items-center justify-center gap-1.5 pt-1">
+              <span className="text-amber-300 text-sm sm:text-base animate-bounce">📍</span>
+              <span className="font-display font-black text-lg sm:text-2xl lg:text-3xl bg-gradient-to-r from-yellow-300 via-amber-200 to-rose-300 bg-clip-text text-transparent tracking-widest drop-shadow-[0_2px_10px_rgba(251,191,36,0.6)] uppercase">
+                {isEn ? "Sangli" : "सांगली"}
+              </span>
+            </div>
           </div>
 
-          {/* 2 MAIN LUXURY FEATURE CARDS - PERFECTLY PROPORTIONED TO WINDOW */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch gap-4 lg:gap-7 max-w-7xl w-full mx-auto relative z-10 py-1 px-2 my-auto">
-            
+          {/* 2 MAIN LUXURY FEATURE CARDS - TIGHT GAP WITH TEXT */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch gap-3 lg:gap-6 max-w-7xl w-full mx-auto relative z-10 py-0.5 px-2 my-auto">
+
             {/* SECTION 1 CARD: PREETAM AANANDASHRAM */}
             <motion.div
               initial={{ opacity: 0, x: -80 }}
@@ -465,21 +557,26 @@ function IndexComponent() {
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => handleSectionSelect("aanandshala")}
-              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-white/30 hover:border-pink-400 flex flex-col justify-between p-4 sm:p-6 ${
-                selectedSection === "aanandshala" ? "ring-4 ring-pink-500 scale-[1.02]" : ""
-              }`}
+              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-white/30 hover:border-pink-400 flex flex-col justify-between p-4 sm:p-6 ${selectedSection === "aanandshala" ? "ring-4 ring-pink-500 scale-[1.02]" : ""
+                }`}
             >
               {/* ANIMATED IMAGE SLIDER BACKGROUND */}
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 <motion.img
-                  key={card1Images[card1Idx]}
-                  src={card1Images[card1Idx]}
+                  key={card1Idx}
+                  src={card1Images[card1Idx] || card1Images[0]}
                   alt={isEn ? site.nameEn : site.nameMr}
-                  initial={{ opacity: 0, scale: 1.08 }}
+                  initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                  className="absolute inset-0 w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-700"
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  className="absolute inset-0 w-full h-full object-cover object-[center_35%] group-hover:scale-105 transition-transform duration-700"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (card1Images[0] && target.src !== card1Images[0]) {
+                      target.src = card1Images[0];
+                    }
+                  }}
                 />
               </AnimatePresence>
 
@@ -491,11 +588,13 @@ function IndexComponent() {
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1.5 text-xs sm:text-sm font-black text-[#541A1A] shadow-lg group-hover:bg-pink-600 group-hover:text-white transition-all duration-300">
                   🏠 {isEn ? "Section 1" : "विभाग १"}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   {card1Images.map((_, i) => (
-                    <span 
-                      key={i} 
-                      className={`h-2 rounded-full transition-all duration-300 ${i === card1Idx ? "w-6 bg-pink-400" : "w-2 bg-white/40"}`}
+                    <button
+                      key={i}
+                      onClick={() => setCard1Idx(i)}
+                      aria-label={`Slide ${i + 1}`}
+                      className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === card1Idx ? "w-6 bg-pink-400 shadow-md shadow-pink-500/50" : "w-2.5 bg-white/40 hover:bg-white/70"}`}
                     />
                   ))}
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-md px-3 py-1 text-[11px] sm:text-xs font-black text-white border border-white/20 ml-1">
@@ -528,37 +627,44 @@ function IndexComponent() {
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.85, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => handleSectionSelect("sports")}
-              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-white/30 hover:border-purple-400 flex flex-col justify-between p-4 sm:p-6 ${
-                selectedSection === "sports" ? "ring-4 ring-purple-500 scale-[1.02]" : ""
-              }`}
+              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-white/30 hover:border-purple-400 flex flex-col justify-between p-4 sm:p-6 ${selectedSection === "sports" ? "ring-4 ring-purple-500 scale-[1.02]" : ""
+                }`}
             >
               {/* ANIMATED IMAGE SLIDER BACKGROUND */}
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 <motion.img
-                  key={card2Images[card2Idx]}
-                  src={card2Images[card2Idx]}
+                  key={card2Idx}
+                  src={card2Images[card2Idx] || card2Images[0]}
                   alt={isEn ? sportsClub.nameEn : sportsClub.nameMr}
-                  initial={{ opacity: 0, scale: 1.08 }}
+                  initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 1, ease: "easeInOut" }}
-                  className="absolute inset-0 w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-700"
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  className="absolute inset-0 w-full h-full object-cover object-[center_35%] group-hover:scale-105 transition-transform duration-700"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (card2Images[0] && target.src !== card2Images[0]) {
+                      target.src = card2Images[0];
+                    }
+                  }}
                 />
               </AnimatePresence>
 
               {/* RICH DARK GRADIENT OVERLAY FOR READABILITY */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#12042b]/95 via-[#12042b]/40 to-black/30 pointer-events-none transition-opacity duration-500 group-hover:opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#12042b]/90 via-black/25 to-black/10 pointer-events-none transition-opacity duration-500 group-hover:opacity-80" />
 
               {/* TOP BADGES & SLIDER DOTS */}
               <div className="relative z-10 flex items-center justify-between gap-2 flex-wrap">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1.5 text-xs sm:text-sm font-black text-[#541A1A] shadow-lg group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
                   🏋️‍♂️ {isEn ? "Section 2" : "विभाग २"}
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   {card2Images.map((_, i) => (
-                    <span 
-                      key={i} 
-                      className={`h-2 rounded-full transition-all duration-300 ${i === card2Idx ? "w-6 bg-purple-400" : "w-2 bg-white/40"}`}
+                    <button
+                      key={i}
+                      onClick={() => setCard2Idx(i)}
+                      aria-label={`Slide ${i + 1}`}
+                      className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === card2Idx ? "w-6 bg-purple-400 shadow-md shadow-purple-500/50" : "w-2.5 bg-white/40 hover:bg-white/70"}`}
                     />
                   ))}
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-md px-3 py-1 text-[11px] sm:text-xs font-black text-white border border-white/20 ml-1">
@@ -636,12 +742,11 @@ function IndexComponent() {
           {/* 15 ACTIVITY HALLS */}
           <ActivityHallsSection />
 
-          {/* DAILY SCHEDULE NEW */}
-          <ScheduleSection />
+          {/* DAILY SCHEDULE ANANDSHALA */}
+          <ScheduleSection type="anandshala" />
 
-
-
-
+          {/* VIDEO & MEMBER TESTIMONIALS */}
+          <TestimonialsSection />
         </div>
       )}
 
@@ -657,6 +762,12 @@ function IndexComponent() {
 
           {/* ── PREETAM SPORTS RATE CARD & FACILITIES ── */}
           <SportsPricingSection />
+
+          {/* ── PREETAM SPORTS CLUB DAILY TIMETABLE SCHEDULE ── */}
+          <ScheduleSection type="sports" />
+
+          {/* VIDEO & MEMBER TESTIMONIALS */}
+          <TestimonialsSection />
         </div>
       )}
     </div>

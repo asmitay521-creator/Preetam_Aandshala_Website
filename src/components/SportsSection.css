@@ -938,24 +938,43 @@
   }
 }
 
-/* Beautiful Clean & Professional Card */
+/* Beautiful Animated Border Shimmer & Glowing Card */
 .sp-fac-card-v2 {
   background: #ffffff;
   border-radius: 20px;
   overflow: hidden;
-  border: 1.5px solid #e2e8f0;
-  box-shadow: 0 10px 25px rgba(84, 26, 26, 0.06);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  z-index: 1;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  border: 2.5px solid transparent;
+  background-image: linear-gradient(#ffffff, #ffffff), 
+                    linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6, #f59e0b, #ec4899);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-size: 100% 100%, 300% 300%;
+  animation: borderRotateGlow 6s linear infinite;
+}
+
+@keyframes borderRotateGlow {
+  0% {
+    background-position: 0% 0%, 0% 50%;
+  }
+  50% {
+    background-position: 0% 0%, 100% 50%;
+  }
+  100% {
+    background-position: 0% 0%, 0% 50%;
+  }
 }
 
 .sp-fac-card-v2:hover {
-  transform: translateY(-6px);
-  border-color: #db2777;
-  box-shadow: 0 18px 40px rgba(219, 39, 119, 0.18);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 45px rgba(236, 72, 153, 0.35), 0 0 25px rgba(139, 92, 246, 0.25);
+  animation-duration: 2.5s;
 }
 
 .sp-fac-img-box {
@@ -963,6 +982,31 @@
   height: 215px;
   overflow: hidden;
   position: relative;
+}
+
+/* Shiny reflection streak across image on hover */
+.sp-fac-img-box::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: all 0.75s ease;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.sp-fac-card-v2:hover .sp-fac-img-box::after {
+  left: 130%;
+  opacity: 1;
 }
 
 .sp-fac-img {

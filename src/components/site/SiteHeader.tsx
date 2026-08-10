@@ -9,7 +9,7 @@ export function SiteHeader() {
   const [hideHeader, setHideHeader] = useState(false);
   const location = useLocation();
   const pathname = location.pathname;
-  const { lang, isMr, toggleLanguage } = useLanguage();
+  const { lang, isMr, isEn, toggleLanguage } = useLanguage();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -135,15 +135,18 @@ export function SiteHeader() {
           {/* MOBILE LANGUAGE TOGGLE BUTTON */}
           <button
             onClick={toggleLanguage}
-            className="inline-flex items-center gap-1.5 rounded-full border-2 px-4 py-2 text-xs font-black cursor-pointer shadow-sm"
+            className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-black cursor-pointer shadow-sm hover:scale-105 transition-all"
             style={{
-              borderColor: "rgba(12, 35, 112, 0.25)",
-              background: "rgba(255, 255, 255, 0.95)",
+              borderColor: "rgba(12, 35, 112, 0.3)",
+              background: "#FFFFFF",
               color: "#1A05A2",
             }}
+            title="Switch Language / भाषा बदला"
           >
-            <span>🌐</span>
-            <span className="text-[#db2777] uppercase font-black">{lang}</span>
+            <span className="text-sm">🌐</span>
+            <span className={isEn ? "text-[#db2777] font-black underline" : "text-slate-500 font-bold"}>ENG</span>
+            <span className="text-slate-300">|</span>
+            <span className={isMr ? "text-[#db2777] font-black underline" : "text-slate-500 font-bold"}>मराठी</span>
           </button>
 
           {/* MOBILE TOGGLE BUTTON */}

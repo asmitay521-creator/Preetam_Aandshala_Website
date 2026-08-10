@@ -210,13 +210,13 @@ const PricingSection: React.FC = () => {
             <span>भारतातील पहिलीच • ॲडव्हान्स् बुकींग शुभारंभ ऑफर</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#541A1A] leading-tight mb-4 tracking-tight">
-            प्रीतम ज्येष्ठ नागरिक आनंदशाळा — <span className="text-pink-600">अधिकृत दरपत्रक</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mb-4 tracking-tight">
+            <span className="bg-gradient-to-r from-amber-300 via-pink-300 to-rose-300 bg-clip-text text-transparent drop-shadow-sm">प्रीतम ज्येष्ठ नागरिक आनंदशाळा</span> — <span className="text-pink-500 font-extrabold drop-shadow">अधिकृत दरपत्रक</span>
           </h2>
 
-          <p className="text-base sm:text-xl font-extrabold text-slate-700 leading-relaxed max-w-4xl mx-auto">
+          <p className="text-base sm:text-xl font-extrabold text-slate-200 leading-relaxed max-w-4xl mx-auto">
             आनंदात जगायच, आरोग्य जपायच, आनंदशाळेत येऊन स्वप्न साकारायच! <br className="hidden sm:inline" />
-            <span className="text-pink-700">आपल्या आवडीचा कालावधी निवडून सविस्तर दरपत्रक पाहण्यासाठी खालील कोणत्याही पर्यायावर क्लीक करा:</span>
+            <span className="text-pink-400 font-black">आपल्या आवडीचा कालावधी निवडून सविस्तर दरपत्रक पाहण्यासाठी खालील कोणत्याही पर्यायावर क्लीक करा:</span>
           </p>
         </div>
       </Reveal>
@@ -547,40 +547,7 @@ const PricingSection: React.FC = () => {
         </div>
       </Reveal>
 
-      {/* ── OFFICIAL CONTACT & ADDRESS FOOTER ── */}
-      <Reveal delay={400}>
-        <div className="ps-official-footer-card">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-pink-100 border-2 border-pink-500 flex items-center justify-center text-pink-700 text-3xl font-black shrink-0 shadow-md">
-                👨‍💼
-              </div>
-              <div>
-                <span className="text-xs font-black text-pink-600 uppercase tracking-wider">अधिकृत संपर्क अधिकारी</span>
-                <h4 className="text-xl font-black text-slate-900">श्री. अभिनव ज. कामाजी</h4>
-                <div className="flex items-center gap-2 text-base font-black text-pink-700 mt-1">
-                  <PhoneCall size={18} />
-                  <a href="tel:9970079090" className="hover:underline">99 7007 9090</a> / <a href="tel:9423258859" className="hover:underline">94 2325 8859</a>
-                </div>
-              </div>
-            </div>
 
-            <div className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200 shadow-sm max-w-md">
-              <MapPin size={24} className="text-pink-600 shrink-0 mt-1" />
-              <div>
-                <strong className="block text-xs font-black text-slate-900 uppercase">आनंदशाळा मुख्य पत्ता</strong>
-                <p className="text-xs sm:text-sm font-bold text-slate-700 leading-snug">
-                  प्रीतम हाऊस बिल्डींग, माधवनगर रोड, जकात नाक्या जवळ, सांगली.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-slate-200 text-center text-xs font-bold text-slate-500">
-            * टीप : सदर दरपत्रकात गरजेनुसार व महागाईनुसार योग्य तो बदल केला जाईल. नियमावली व अटी लागू. (GST Extra)
-          </div>
-        </div>
-      </Reveal>
 
       {/* ══════════════════════════════════════════════════════════════
           POPUP MODAL WINDOW FOR PACKAGES (ON CLICK)

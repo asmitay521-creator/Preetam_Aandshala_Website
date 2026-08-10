@@ -4,27 +4,28 @@ import {
   Users, Calendar, Award, ShieldCheck, 
   ArrowRight, Landmark, Flower2, 
   Dumbbell, BookOpen, Music, Utensils, 
-  Bus, HeartHandshake, PhoneCall, Sparkles
+  Bus, HeartHandshake, PhoneCall, Sparkles,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
 
 const heroSlides = [
   {
-    image: "/images/aandshala_img.png",
+    image: "/images/slider1.JPG",
     tag: "🏛️ मुख्य आनंदशाळा वास्तू",
     title: "१.५ एकर निसर्गरम्य परिसर",
     subtitle: "सांगली जिल्ह्यातील भव्य व सर्व सोयींनी युक्त ज्येष्ठ नागरिक संकूल",
   },
   {
-    image: "/images/sports_hero_bg.png",
+    image: "/images/slider2.JPG",
     tag: "🏊‍♂️ प्रीतम क्रीडा & फिटनेस क्लब",
     title: "ऑलिंपिक स्विमिंग पूल व AC जिम",
-    subtitle: "बॅडमिंटन, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
+    subtitle: "बॅडमिंटन, पिकलबॉल, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
   },
   {
-    image: "/images/imgever.JPG",
-    tag: "🎉 सांस्कृतिक सोहळे",
-    title: "आपुलकीचे नाते व कौटुंबिक वातावरण",
-    subtitle: "आपल्या वयाच्या मित्र-मैत्रिणींसोबत आनंदी आयुष्य सोहळा",
+    image: "/images/slider3.png",
+    tag: "🌸 आनंदी सुवर्णवर्षे",
+    title: "आपुलकीचे नाते व कौटुंबिक आनंद",
+    subtitle: "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित जीवन सोहळा",
   },
 ];
 
@@ -38,11 +39,19 @@ const HomeHero = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handleNext = () => {
+    setActiveSlide((prev) => (prev + 1) % heroSlides.length);
+  };
+
+  const handlePrev = () => {
+    setActiveSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
+
   return (
     <div className="hero-section-clean">
 
       {/* ══════════════════════════════════════════════════════════════
-          1. TOP HALF: 100% FULL-WIDTH PURE IMAGE CAROUSEL SLIDER (NO SIDE WHITESPACE)
+          1. TOP HALF: 100% FULL-WIDTH PURE IMAGE CAROUSEL SLIDER (ZERO WHITESPACE)
          ══════════════════════════════════════════════════════════════ */}
       <div className="hero-top-slide-box">
         {/* SLIDING IMAGES */}
@@ -55,28 +64,33 @@ const HomeHero = () => {
           />
         ))}
 
-        {/* FLOATING TOP OVERLAY BAR ON PHOTO */}
-        <div className="hero-slide-top-bar">
-          <div className="hero-pill-badge">
-            <Sparkles size={15} className="text-amber-600 animate-pulse" />
-            <span>प्रीतम • भारतीय परंपरा, आधुनिक विचार • सांगली</span>
-          </div>
+        {/* PREV / NEXT NAV ARROWS */}
+        <button 
+          onClick={handlePrev}
+          className="hero-arrow-btn left-arrow cursor-pointer"
+          aria-label="Previous Slide"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button 
+          onClick={handleNext}
+          className="hero-arrow-btn right-arrow cursor-pointer"
+          aria-label="Next Slide"
+        >
+          <ChevronRight size={24} />
+        </button>
 
-          {/* SLIDER TAG & DOTS */}
-          <div className="hero-slider-controls">
-            <span className="current-slide-tag-pill">
-              {heroSlides[activeSlide].tag}
-            </span>
-            <div className="slider-dots-group">
-              {heroSlides.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveSlide(idx)}
-                  className={`slider-dot-item ${idx === activeSlide ? "slider-dot-active" : ""}`}
-                  title={`Slide ${idx + 1}`}
-                />
-              ))}
-            </div>
+        {/* FLOATING TOP OVERLAY DOTS ON PHOTO */}
+        <div className="hero-slide-top-bar justify-end">
+          <div className="slider-dots-group">
+            {heroSlides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveSlide(idx)}
+                className={`slider-dot-item ${idx === activeSlide ? "slider-dot-active" : ""}`}
+                title={`Slide ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
       </div>

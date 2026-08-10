@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
@@ -11,9 +11,12 @@ import ContactPage from "./routes/contact";
 import AdminPage from "./routes/admin";
 
 export default function App() {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <SiteHeader />
+      {!isAdmin && <SiteHeader />}
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<IndexComponent />} />
@@ -25,7 +28,7 @@ export default function App() {
           <Route path="*" element={<IndexComponent />} />
         </Routes>
       </main>
-      <SiteFooter />
+      {!isAdmin && <SiteFooter />}
     </div>
   );
 }
