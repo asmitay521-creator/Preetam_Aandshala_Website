@@ -1060,31 +1060,42 @@ export function useAdminStore() {
   const anandshalaInquiries = inquiries.filter((i) => !isSportsInquiryItem(i));
 
   const syncAllToFirebaseCloud = async () => {
-    try {
-      await Promise.all([
-        setDoc(doc(db, "app_data", STORAGE_KEYS.site), { data: siteData }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.about), { data: aboutData }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.gallery), { data: gallery }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.inquiries), { data: inquiries }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.testimonials), { data: testimonials }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.packages), { data: packages }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.brochures), { data: brochures }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.homeNews), { data: homeNews }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.schedule), { data: scheduleConfig }, { merge: true }),
-        setDoc(doc(db, "app_data", STORAGE_KEYS.sportsSchedule), { data: sportsScheduleConfig }, { merge: true }),
-        // Top-level collections for easy viewing in Firebase Console
-        setDoc(doc(db, "site_settings", "general"), { siteData }, { merge: true }),
-        setDoc(doc(db, "about_settings", "general"), { aboutData }, { merge: true }),
-        setDoc(doc(db, "gallery_collection", "all"), { items: gallery }, { merge: true }),
-        setDoc(doc(db, "inquiries_collection", "all"), { items: inquiries }, { merge: true }),
-        setDoc(doc(db, "brochures_collection", "all"), { items: brochures }, { merge: true }),
-      ]);
-      console.log("🔥 Successfully synced all data to Firestore Cloud Database!");
-      return true;
-    } catch (err: any) {
-      console.error("🔥 Error syncing to Firestore Cloud Database:", err);
-      throw err;
+    const itemsToSync = [
+      { name: "site", ref: doc(db, "app_data", STORAGE_KEYS.site), payload: { data: siteData } },
+      { name: "about", ref: doc(db, "app_data", STORAGE_KEYS.about), payload: { data: aboutData } },
+      { name: "gallery", ref: doc(db, "app_data", STORAGE_KEYS.gallery), payload: { data: gallery } },
+      { name: "inquiries", ref: doc(db, "app_data", STORAGE_KEYS.inquiries), payload: { data: inquiries } },
+      { name: "testimonials", ref: doc(db, "app_data", STORAGE_KEYS.testimonials), payload: { data: testimonials } },
+      { name: "packages", ref: doc(db, "app_data", STORAGE_KEYS.packages), payload: { data: packages } },
+      { name: "brochures", ref: doc(db, "app_data", STORAGE_KEYS.brochures), payload: { data: brochures } },
+      { name: "homeNews", ref: doc(db, "app_data", STORAGE_KEYS.homeNews), payload: { data: homeNews } },
+      { name: "schedule", ref: doc(db, "app_data", STORAGE_KEYS.schedule), payload: { data: scheduleConfig } },
+      { name: "sportsSchedule", ref: doc(db, "app_data", STORAGE_KEYS.sportsSchedule), payload: { data: sportsScheduleConfig } },
+      { name: "site_settings", ref: doc(db, "site_settings", "general"), payload: { siteData } },
+      { name: "gallery_collection", ref: doc(db, "gallery_collection", "all"), payload: { items: gallery } },
+      { name: "inquiries_collection", ref: doc(db, "inquiries_collection", "all"), payload: { items: inquiries } },
+      { name: "brochures_collection", ref: doc(db, "brochures_collection", "all"), payload: { items: brochures } },
+    ];
+
+    let successCount = 0;
+    let firstError: any = null;
+
+    for (const item of itemsToSync) {
+      try {
+        await setDoc(item.ref, item.payload, { merge: true });
+        successCount++;
+      } catch (err: any) {
+        if (!firstError) firstError = err;
+        console.warn(`Firestore sync warning for ${item.name}:`, err);
+      }
     }
+
+    if (successCount === 0 && firstError) {
+      throw firstError;
+    }
+
+    console.log(`🔥 Successfully synced ${successCount} collection items to Firestore Cloud Database!`);
+    return successCount;
   };
 
   return {
