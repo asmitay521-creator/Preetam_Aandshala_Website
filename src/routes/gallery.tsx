@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/lib/use-language";
 import {
   ChevronLeft,
   ChevronRight,
@@ -16,57 +17,63 @@ import {
 
 // ===== Gallery Data =====
 const galleryImages = [
-  { id: 1,  title: "आनंदशाळा संकुल गॅलरी १", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 जानेवारी 2026", image: "/images/gallery imgage1.JPG" },
-  { id: 2,  title: "आनंदशाळा परिसर चित्र २", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 जानेवारी 2026", image: "/images/gallery image2.JPG" },
-  { id: 3,  title: "आनंदशाळा उपक्रम चित्र ३", category: "विशेष कार्यक्रम", date: "26 जानेवारी 2026", image: "/images/gallery image3.JPG" },
-  { id: 4,  title: "आनंदशाळा सोहळा चित्र ४", category: "वार्षिक स्नेहसंमेलन", date: "26 जानेवारी 2026", image: "/images/gallery image4.JPG" },
-  { id: 5,  title: "आनंदशाळा कार्यक्रम ५", category: "आनंद मेळावा", date: "26 जानेवारी 2026", image: "/images/gallery image5.JPG" },
-  { id: 6,  title: "आनंदशाळा क्रीडा & गॅलरी ६", category: "विशेष कार्यक्रम", date: "26 जानेवारी 2026", image: "/images/gallery image6.JPG" },
-  { id: 7,  title: "आनंदशाळा परिसर दृश्य ७", category: "बांधकाम", date: "26 जानेवारी 2026", image: "/images/gallery image7.JPG" },
-  { id: 8,  title: "आनंदशाळा विशेष सोहळा ८", category: "मान्यवर भेट", date: "26 जानेवारी 2026", image: "/images/gallery image8.JPG" },
-  { id: 9,  title: "आनंदभवन परिसर", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 जानेवारी 2024", image: "/images/Screenshot 2026-07-31 103107.png" },
-  { id: 10, title: "आनंद मेळावा सोहळा", category: "आनंद मेळावा", date: "15 ऑगस्ट 2023", image: "/images/aandmelav 10.jpeg" },
-  { id: 11, title: "भूमिपूजन कार्यक्रम", category: "भूमिपूजन", date: "09 जानेवारी 2024", image: "/images/ropya mahotsv1.jpg" },
-  { id: 12, title: "वार्षिक स्नेहसंमेलन", category: "वार्षिक स्नेहसंमेलन", date: "25 डिसेंबर 2023", image: "/images/aandshala sahal 1.jpeg" },
-  { id: 13, title: "सांस्कृतिक महोत्सव", category: "आनंद मेळावा", date: "14 नोव्हेंबर 2023", image: "/images/aandmelava1.jpg" },
-  { id: 14, title: "योगा व ध्यान कक्ष", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "21 जून 2023", image: "/images/Screenshot 2026-07-31 103545.png" },
-  { id: 15, title: "संगीत संध्या व सांस्कृतिक", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "05 मार्च 2023", image: "/images/aandmelav 5.jpg" },
-  { id: 16, title: "गार्डन, लॉन व संकुल", category: "बांधकाम", date: "10 फेब्रुवारी 2024", image: "/images/Screenshot 2026-07-31 103213.png" },
-  { id: 17, title: "रौप्य महोत्सव भूमिपूजन", category: "भूमिपूजन", date: "26 जानेवारी 2024", image: "/images/ropya mahotsv 2.jpg" },
-  { id: 18, title: "सामाजिक कार्य शिबिर", category: "सामाजिक कार्य", date: "02 ऑक्टोबर 2023", image: "/images/samajik karya 2.jpeg" },
-  { id: 21, title: "मान्यवर सत्कार भेट", category: "मान्यवर भेट", date: "20 डिसेंबर 2023", image: "/images/vyavsaik mahiti 3.jpeg" },
-  { id: 22, title: "खेळ व विरंगुळा केंद्र", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "18 नोव्हेंबर 2023", image: "/images/Screenshot 2026-07-31 103517.png" },
-  { id: 23, title: "आनंद निवास संकुल", category: "ज्येष्ठ नागरिक आनंदशाळा", date: "10 जानेवारी 2024", image: "/images/Screenshot 2026-07-31 103842.png" },
-  { id: 24, title: "आनंद सहल २", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 2.jpg" },
-  { id: 25, title: "आनंद सहल ३", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 3.jpg" },
-  { id: 26, title: "आनंद सहल ४", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 4.jpg" },
-  { id: 27, title: "आनंद सहल ५", category: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 5.jpeg" },
-  { id: 28, title: "आनंद मेळावा ९", category: "आनंद मेळावा", date: "2023", image: "/images/aandmelava 9.jpg" },
+  { id: 1,  titleEn: "Anandshala Campus Gallery 1", titleMr: "आनंदशाळा संकुल गॅलरी १", categoryEn: "Senior Citizen Anandshala", categoryMr: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 Jan 2026", image: "/images/gallery imgage1.JPG" },
+  { id: 2,  titleEn: "Anandshala Campus View 2", titleMr: "आनंदशाळा परिसर चित्र २", categoryEn: "Senior Citizen Anandshala", categoryMr: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 Jan 2026", image: "/images/gallery image2.JPG" },
+  { id: 3,  titleEn: "Anandshala Activity Photo 3", titleMr: "आनंदशाळा उपक्रम चित्र ३", categoryEn: "Special Events", categoryMr: "विशेष कार्यक्रम", date: "26 Jan 2026", image: "/images/gallery image3.JPG" },
+  { id: 4,  titleEn: "Anandshala Event Celebration 4", titleMr: "आनंदशाळा सोहळा चित्र ४", categoryEn: "Annual Function", categoryMr: "वार्षिक स्नेहसंमेलन", date: "26 Jan 2026", image: "/images/gallery image4.JPG" },
+  { id: 5,  titleEn: "Anandshala Gathering 5", titleMr: "आनंदशाळा कार्यक्रम ५", categoryEn: "Joy Festival", categoryMr: "आनंद मेळावा", date: "26 Jan 2026", image: "/images/gallery image5.JPG" },
+  { id: 6,  titleEn: "Sports & Gallery 6", titleMr: "आनंदशाळा क्रीडा & गॅलरी ६", categoryEn: "Special Events", categoryMr: "विशेष कार्यक्रम", date: "26 Jan 2026", image: "/images/gallery image6.JPG" },
+  { id: 7,  titleEn: "Anandshala Campus View 7", titleMr: "आनंदशाळा परिसर दृश्य ७", categoryEn: "Construction", categoryMr: "बांधकाम", date: "26 Jan 2026", image: "/images/gallery image7.JPG" },
+  { id: 8,  titleEn: "Anandshala Special Meet 8", titleMr: "आनंदशाळा विशेष सोहळा ८", categoryEn: "Dignitaries Visit", categoryMr: "मान्यवर भेट", date: "26 Jan 2026", image: "/images/gallery image8.JPG" },
+  { id: 9,  titleEn: "Anandbhavan Campus", titleMr: "आनंदभवन परिसर", categoryEn: "Senior Citizen Anandshala", categoryMr: "ज्येष्ठ नागरिक आनंदशाळा", date: "26 Jan 2024", image: "/images/Screenshot 2026-07-31 103107.png" },
+  { id: 10, titleEn: "Joy Festival Celebration", titleMr: "आनंद मेळावा सोहळा", categoryEn: "Joy Festival", categoryMr: "आनंद मेळावा", date: "15 Aug 2023", image: "/images/aandmelav 10.jpeg" },
+  { id: 11, titleEn: "Bhumipujan Ceremony", titleMr: "भूमिपूजन कार्यक्रम", categoryEn: "Bhumipujan", categoryMr: "भूमिपूजन", date: "09 Jan 2024", image: "/images/ropya mahotsv1.jpg" },
+  { id: 12, titleEn: "Annual Gathering Meetup", titleMr: "वार्षिक स्नेहसंमेलन", categoryEn: "Annual Function", categoryMr: "वार्षिक स्नेहसंमेलन", date: "25 Dec 2023", image: "/images/aandshala sahal 1.jpeg" },
+  { id: 13, titleEn: "Cultural Festival", titleMr: "सांस्कृतिक महोत्सव", categoryEn: "Joy Festival", categoryMr: "आनंद मेळावा", date: "14 Nov 2023", image: "/images/aandmelava1.jpg" },
+  { id: 14, titleEn: "Yoga & Meditation Hall", titleMr: "योगा व ध्यान कक्ष", categoryEn: "Senior Citizen Anandshala", categoryMr: "ज्येष्ठ नागरिक आनंदशाळा", date: "21 Jun 2023", image: "/images/Screenshot 2026-07-31 103545.png" },
+  { id: 15, titleEn: "Music Evening & Culture", titleMr: "संगीत संध्या व सांस्कृतिक", categoryEn: "Senior Citizen Anandshala", categoryMr: "ज्येष्ठ नागरिक आनंदशाळा", date: "05 Mar 2023", image: "/images/aandmelav 5.jpg" },
+  { id: 16, titleEn: "Garden, Lawn & Campus", titleMr: "गार्डन, लॉन व संकुल", categoryEn: "Construction", categoryMr: "बांधकाम", date: "10 Feb 2024", image: "/images/Screenshot 2026-07-31 103213.png" },
+  { id: 17, titleEn: "Silver Jubilee Bhumipujan", titleMr: "रौप्य महोत्सव भूमिपूजन", categoryEn: "Bhumipujan", categoryMr: "भूमिपूजन", date: "26 Jan 2024", image: "/images/ropya mahotsv 2.jpg" },
+  { id: 18, titleEn: "Social Work Camp", titleMr: "सामाजिक कार्य शिबिर", categoryEn: "Social Work", categoryMr: "सामाजिक कार्य", date: "02 Oct 2023", image: "/images/samajik karya 2.jpeg" },
+  { id: 21, titleEn: "Dignitary Felicitation Visit", titleMr: "मान्यवर सत्कार भेट", categoryEn: "Dignitaries Visit", categoryMr: "मान्यवर भेट", date: "20 Dec 2023", image: "/images/vyavsaik mahiti 3.jpeg" },
+  { id: 22, titleEn: "Recreation & Games Center", titleMr: "खेळ व विरंगुळा केंद्र", categoryEn: "Senior Citizen Anandshala", categoryMr: "ज्येष्ठ नागरिक आनंदशाळा", date: "18 Nov 2023", image: "/images/Screenshot 2026-07-31 103517.png" },
+  { id: 23, titleEn: "Anand Niwas Complex", titleMr: "आनंद निवास संकुल", categoryEn: "Senior Citizen Anandshala", categoryMr: "ज्येष्ठ नागरिक आनंदशाळा", date: "10 Jan 2024", image: "/images/Screenshot 2026-07-31 103842.png" },
+  { id: 24, titleEn: "Anand Picnic Tour 2", titleMr: "आनंद सहल २", categoryEn: "Annual Function", categoryMr: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 2.jpg" },
+  { id: 25, titleEn: "Anand Picnic Tour 3", titleMr: "आनंद सहल ३", categoryEn: "Annual Function", categoryMr: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 3.jpg" },
+  { id: 26, titleEn: "Anand Picnic Tour 4", titleMr: "आनंद सहल ४", categoryEn: "Annual Function", categoryMr: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 4.jpg" },
+  { id: 27, titleEn: "Anand Picnic Tour 5", titleMr: "आनंद सहल ५", categoryEn: "Annual Function", categoryMr: "वार्षिक स्नेहसंमेलन", date: "2024", image: "/images/aandshala sahal 5.jpeg" },
+  { id: 28, titleEn: "Joy Festival Gathering 9", titleMr: "आनंद मेळावा ९", categoryEn: "Joy Festival", categoryMr: "आनंद मेळावा", date: "2023", image: "/images/aandmelava 9.jpg" },
 ];
 
-const categories = [
-  "सर्व",
-  "ज्येष्ठ नागरिक आनंदशाळा",
-  "आनंद मेळावा",
-  "भूमिपूजन",
-  "बांधकाम",
-  "सामाजिक कार्य",
-  "वार्षिक स्नेहसंमेलन",
-  "मान्यवर भेट",
-  "विशेष कार्यक्रम",
+const categoryList = [
+  { key: "all", labelEn: "All", labelMr: "सर्व" },
+  { key: "anandshala", labelEn: "Senior Citizen Anandshala", labelMr: "ज्येष्ठ नागरिक आनंदशाळा" },
+  { key: "melava", labelEn: "Joy Festival", labelMr: "आनंद मेळावा" },
+  { key: "bhumipujan", labelEn: "Bhumipujan", labelMr: "भूमिपूजन" },
+  { key: "construction", labelEn: "Construction", labelMr: "बांधकाम" },
+  { key: "social", labelEn: "Social Work", labelMr: "सामाजिक कार्य" },
+  { key: "annual", labelEn: "Annual Function", labelMr: "वार्षिक स्नेहसंमेलन" },
+  { key: "dignitary", labelEn: "Dignitaries Visit", labelMr: "मान्यवर भेट" },
+  { key: "special", labelEn: "Special Events", labelMr: "विशेष कार्यक्रम" },
 ];
 
 function Gallery() {
-  const [selectedCategory, setSelectedCategory] = useState("सर्व");
+  const { isEn } = useLanguage();
+  const [selectedKey, setSelectedKey] = useState("all");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const selectedCatObj = categoryList.find(c => c.key === selectedKey);
+
   const filteredImages =
-    selectedCategory === "सर्व"
+    selectedKey === "all"
       ? galleryImages
-      : galleryImages.filter((item) => item.category === selectedCategory);
+      : galleryImages.filter((item) => {
+          if (!selectedCatObj) return true;
+          return item.categoryMr === selectedCatObj.labelMr || item.categoryEn === selectedCatObj.labelEn;
+        });
 
   const openImage = (index: number) => {
     setSelectedIndex(index);
@@ -188,11 +195,11 @@ function Gallery() {
         <div className="text-center mb-8 sm:mb-12">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white shadow-sm border border-pink-200 text-pink-600 font-bold text-xs sm:text-sm">
             <Sparkles size={16} />
-            फोटो गॅलरी • GALLERY
+            {isEn ? "Photo Gallery • GALLERY" : "फोटो गॅलरी • GALLERY"}
           </span>
 
           <h1 className="mt-3 text-3xl sm:text-5xl font-black text-[#541A1A]">
-            आनंदशाळा फोटो गॅलरी
+            {isEn ? "Anandshala Photo Gallery" : "आनंदशाळा फोटो गॅलरी"}
           </h1>
 
           <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-medium">
@@ -204,13 +211,13 @@ function Gallery() {
 
         {/* ===== CATEGORY FILTER BUTTONS ===== */}
         <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
-          {categories.map((category) => {
-            const isActive = selectedCategory === category;
+          {categoryList.map((category) => {
+            const isActive = selectedKey === category.key;
             return (
               <button
-                key={category}
+                key={category.key}
                 onClick={() => {
-                  setSelectedCategory(category);
+                  setSelectedKey(category.key);
                   setSelectedIndex(null);
                 }}
                 className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 cursor-pointer ${
@@ -219,7 +226,7 @@ function Gallery() {
                     : "bg-white text-slate-700 border border-slate-200 hover:border-pink-300 hover:text-pink-600 hover:shadow-sm"
                 }`}
               >
-                {category}
+                {isEn ? category.labelEn : category.labelMr}
               </button>
             );
           })}
@@ -227,13 +234,15 @@ function Gallery() {
 
         {/* ===== PHOTO COUNT INFO ===== */}
         <p className="text-center text-xs sm:text-sm font-semibold text-slate-500 mb-8">
-          एकूण <span className="text-pink-600 font-extrabold">{filteredImages.length}</span> फोटो उपलब्ध (फोटोवर क्लीक करून मोठ्या स्क्रीनवर स्लाइडर पहा)
+          {isEn
+            ? <>Total <span className="text-pink-600 font-extrabold">{filteredImages.length}</span> photos available (Click any photo to view in fullscreen slider)</>
+            : <>एकूण <span className="text-pink-600 font-extrabold">{filteredImages.length}</span> फोटो उपलब्ध (फोटोवर क्लीक करून मोठ्या स्क्रीनवर स्लाइडर पहा)</>}
         </p>
 
         {/* ===== GALLERY CARDS GRID ===== */}
         {filteredImages.length === 0 ? (
           <div className="text-center py-16 text-slate-400 font-semibold">
-            या श्रेणीत फोटो उपलब्ध नाहीत.
+            {isEn ? "No photos available in this category." : "या श्रेणीत फोटो उपलब्ध नाहीत."}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -253,7 +262,7 @@ function Gallery() {
                 {/* 100% PURE FULL-COVERAGE CRYSTAL CLEAR PHOTO */}
                 <img
                   src={item.image}
-                  alt={item.title}
+                  alt={isEn ? item.titleEn : item.titleMr}
                   loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                   onError={(e) => {
@@ -267,7 +276,7 @@ function Gallery() {
                 {/* TOP BADGES */}
                 <div className="absolute top-3 left-3 z-20">
                   <span className="bg-pink-600/95 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-md border border-white/20">
-                    {item.category}
+                    {isEn ? item.categoryEn : item.categoryMr}
                   </span>
                 </div>
 
@@ -284,7 +293,7 @@ function Gallery() {
                     <span>{item.date}</span>
                   </div>
                   <h3 className="text-sm sm:text-base font-extrabold text-white line-clamp-1 group-hover:text-pink-300 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-                    {item.title}
+                    {isEn ? item.titleEn : item.titleMr}
                   </h3>
                 </div>
               </motion.div>

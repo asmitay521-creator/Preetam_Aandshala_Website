@@ -3,9 +3,11 @@ import { Phone, MessageCircle, Mail, User, MapPin, Building, Send, Map, CheckSqu
 import { Reveal } from "@/components/site/Reveal";
 import { useAdminStore } from "@/lib/admin-store";
 import { site, sportsClub } from "@/lib/site-info";
+import { useLanguage } from "@/lib/use-language";
 
 function Contact() {
   const { addInquiry } = useAdminStore();
+  const { isEn } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -60,7 +62,7 @@ function Contact() {
         </span>
 
         <h1 className="relative z-10 text-5xl sm:text-7xl font-black text-[#2e3192] mb-4 drop-shadow-sm">
-          संपर्क
+          {isEn ? "Contact Us" : "संपर्क"}
           <div className="flex items-center justify-center mt-3 gap-2 text-pink-400">
             <span className="block w-12 h-0.5 bg-pink-400 rounded-full"></span>
             <span className="block w-2 h-2 rounded-full bg-pink-400"></span>
@@ -69,7 +71,7 @@ function Contact() {
         </h1>
 
         <p className="relative z-10 mt-4 text-base sm:text-lg font-bold text-slate-600">
-          प्रवेश, सहकार्य किंवा अधिक माहितीसाठी आजच संपर्क साधा.
+          {isEn ? "Contact us today for admission, collaboration or further details." : "प्रवेश, सहकार्य किंवा अधिक माहितीसाठी आजच संपर्क साधा."}
         </p>
 
       </div>
@@ -87,7 +89,7 @@ function Contact() {
               <Phone size={24} />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-500 mb-1">आनंदशाळा हेल्पलाईन</p>
+              <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "Anandshala Helpline" : "आनंदशाळा हेल्पलाईन"}</p>
               <a href="tel:+919370237633" className="text-[15px] font-black text-[#f472b6] tracking-wide">+91-9370237633</a>
             </div>
           </div>
@@ -98,7 +100,7 @@ function Contact() {
               <Phone size={24} />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-500 mb-1">कार्यालय संपर्क</p>
+              <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "Office Contact" : "कार्यालय संपर्क"}</p>
               <a href="tel:+919423258859" className="text-[15px] font-black text-[#662d91] tracking-wide">+91-9423258859</a>
             </div>
           </div>
@@ -109,7 +111,7 @@ function Contact() {
               <MessageCircle size={24} />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-500 mb-1">चॅट WhatsApp</p>
+              <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "WhatsApp Chat" : "चॅट WhatsApp"}</p>
               <a href={sportsClub.whatsapp} target="_blank" rel="noopener noreferrer" className="text-[15px] font-black text-[#0071bc] tracking-wide">+91-9370237633</a>
             </div>
           </div>
@@ -120,7 +122,7 @@ function Contact() {
               <Mail size={24} />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-500 mb-1">ई-मेल पत्ता</p>
+              <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "Email Address" : "ई-मेल पत्ता"}</p>
               <a href={`mailto:${site.email}`} className="text-[13px] font-black text-[#f26522] tracking-wide truncate block w-[160px] sm:w-full">{site.email}</a>
             </div>
           </div>
@@ -143,14 +145,14 @@ function Contact() {
                   <CheckSquare size={26} />
                 </div>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-[#1a1a40]">प्रवेश व नोंदणीची चौकशी करा</h2>
-                  <p className="text-xs sm:text-sm font-bold text-slate-500 mt-1">खालील माहिती भरा - आमची टीम लवकरच आपल्याशी संपर्क साधेल.</p>
+                  <h2 className="text-xl sm:text-2xl font-black text-[#1a1a40]">{isEn ? "Inquire About Admission & Booking" : "प्रवेश व नोंदणीची चौकशी करा"}</h2>
+                  <p className="text-xs sm:text-sm font-bold text-slate-500 mt-1">{isEn ? "Fill in the details below - our team will get in touch with you soon." : "खालील माहिती भरा - आमची टीम लवकरच आपल्याशी संपर्क साधेल."}</p>
                 </div>
               </div>
 
               {submitted && (
                 <div className="mb-6 p-4 rounded-xl bg-emerald-50 text-emerald-600 font-bold text-sm border border-emerald-200">
-                  तुमची चौकशी यशस्वीरित्या पाठवली गेली आहे! आम्ही लवकरच संपर्क करू.
+                  {isEn ? "Your inquiry has been submitted successfully! We will contact you soon." : "तुमची चौकशी यशस्वीरित्या पाठवली गेली आहे! आम्ही लवकरच संपर्क करू."}
                 </div>
               )}
 
@@ -164,7 +166,7 @@ function Contact() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="आपले पूर्ण नाव"
+                    placeholder={isEn ? "Your Full Name" : "आपले पूर्ण नाव"}
                     className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm font-semibold outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-100 placeholder:text-slate-400 text-slate-700 shadow-sm"
                   />
                 </div>
@@ -178,7 +180,7 @@ function Contact() {
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="मोबाईल नंबर"
+                      placeholder={isEn ? "Mobile Number" : "मोबाईल नंबर"}
                       className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm font-semibold outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-100 placeholder:text-slate-400 text-slate-700 shadow-sm"
                     />
                   </div>
@@ -190,7 +192,7 @@ function Contact() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ई-मेल पत्ता (पर्यायी)"
+                      placeholder={isEn ? "Email Address (Optional)" : "ई-मेल पत्ता (पर्यायी)"}
                       className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm font-semibold outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-100 placeholder:text-slate-400 text-slate-700 shadow-sm"
                     />
                   </div>
@@ -205,11 +207,11 @@ function Contact() {
                     onChange={(e) => setSubject(e.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm font-bold outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-100 text-slate-700 shadow-sm appearance-none"
                   >
-                    <option value="आनंदशाळा प्रवेश चौकशी">आनंदशाळा प्रवेश चौकशी</option>
-                    <option value="१ दिवस सहल पास">१ दिवस सहल पास</option>
-                    <option value="डे-केअर मन्थली">डे-केअर मासिक पास</option>
-                    <option value="आनंदनिवास">आनंदनिवास निवास पास</option>
-                    <option value="स्पोर्ट्स क्लब">स्पोर्ट्स क्लब मेंबरशिप</option>
+                    <option value="आनंदशाळा प्रवेश चौकशी">{isEn ? "Anandshala Admission Inquiry" : "आनंदशाळा प्रवेश चौकशी"}</option>
+                    <option value="१ दिवस सहल पास">{isEn ? "1 Day Tour Pass" : "१ दिवस सहल पास"}</option>
+                    <option value="डे-केअर मन्थली">{isEn ? "Day-Care Monthly Pass" : "डे-केअर मासिक पास"}</option>
+                    <option value="आनंदनिवास">{isEn ? "Anandniwas Stay Pass" : "आनंदनिवास निवास पास"}</option>
+                    <option value="स्पोर्ट्स क्लब">{isEn ? "Sports Club Membership" : "स्पोर्ट्स क्लब मेंबरशिप"}</option>
                   </select>
                 </div>
 
@@ -221,7 +223,7 @@ function Contact() {
                     rows={4}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="आपला संदेश किंवा प्रश्न येथे लिहा..."
+                    placeholder={isEn ? "Write your message or query here..." : "आपला संदेश किंवा प्रश्न येथे लिहा..."}
                     className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm font-semibold outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-100 placeholder:text-slate-400 text-slate-700 shadow-sm resize-none"
                   />
                 </div>
@@ -230,7 +232,7 @@ function Contact() {
                   type="submit"
                   className="mt-auto w-full flex items-center justify-center gap-2 rounded-xl py-4 font-bold text-white shadow-lg transition-transform hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-[#f472b6] to-[#662d91]"
                 >
-                  <Send size={18} /> चौकशी अर्ज पाठवा
+                  <Send size={18} /> {isEn ? "Submit Inquiry Form" : "चौकशी अर्ज पाठवा"}
                 </button>
               </form>
             </div>
@@ -247,9 +249,11 @@ function Contact() {
                   <MapPin size={26} />
                 </div>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-[#1a1a40]">भेट द्या व पत्ता</h2>
+                  <h2 className="text-xl sm:text-2xl font-black text-[#1a1a40]">{isEn ? "Visit Us & Address" : "भेट द्या व पत्ता"}</h2>
                   <p className="text-[13px] sm:text-sm font-bold text-slate-500 mt-1 leading-relaxed">
-                    सर्वे नंबर 39/1, 2, 3 आनंद नगरी, माधवनगर दाबा जवळ,<br/>गांडगे रोड, रेल्वे गेट शेजारी, सांगली
+                    {isEn
+                      ? "Survey No. 39/1, 2, 3 Anand Nagari, Near Madhavnagar Daba, Gandge Road, Beside Railway Gate, Sangli"
+                      : "सर्वे नंबर 39/1, 2, 3 आनंद नगरी, माधवनगर दाबा जवळ, गांडगे रोड, रेल्वे गेट शेजारी, सांगली"}
                   </p>
                 </div>
               </div>
@@ -257,11 +261,11 @@ function Contact() {
               <div className="bg-[#f4f7fb] rounded-xl p-4 mb-6 space-y-3 border border-blue-50/50">
                 <div className="flex items-center gap-3">
                   <MapPin size={16} className="text-[#f472b6]" />
-                  <p className="text-sm font-bold text-slate-700">आनंदशाळेचे केंद्र : इमारती नं 1 ते सर्वे. 5</p>
+                  <p className="text-sm font-bold text-slate-700">{isEn ? "Anandshala Center: Bldg No. 1 to Survey 5" : "आनंदशाळेचे केंद्र : इमारती नं 1 ते सर्वे. 5"}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Building size={16} className="text-[#662d91]" />
-                  <p className="text-sm font-bold text-slate-700">कार्यालय केंद्र : इमारती नं 6 ते सर्वे 9</p>
+                  <p className="text-sm font-bold text-slate-700">{isEn ? "Office Center: Bldg No. 6 to Survey 9" : "कार्यालय केंद्र : इमारती नं 6 ते सर्वे 9"}</p>
                 </div>
               </div>
 
@@ -284,7 +288,7 @@ function Contact() {
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 rounded-xl py-4 font-bold text-white shadow-lg transition-transform hover:-translate-y-0.5 cursor-pointer bg-gradient-to-r from-[#20b2aa] to-[#0ea5e9]"
               >
-                <Map size={18} /> Google Maps वर दिशा पहा
+                <Map size={18} /> {isEn ? "Get Directions on Google Maps" : "Google Maps वर दिशा पहा"}
               </a>
 
             </div>

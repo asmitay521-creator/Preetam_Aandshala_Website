@@ -236,6 +236,16 @@ function IndexComponent() {
   const c1Len = card1Images.length;
   const c2Len = card2Images.length;
 
+  // Preload all slider images instantly in browser memory for zero delay
+  useEffect(() => {
+    [...card1Images, ...card2Images].forEach((src) => {
+      if (src) {
+        const img = new Image();
+        img.src = src;
+      }
+    });
+  }, [JSON.stringify(card1Images), JSON.stringify(card2Images)]);
+
   // Auto slide images in background of section cards
   useEffect(() => {
     if (c1Len <= 1) return;
@@ -532,7 +542,7 @@ function IndexComponent() {
           <div className="animate-fade-up text-center max-w-5xl mx-auto mb-2 sm:mb-4 relative z-10 px-2">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-purple-500/20 backdrop-blur-xl border border-amber-300/40 text-amber-200 font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(251,191,36,0.3)] tracking-wide">
               <span className="inline-block size-2 rounded-full bg-amber-400 animate-ping" />
-              <span>✨ सांगलीतील भव्य मानचिन्ह प्रकल्प</span>
+              <span>✨ {isEn ? "Sangli's Grand Landmark Project" : "सांगलीतील भव्य मानचिन्ह प्रकल्प"}</span>
             </div>
             <h1 className="font-display font-black text-xl sm:text-3xl lg:text-4xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 via-rose-200 to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(251,191,36,0.7)] leading-tight py-0.5 mt-3 sm:mt-5">
               {isEn
@@ -566,6 +576,8 @@ function IndexComponent() {
                   key={card1Idx}
                   src={card1Images[card1Idx] || card1Images[0]}
                   alt={isEn ? site.nameEn : site.nameMr}
+                  loading="eager"
+                  decoding="async"
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
@@ -636,6 +648,8 @@ function IndexComponent() {
                   key={card2Idx}
                   src={card2Images[card2Idx] || card2Images[0]}
                   alt={isEn ? sportsClub.nameEn : sportsClub.nameMr}
+                  loading="eager"
+                  decoding="async"
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}

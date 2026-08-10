@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./HomeHero.css";
 import { useLanguage } from "@/lib/use-language";
+import { useAdminStore } from "@/lib/admin-store";
 
 export const HomeHero: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { isEn } = useLanguage();
+  const store = useAdminStore();
+
+  const customAnandImg = store.siteData.aanandshalaImages && store.siteData.aanandshalaImages[0];
+  const customSportsImg = store.siteData.sportsImages && store.siteData.sportsImages[0];
 
   const slides = [
     {
-      image: "/images/slider1.JPG",
+      image: customAnandImg || "/images/slider1.JPG",
       tag: isEn ? "🏛️ Main Campus" : "🏛️ मुख्य परिसर",
       title: isEn ? "1.5 Acre Scenic Anandshala Campus" : "१.५ एकर निसर्गरम्य आनंदशाळा परिसर",
       sub: isEn
@@ -16,7 +21,7 @@ export const HomeHero: React.FC = () => {
         : "सांगली जिल्ह्यातील सर्वात भव्य व सुसज्ज ज्येष्ठ नागरिक केंद्र",
     },
     {
-      image: "/images/slider2.JPG",
+      image: customSportsImg || "/images/slider2.JPG",
       tag: isEn ? "🏊‍♂️ Sports & Fitness Club" : "🏊‍♂️ क्रीडा & फिटनेस क्लब",
       title: isEn ? "Olympic Pool & AC Gym" : "ऑलिंपिक स्विमिंग पूल व AC जीम",
       sub: isEn
@@ -24,7 +29,7 @@ export const HomeHero: React.FC = () => {
         : "बॅडमिंटन, पिकलबॉल, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
     },
     {
-      image: "/images/slider3.png",
+      image: (store.siteData.aanandshalaImages && store.siteData.aanandshalaImages[1]) || "/images/slider3.png",
       tag: isEn ? "🌸 Blissful Atmosphere" : "🌸 आनंदी वातावरण",
       title: isEn ? "Warm Belonging & Family Bond" : "आपुलकीचे नाते व कौटुंबिक सोहळा",
       sub: isEn
@@ -32,6 +37,25 @@ export const HomeHero: React.FC = () => {
         : "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित सुवर्णवर्षे",
     },
   ];
+
+  // Preload all slider images instantly in browser memory for zero delay
+  useEffect(() => {
+    slides.forEach((s) => {
+      if (s.image) {
+        const img = new Image();
+        img.src = s.image;
+      }
+    });
+  }, [JSON.stringify(slides.map(s => s.image))]);
+
+  // Auto slide images in background
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
 
   const featureCards = [
     {
@@ -154,7 +178,12 @@ export const HomeHero: React.FC = () => {
                     index === currentSlide ? "active" : ""
                   }`}
                 >
-                  <img src={slide.image} alt={slide.title} />
+                  <img 
+                    src={slide.image} 
+                    alt={slide.title}
+                    loading="eager"
+                    decoding="async"
+                  />
                 </div>
               ))}
 

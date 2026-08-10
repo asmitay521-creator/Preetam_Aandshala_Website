@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/use-language";
 import { 
   CheckCircle2, 
   Phone, 
@@ -38,6 +39,7 @@ interface ModalDetail {
 }
 
 const Brochure: React.FC = () => {
+  const { isEn } = useLanguage();
   const [selectedDetail, setSelectedDetail] = useState<ModalDetail | null>(null);
 
   const photoItems: ModalDetail[] = [
@@ -238,13 +240,13 @@ const Brochure: React.FC = () => {
           <div>
             <div className="bcol-1-header">
               <div className="bcol-top-badge">
-                ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्यासाठी आनंद प्रवेश घ्या.
+                {isEn ? "Enroll now for senior citizens' healthy and joyful golden years." : "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्यासाठी आनंद प्रवेश घ्या."}
               </div>
               <h1 className="bcol-main-title">
-                प्रीतम ज्येष्ठ नागरिक<br/>आनंदशाळा
+                {isEn ? <>Preetam Senior Citizen<br/>Anandshala</> : <>प्रीतम ज्येष्ठ नागरिक<br/>आनंदशाळा</>}
               </h1>
               <p className="bcol-sub-title">
-                सांगलीतील भव्य, आधुनिक, सर्व सुविधायुक्त ज्येष्ठ नागरिक आनंदधाम
+                {isEn ? "Sangli's premier, modern & fully-equipped senior citizen sanctuary" : "सांगलीतील भव्य, आधुनिक, सर्व सुविधायुक्त ज्येष्ठ नागरिक आनंदधाम"}
               </p>
             </div>
 
@@ -265,10 +267,12 @@ const Brochure: React.FC = () => {
           <div className="bcol-1-bottom">
             <div className="flex items-center gap-2 mb-2">
               <Flower2 size={24} className="text-pink-300" />
-              <span className="font-bold text-sm text-pink-200">प्रीतम आपुलकी व जिव्हाळा ट्रस्ट</span>
+              <span className="font-bold text-sm text-pink-200">{isEn ? "Preetam Belonging & Care Trust" : "प्रीतम आपुलकी व जिव्हाळा ट्रस्ट"}</span>
             </div>
             <p className="bcol-bottom-text">
-              सांगली शहरातील दीड एकर जागेवर, निसर्गाच्या वातावरणात उभा राहणारा हा भारतातील पहिलाच भव्य प्रकल्प आहे. येथे दिवसापासून ते आयुष्यभर आनंदाने राहता येते.
+              {isEn
+                ? "Built across 1.5 acres in Sangli amidst serene nature, this is India's first digital landmark project where senior citizens can reside happily for days or a lifetime."
+                : "सांगली शहरातील दीड एकर जागेवर, निसर्गाच्या वातावरणात उभा राहणारा हा भारतातील पहिलाच भव्य प्रकल्प आहे. येथे दिवसापासून ते आयुष्यभर आनंदाने राहता येते."}
             </p>
           </div>
         </motion.div>
@@ -284,11 +288,13 @@ const Brochure: React.FC = () => {
         >
           <div>
             <div className="bcol-2-top-badge">
-              प्रीतम आनंदशाळा — एक आदर्श ज्येष्ठ नागरिक धाम
+              {isEn ? "Preetam Anandshala — An Ideal Senior Citizen Sanctuary" : "प्रीतम आनंदशाळा — एक आदर्श ज्येष्ठ नागरिक धाम"}
             </div>
 
             <p className="bcol-2-intro">
-              माझ्या जन्माची बीजे रुजली ती श्री. अभिनव जननायक काकाणी, ता. सांगली यांच्या स्वप्नातून. अभिनव यांनी 26 जानेवारी 2000 रोजी व्यवसाय सुरू केला आणि दरवर्षी वाढदिवस दिन, <span>ज्येष्ठ नागरिक मेळावा व वाढदिवस आयोजन</span> करून तो साजरा करतात.
+              {isEn
+                ? "Founded from the dream of Mr. Abhinav Kakani, Sangli. Founded on 26 January 2000, organizing annual foundation day & senior citizen meetups."
+                : "माझ्या जन्माची बीजे रुजली ती श्री. अभिनव जननायक काकाणी, ता. सांगली यांच्या स्वप्नातून. अभिनव यांनी 26 जानेवारी 2000 रोजी व्यवसाय सुरू केला आणि दरवर्षी वाढदिवस दिन, <span>ज्येष्ठ नागरिक मेळावा व वाढदिवस आयोजन</span> करून तो साजरा करतात."}
             </p>
 
             {/* 6 Photo Grid - CLICKABLE */}
@@ -298,21 +304,21 @@ const Brochure: React.FC = () => {
                   className="bcol-photo-item"
                   key={idx}
                   onClick={() => setSelectedDetail(item)}
-                  title="माहिती पाहण्यासाठी क्लीक करा"
+                  title={isEn ? "Click to view details" : "माहिती पाहण्यासाठी क्लीक करा"}
                 >
                   <img 
                     src={item.img} 
                     alt={item.title} 
                     onError={(e) => { e.currentTarget.src = buildingImage; }} 
                   />
-                  <div className="bcol-photo-label">{item.title}</div>
+                  <div className="bcol-photo-label">{isEn ? item.category : item.title}</div>
                 </div>
               ))}
             </div>
 
             {/* Facilities Header */}
             <div className="bcol-section-header-red">
-              आमच्याकडे उपलब्ध सुविधा (क्लीक करा)
+              {isEn ? "Available Campus Facilities (Click Any)" : "आमच्याकडे उपलब्ध सुविधा (क्लीक करा)"}
             </div>
 
             {/* 13 Facilities Grid - CLICKABLE */}

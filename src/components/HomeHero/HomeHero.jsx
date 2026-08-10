@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./HomeHero.css";
+import { useLanguage } from "../../lib/use-language";
+import { useAdminStore } from "../../lib/admin-store";
 import { 
   Users, Calendar, Award, ShieldCheck, 
   ArrowRight, Landmark, Flower2, 
@@ -8,36 +10,51 @@ import {
   ChevronLeft, ChevronRight
 } from "lucide-react";
 
-const heroSlides = [
-  {
-    image: "/images/slider1.JPG",
-    tag: "🏛️ मुख्य आनंदशाळा वास्तू",
-    title: "१.५ एकर निसर्गरम्य परिसर",
-    subtitle: "सांगली जिल्ह्यातील भव्य व सर्व सोयींनी युक्त ज्येष्ठ नागरिक संकूल",
-  },
-  {
-    image: "/images/slider2.JPG",
-    tag: "🏊‍♂️ प्रीतम क्रीडा & फिटनेस क्लब",
-    title: "ऑलिंपिक स्विमिंग पूल व AC जिम",
-    subtitle: "बॅडमिंटन, पिकलबॉल, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
-  },
-  {
-    image: "/images/slider3.png",
-    tag: "🌸 आनंदी सुवर्णवर्षे",
-    title: "आपुलकीचे नाते व कौटुंबिक आनंद",
-    subtitle: "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित जीवन सोहळा",
-  },
-];
-
 const HomeHero = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const { isEn } = useLanguage();
+  const store = useAdminStore();
+
+  const customAnandImg = store.siteData.aanandshalaImages && store.siteData.aanandshalaImages[0];
+  const customSportsImg = store.siteData.sportsImages && store.siteData.sportsImages[0];
+
+  const heroSlides = [
+    {
+      image: customAnandImg || "/images/slider1.JPG",
+      tag: isEn ? "🏛️ Main Anandshala Campus" : "🏛️ मुख्य आनंदशाळा वास्तू",
+      title: isEn ? "1.5 Acre Scenic Campus" : "१.५ एकर निसर्गरम्य परिसर",
+      subtitle: isEn ? "Sangli's premier & fully equipped senior citizen hub" : "सांगली जिल्ह्यातील भव्य व सर्व सोयींनी युक्त ज्येष्ठ नागरिक संकूल",
+    },
+    {
+      image: customSportsImg || "/images/slider2.JPG",
+      tag: isEn ? "🏊‍♂️ Preetam Sports & Fitness Club" : "🏊‍♂️ प्रीतम क्रीडा & फिटनेस क्लब",
+      title: isEn ? "Olympic Pool & AC Gym" : "ऑलिंपिक स्विमिंग पूल व AC जिम",
+      subtitle: isEn ? "Badminton, Pickleball, Table Tennis, Library & Modern Halls" : "बॅडमिंटन, पिकलबॉल, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
+    },
+    {
+      image: (store.siteData.aanandshalaImages && store.siteData.aanandshalaImages[1]) || "/images/slider3.png",
+      tag: isEn ? "🌸 Joyful Golden Years" : "🌸 आनंदी सुवर्णवर्षे",
+      title: isEn ? "Warm Belonging & Family Bond" : "आपुलकीचे नाते व कौटुंबिक आनंद",
+      subtitle: isEn ? "Vibrant, joyful & secure golden years with peer friends" : "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित जीवन सोहळा",
+    },
+  ];
+
+  // Preload all slider images in browser memory for zero delay
+  useEffect(() => {
+    heroSlides.forEach((s) => {
+      if (s.image) {
+        const img = new Image();
+        img.src = s.image;
+      }
+    });
+  }, [JSON.stringify(heroSlides.map(s => s.image))]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % heroSlides.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, []);
+  }, [heroSlides.length]);
 
   const handleNext = () => {
     setActiveSlide((prev) => (prev + 1) % heroSlides.length);
@@ -60,6 +77,8 @@ const HomeHero = () => {
             key={idx}
             src={slide.image}
             alt={slide.title}
+            loading="eager"
+            decoding="async"
             className={`hero-slide-photo ${idx === activeSlide ? "slide-active" : "slide-hidden"}`}
           />
         ))}
@@ -104,13 +123,18 @@ const HomeHero = () => {
           {/* MAIN HEADING & SUBTITLE */}
           <div className="hero-text-header text-center">
             <h1 className="hero-main-title">
-              <span className="text-dark-burgundy">प्रीतम ज्येष्ठ नागरिक</span>
-              <span className="text-gradient-pink"> आनंदशाळा • सांगली</span>
+              <span className="text-dark-burgundy">
+                {isEn ? "Preetam Senior Citizen" : "प्रीतम ज्येष्ठ नागरिक"}
+              </span>
+              <span className="text-gradient-pink">
+                {isEn ? " Anandshala • Sangli" : " आनंदशाळा • सांगली"}
+              </span>
             </h1>
 
             <p className="hero-main-subtitle">
-              ज्येष्ठ नागरिकांच्या निरोगी आरोग्य, आनंददायी आयुष्य व स्वाभिमानी
-              जीवनासाठी प्रेम, सेवा, सुरक्षा आणि संस्कार यांचा सुंदर संगम!
+              {isEn
+                ? "A beautiful blend of love, service, security and values for senior citizens' healthy, happy and dignified living!"
+                : "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य, आनंददायी आयुष्य व स्वाभिमानी जीवनासाठी प्रेम, सेवा, सुरक्षा आणि संस्कार यांचा सुंदर संगम!"}
             </p>
           </div>
 
@@ -122,8 +146,8 @@ const HomeHero = () => {
               </div>
               <div className="stat-info">
                 <strong>500+</strong>
-                <span>समुदाय सदस्य</span>
-                <small>आमच्या परिवाराचा भाग</small>
+                <span>{isEn ? "Community Members" : "समुदाय सदस्य"}</span>
+                <small>{isEn ? "Our beloved family" : "आमच्या परिवाराचा भाग"}</small>
               </div>
             </div>
 
@@ -133,8 +157,8 @@ const HomeHero = () => {
               </div>
               <div className="stat-info">
                 <strong>26/27/28</strong>
-                <span>जानेवारी 2026</span>
-                <small>भव्य प्रवेश व मित्र मेळावा</small>
+                <span>{isEn ? "January 2026" : "जानेवारी 2026"}</span>
+                <small>{isEn ? "Grand Launch Meetup" : "भव्य प्रवेश व मित्र मेळावा"}</small>
               </div>
             </div>
 
@@ -144,8 +168,8 @@ const HomeHero = () => {
               </div>
               <div className="stat-info">
                 <strong>11+</strong>
-                <span>उपक्रमांची बैठक</span>
-                <small>दर महिन्याला 5+ उपक्रम</small>
+                <span>{isEn ? "Activity Sessions" : "उपक्रमाची बैठक"}</span>
+                <small>{isEn ? "5+ monthly activities" : "दर महिन्याला 5+ उपक्रम"}</small>
               </div>
             </div>
 
@@ -154,9 +178,9 @@ const HomeHero = () => {
                 <ShieldCheck size={22} />
               </div>
               <div className="stat-info">
-                <strong>२४×७</strong>
-                <span>सुरक्षा & काळजी</span>
-                <small>वैद्यकीय सेवा व CCTV</small>
+                <strong>24×7</strong>
+                <span>{isEn ? "Safety & Care" : "सुरक्षा & काळजी"}</span>
+                <small>{isEn ? "Medical service & CCTV" : "वैद्यकीय सेवा व CCTV"}</small>
               </div>
             </div>
           </div>
@@ -168,7 +192,7 @@ const HomeHero = () => {
                 <PhoneCall size={20} />
               </div>
               <div className="btn-text-box">
-                <span className="btn-sub">आजच संपर्क व प्रवेश नोंदणी करा</span>
+                <span className="btn-sub">{isEn ? "Book Admission Now" : "आजच संपर्क व प्रवेश नोंदणी करा"}</span>
                 <span className="btn-main">📞 9370237633</span>
               </div>
               <div className="btn-arrow-glow">
@@ -181,8 +205,8 @@ const HomeHero = () => {
                 <Landmark size={20} />
               </div>
               <div className="btn-text-box">
-                <span className="btn-dept-heading">विभाग निवडा</span>
-                <span className="btn-dept-subtext">सर्व सोयी सुविधा पहा</span>
+                <span className="btn-dept-heading">{isEn ? "Select Section" : "विभाग निवडा"}</span>
+                <span className="btn-dept-subtext">{isEn ? "Explore all facilities" : "सर्व सोयी सुविधा पहा"}</span>
               </div>
               <ArrowRight size={16} className="text-amber-700 group-hover:translate-x-1 transition-transform" />
             </a>
@@ -192,63 +216,63 @@ const HomeHero = () => {
           <div className="hero-activities-strip">
             <div className="activities-header">
               <Flower2 className="text-pink-500 animate-spin-slow" size={24} />
-              <h3>आनंदी जीवनाचे सुंदर क्षण</h3>
+              <h3>{isEn ? "Beautiful Moments of Happy Life" : "आनंदी जीवनाचे सुंदर क्षण"}</h3>
             </div>
 
             <div className="activities-grid-full">
               <div className="activity-pill">
                 <Flower2 size={20} className="text-pink-600" />
                 <div>
-                  <strong>योगा & ध्यान</strong>
-                  <p>शारीरिक व मानसिक स्वास्थ्य</p>
+                  <strong>{isEn ? "Yoga & Meditation" : "योगा & ध्यान"}</strong>
+                  <p>{isEn ? "Physical & Mental Wellness" : "शारीरिक व मानसिक स्वास्थ"}</p>
                 </div>
               </div>
 
               <div className="activity-pill">
                 <Dumbbell size={20} className="text-blue-600" />
                 <div>
-                  <strong>फिटनेस सेंटर</strong>
-                  <p>नियमित व्यायाम & जिम</p>
+                  <strong>{isEn ? "Fitness Center" : "फिटनेस सेंटर"}</strong>
+                  <p>{isEn ? "Regular Exercise & Gym" : "नियमित व्यायाम & जिम"}</p>
                 </div>
               </div>
 
               <div className="activity-pill">
                 <BookOpen size={20} className="text-amber-600" />
                 <div>
-                  <strong>वाचनालय</strong>
-                  <p>ज्ञान व विचार संवाद</p>
+                  <strong>{isEn ? "Library" : "वाचनालय"}</strong>
+                  <p>{isEn ? "Knowledge & Dialogues" : "ज्ञान व विचार संवाद"}</p>
                 </div>
               </div>
 
               <div className="activity-pill">
                 <Music size={20} className="text-purple-600" />
                 <div>
-                  <strong>संगीत & कला</strong>
-                  <p>गायन, वादन व कला</p>
+                  <strong>{isEn ? "Music & Arts" : "संगीत & कला"}</strong>
+                  <p>{isEn ? "Singing, Instruments & Crafts" : "गायन, वादन व कला"}</p>
                 </div>
               </div>
 
               <div className="activity-pill">
                 <Utensils size={20} className="text-emerald-600" />
                 <div>
-                  <strong>स्वादिष्ट भोजन</strong>
-                  <p>पौष्टिक व संतुलित आहार</p>
+                  <strong>{isEn ? "Delicious Dining" : "स्वादिष्ट भोजन"}</strong>
+                  <p>{isEn ? "Nutritious & Balanced Diet" : "पौष्टिक व संतुलित आहार"}</p>
                 </div>
               </div>
 
               <div className="activity-pill">
                 <Bus size={20} className="text-sky-600" />
                 <div>
-                  <strong>सहली & प्रवास</strong>
-                  <p>निसर्ग व धार्मिक सहली</p>
+                  <strong>{isEn ? "Tours & Travel" : "सहली & प्रवास"}</strong>
+                  <p>{isEn ? "Nature & Pilgrimage Trips" : "निसर्ग व धार्मिक सहली"}</p>
                 </div>
               </div>
 
               <div className="activity-pill">
                 <HeartHandshake size={20} className="text-rose-600" />
                 <div>
-                  <strong>आपुलकीचे नाते</strong>
-                  <p>कौटुंबिक व स्नेही वातावरण</p>
+                  <strong>{isEn ? "Warm Belonging" : "आपुलकीचे नाते"}</strong>
+                  <p>{isEn ? "Family & Friendly Ambiance" : "कौटुंबिक व स्नेही वातावरण"}</p>
                 </div>
               </div>
             </div>

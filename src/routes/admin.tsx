@@ -295,8 +295,13 @@ function AdminPage() {
     setTimeout(() => setSaveSuccessMsg(""), 3000);
   };
 
+  // Sync siteForm with live store.siteData updates
+  useEffect(() => {
+    setSiteForm(store.siteData);
+  }, [JSON.stringify(store.siteData)]);
+
   // Image compression helper (resizes large camera photos to tiny footprint for instant localStorage saving)
-  const compressImage = (dataUrl: string, maxWidth = 1200, maxHeight = 1200, quality = 0.75): Promise<string> => {
+  const compressImage = (dataUrl: string, maxWidth = 900, maxHeight = 900, quality = 0.65): Promise<string> => {
     return new Promise((resolve) => {
       if (!dataUrl || !dataUrl.startsWith("data:image")) {
         resolve(dataUrl);
@@ -891,16 +896,14 @@ function AdminPage() {
                       className="hidden"
                       onChange={(e) =>
                         handleMultipleFileUpload(e, (urls) => {
-                          const currentImgs = siteForm.aanandshalaImages || [
-                            "/images/anandashram_building_card.png",
-                            "/images/aandshala_img.png",
-                            "/images/Screenshot 2026-07-31 103107.png"
-                          ];
-                          const updatedImgs = [...currentImgs, ...urls];
+                          const currentImgs = siteForm.aanandshalaImages || [];
+                          // Filter out default static fallback images if user uploads custom photos
+                          const userOnlyImgs = currentImgs.filter(img => !img.startsWith("/images/Screenshot") && !img.startsWith("/images/anandashram") && !img.startsWith("/images/aandshala_img"));
+                          const updatedImgs = [...urls, ...userOnlyImgs];
                           const updated = { ...siteForm, aanandshalaImages: updatedImgs };
                           setSiteForm(updated);
                           store.updateSiteData(updated);
-                          setSaveSuccessMsg(`${urls.length} नवीन फोटो आनंदशाळा स्लायडरमध्ये जोडले गेले!`);
+                          setSaveSuccessMsg(`✅ ${urls.length} नवीन फोटो आनंदशाळा कार्ड स्लायडरमध्ये जोडले गेले!`);
                           setTimeout(() => setSaveSuccessMsg(""), 3500);
                         })
                       }
@@ -1024,16 +1027,14 @@ function AdminPage() {
                       className="hidden"
                       onChange={(e) =>
                         handleMultipleFileUpload(e, (urls) => {
-                          const currentImgs = siteForm.sportsImages || [
-                            "/images/sports_club_building_card.png",
-                            "/images/epic_sports_gym_bg.png",
-                            "/images/pickleball-court.png"
-                          ];
-                          const updatedImgs = [...currentImgs, ...urls];
+                          const currentImgs = siteForm.sportsImages || [];
+                          // Filter out default static fallback images if user uploads custom photos
+                          const userOnlyImgs = currentImgs.filter(img => !img.startsWith("/images/Screenshot") && !img.startsWith("/images/sports_club_building") && !img.startsWith("/images/epic_sports") && !img.startsWith("/images/pickleball"));
+                          const updatedImgs = [...urls, ...userOnlyImgs];
                           const updated = { ...siteForm, sportsImages: updatedImgs };
                           setSiteForm(updated);
                           store.updateSiteData(updated);
-                          setSaveSuccessMsg(`${urls.length} नवीन फोटो स्पोर्ट्स स्लायडरमध्ये जोडले गेले!`);
+                          setSaveSuccessMsg(`✅ ${urls.length} नवीन फोटो स्पोर्ट्स क्लब कार्ड स्लायडरमध्ये जोडले गेले!`);
                           setTimeout(() => setSaveSuccessMsg(""), 3500);
                         })
                       }

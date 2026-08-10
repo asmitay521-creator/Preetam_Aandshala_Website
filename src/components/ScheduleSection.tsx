@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAdminStore } from "@/lib/admin-store";
+import { useLanguage } from "@/lib/use-language";
 
 interface ScheduleSectionProps {
   type?: "anandshala" | "sports";
@@ -7,6 +8,7 @@ interface ScheduleSectionProps {
 
 export default function ScheduleSection({ type = "anandshala" }: ScheduleSectionProps) {
   const store = useAdminStore();
+  const { isEn } = useLanguage();
   const config = type === "sports" ? store.sportsScheduleConfig : store.scheduleConfig;
   const items = config.items?.length ? config.items : [];
   const rules = config.rules?.length ? config.rules : [];
@@ -24,7 +26,7 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
                 ? "bg-indigo-50 border-indigo-200 text-[#1A05A2]" 
                 : "bg-pink-50 border-pink-200 text-[#810B38]"
             }`}>
-              <span>{type === "sports" ? "🏋️‍♂️ प्रीतम स्पोर्ट्स अँड फिटनेस क्लब" : "🌸 प्रीतम ज्येष्ठ नागरिक आनंदशाळा"}</span>
+              <span>{type === "sports" ? (isEn ? "🏋️‍♂️ Preetam Sports & Fitness Club" : "🏋️‍♂️ प्रीतम स्पोर्ट्स अँड फिटनेस क्लब") : (isEn ? "🌸 Preetam Senior Citizen Anandshala" : "🌸 प्रीतम ज्येष्ठ नागरिक आनंदशाळा")}</span>
             </span>
           </div>
 
@@ -34,13 +36,21 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
               : "from-[#810B38] via-rose-700 to-amber-700"
           }`}>
             <span className="text-amber-500 opacity-90 text-2xl sm:text-3xl">✨</span>
-            <span>{config.headerTitle || (type === "sports" ? "प्रीतम स्पोर्ट्स क्लब वेळापत्रक" : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक")}</span>
+            <span>
+              {isEn
+                ? (type === "sports" ? "Preetam Sports Club Timetable" : "Preetam Senior Citizen Anandshala Timetable")
+                : (config.headerTitle || (type === "sports" ? "प्रीतम स्पोर्ट्स क्लब वेळापत्रक" : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक"))}
+            </span>
             <span className="text-amber-500 opacity-90 text-2xl sm:text-3xl">✨</span>
           </h2>
 
           <p className="mt-3 text-slate-800 font-black text-sm sm:text-lg md:text-xl flex items-center justify-center flex-wrap gap-2 max-w-4xl leading-relaxed">
             <span className="text-pink-600 text-base sm:text-xl">💖</span> 
-            <span>{config.subtitle || (type === "sports" ? "फिटनेस, क्रीडा आणि आरोग्याचा परिपूर्ण अनुभव... आधुनिक जिम, स्विमिंग पुल व सर्व खेळांची सोय." : "आनंदी जीवन, सुंदर विचार... आरोग्य, मनोरंजन, संस्कार आणि सहवास यांचं आदर्श केंद्र.")}</span>
+            <span>
+              {isEn
+                ? (type === "sports" ? "Complete experience of fitness, sports and wellness... Modern gym, swimming pool & all sports facilities." : "Joyful life, beautiful thoughts... Ideal center of health, entertainment, values and togetherness.")
+                : (config.subtitle || (type === "sports" ? "फिटनेस, क्रीडा आणि आरोग्याचा परिपूर्ण अनुभव... आधुनिक जिम, स्विमिंग पुल व सर्व खेळांची सोय." : "आनंदी जीवन, सुंदर विचार... आरोग्य, मनोरंजन, संस्कार आणि सहवास यांचं आदर्श केंद्र."))}
+            </span>
             <span className="text-pink-600 text-base sm:text-xl">💖</span>
           </p>
 
@@ -192,28 +202,28 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
           {/* Features */}
           <div className="col-span-1 lg:col-span-4 bg-white rounded-[24px] shadow-lg border-2 border-pink-200 overflow-hidden relative flex flex-col justify-between">
             <div className="bg-[#f472b6] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-8 rounded-b-xl absolute top-0 inset-x-0 shadow-sm z-10">
-              <span className="text-xs">✦</span> आमच्या वैशिष्ट्ये <span className="text-xs">✦</span>
+              <span className="text-xs">✦</span> {isEn ? "Our Key Features" : "आमच्या वैशिष्ट्ये"} <span className="text-xs">✦</span>
             </div>
             <div className="pt-14 pb-5 px-4 grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-3 gap-2.5 sm:gap-3.5 items-center justify-center h-full">
               <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-pink-50/60 hover:bg-pink-100/60 transition-colors border border-pink-100">
                 <div className="w-11 h-11 rounded-full bg-[#1A05A2] text-white flex items-center justify-center text-xl shadow-md">🏢</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">आधुनिक<br/>सुविधा</div>
+                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Modern Facilities" : "आधुनिक सुविधा"}</div>
               </div>
               <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-blue-50/60 hover:bg-blue-100/60 transition-colors border border-blue-100">
                 <div className="w-11 h-11 rounded-full bg-[#208dd7] text-white flex items-center justify-center text-xl shadow-md">🛡️</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">सुरक्षा<br/>प्रथम</div>
+                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Safety First" : "सुरक्षा प्रथम"}</div>
               </div>
               <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-rose-50/60 hover:bg-rose-100/60 transition-colors border border-rose-100">
                 <div className="w-11 h-11 rounded-full bg-[#f472b6] text-white flex items-center justify-center text-xl shadow-md">❤️</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">आरोग्याची<br/>काळजी</div>
+                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Health Care" : "आरोग्याची काळजी"}</div>
               </div>
               <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-purple-50/60 hover:bg-purple-100/60 transition-colors border border-purple-100">
                 <div className="w-11 h-11 rounded-full bg-[#1A05A2] text-white flex items-center justify-center text-xl shadow-md">🎭</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">मनोरंजन व<br/>संस्कृती</div>
+                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Arts & Culture" : "मनोरंजन व संस्कृती"}</div>
               </div>
               <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-pink-50/60 hover:bg-pink-100/60 transition-colors border border-pink-100 col-span-2 sm:col-span-1 lg:col-span-2">
                 <div className="w-11 h-11 rounded-full bg-[#f472b6] text-white flex items-center justify-center text-xl shadow-md">🧘</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">अनुभवी व तज्ञ<br/>मार्गदर्शक</div>
+                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Expert Trainers" : "अनुभवी मार्गदर्शक"}</div>
               </div>
             </div>
           </div>
@@ -221,7 +231,7 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
           {/* Rules */}
           <div className="col-span-1 lg:col-span-5 bg-white rounded-[24px] shadow-lg border-2 border-indigo-200 relative pt-16 pb-6 px-5 sm:px-6">
             <div className="bg-[#1A05A2] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-8 sm:px-10 rounded-b-xl absolute top-0 inset-x-0 shadow-sm z-10">
-              <span className="text-xs">🌿</span> क्लबचे नियम व सूचना <span className="text-xs">🌿</span>
+              <span className="text-xs">🌿</span> {isEn ? "Club Rules & Guidelines" : "क्लबाचे नियम व सूचना"} <span className="text-xs">🌿</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-1">
               {rules.map((rule, idx) => (
@@ -238,7 +248,7 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
           {/* Happy Moments */}
           <div className="col-span-1 lg:col-span-3 bg-white rounded-[24px] shadow-lg border-2 border-pink-200 overflow-hidden relative flex flex-col justify-between min-h-[300px]">
              <div className="bg-[#f472b6] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-6 rounded-b-xl absolute top-0 inset-x-0 z-10 shadow-sm">
-              <span className="text-xs">✦</span> आनंदी जीवनाचे सुंदर क्षण <span className="text-xs">✦</span>
+              <span className="text-xs">✦</span> {isEn ? "Moments of Happiness" : "आनंदी जीवनाचे सुंदर क्षण"} <span className="text-xs">✦</span>
             </div>
             <div className="w-full flex-1 pt-14 p-3 flex flex-col">
                <div className="w-full flex-1 min-h-[220px] rounded-2xl overflow-hidden border-2 border-pink-100 relative shadow-inner">

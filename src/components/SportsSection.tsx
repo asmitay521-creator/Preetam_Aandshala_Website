@@ -102,6 +102,12 @@ const facilityItems: FacilityDetail[] = [
       "प्राणायाम व योगासने वर्ग",
       "मानसिक ताणतणाव व BP मुक्ती",
       "ज्येष्ठ नागरिकांसाठी विशेष सोपा योगा"
+    ],
+    featuresEn: [
+      "Peaceful and pleasant AC hall",
+      "Pranayama and yoga classes",
+      "Mental stress and BP relief",
+      "Special easy yoga for senior citizens"
     ]
   },
   {
@@ -112,13 +118,21 @@ const facilityItems: FacilityDetail[] = [
     subMr: "एनर्जेटिक सेशन्स आणि प्रोफेशनल कोडिंग",
     subEn: "High energy zumba and dance workout",
     descMr: "संगीताच्या तालावर एनर्जेटिक झुंबा व फिटनेस डान्स सेशन्स. वजन नियंत्रित ठेवण्यासाठी व आनंदाने कॅलरी बर्न करण्यासाठी सर्वोत्तम उपक्रम.",
+    descEn: "Energetic Zumba and fitness dance sessions to music. The best way to manage weight and burn calories happily.",
     img: "https://d3k88l35vy59af.cloudfront.net/A42/9663/1763357581614.png",
     timingMr: "सकाळी ७:०० ते ८:०० व सायं. ६ ते ७",
+    timingEn: "7:00 AM-8:00 AM & 6:00 PM-7:00 PM",
     featuresMr: [
       "प्रोफेशनल सर्टीफाइड झुंबा ट्रेनर्स",
       "हाय-फाय साऊंड व म्युझिक सिस्टीम",
       "मजबूत कार्डिओ वर्कआउट",
       "उत्साही व आनंदी वातावरण"
+    ],
+    featuresEn: [
+      "Professional certified Zumba trainers",
+      "Hi-fi sound and music system",
+      "Strong cardio workout",
+      "Energetic and joyful environment"
     ]
   },
   {
@@ -129,13 +143,21 @@ const facilityItems: FacilityDetail[] = [
     subMr: "आंतरराष्ट्रीय मानकांच्या स्वच्छ कोर्ट",
     subEn: "International glass-back squash court",
     descMr: "आंतरराष्ट्रीय ग्लास-बॅक मानकांचे स्क्वॅश कोर्ट. जलद हालचाली, स्टॅमिना व उच्च फिटनेससाठी अतिशय उपयुक्त.",
+    descEn: "International glass-back standard squash court. Highly useful for quick movements, stamina, and high fitness.",
     img: "https://d3k88l35vy59af.cloudfront.net/A42/9663/1763184843273.jpg",
     timingMr: "सकाळी ६:०० ते रात्री ९:००",
+    timingEn: "6:00 AM to 9:00 PM",
     featuresMr: [
       "ग्लास-बॅक आंतरराष्ट्रीय मानकांचे कोर्ट",
       "स्पेशल वूडन स्प्रंग फ्लोअरिंग",
       "रॅकेट व इक्विपमेंट सोय",
       "उच्च फिटनेस व स्टॅमिना वर्कआउट"
+    ],
+    featuresEn: [
+      "Glass-back international standard court",
+      "Special wooden sprung flooring",
+      "Rackets and equipment available",
+      "High fitness and stamina workout"
     ]
   },
   {
@@ -146,52 +168,36 @@ const facilityItems: FacilityDetail[] = [
     subMr: "एकग्रता वाढवणारा स्नूकर आणि पूल टेबल",
     subEn: "Concentration boosting snooker and pool table",
     descMr: "प्रीमियम वूलन क्लोथवर आंतरराष्ट्रीय मानकांचे स्नूकर व पूल टेबल्स. वातानुकूलित लाउंजमध्ये एकाग्रता व मनोरंजनाचा आनंद.",
+    descEn: "International standard snooker and pool tables on premium woolen cloth. Enjoy concentration and entertainment in our AC lounge.",
     img: "https://d3k88l35vy59af.cloudfront.net/A42/9663/1763357638129.jpg",
     timingMr: "सकाळी १०:०० ते रात्री ९:००",
+    timingEn: "10:00 AM to 9:00 PM",
     featuresMr: [
       "आंतरराष्ट्रीय मानकांचे स्नूकर टेबल्स",
       "प्रीमियम ८-बॉल पूल टेबल",
       "एसी लाउंज व सोफा सीटिंग",
       "मित्र-मैत्रिणींसोबत रिलॅक्सिंग वेळ"
+    ],
+    featuresEn: [
+      "International standard snooker tables",
+      "Premium 8-ball pool table",
+      "AC lounge and sofa seating",
+      "Relaxing time with friends"
     ]
   }
 ];
 
-export const SportsSection: React.FC = () => {
-  const [activeNav, setActiveNav] = useState("home");
+export default function SportsSection() {
   const { isEn } = useLanguage();
   const [selectedFacility, setSelectedFacility] = useState<FacilityDetail | null>(null);
-
   const [showRegModal, setShowRegModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    city: "",
-    interest: "sports",
-    message: ""
-  });
-
-  const handleSubmitReg = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.phone) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1000);
-  };
 
   useEffect(() => {
     if (selectedFacility || showRegModal) {
       document.body.style.overflow = "hidden";
-      document.body.style.height = "100vh";
       document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
-      document.body.style.height = "";
       document.documentElement.style.overflow = "";
     }
     return () => {
@@ -299,13 +305,13 @@ export const SportsSection: React.FC = () => {
                   <div className="sp-fac-img-box">
                     <img
                       src={item.img}
-                      alt={item.titleMr}
+                      alt={isEn ? item.titleEn : item.titleMr}
                       className="sp-fac-img"
                     />
                   </div>
                   <div className="sp-fac-body">
-                    <div className="sp-fac-info-title">{item.titleMr}</div>
-                    <div className="sp-fac-info-sub">{item.subMr}</div>
+                    <div className="sp-fac-info-title">{isEn ? item.titleEn : item.titleMr}</div>
+                    <div className="sp-fac-info-sub">{isEn ? item.subEn : item.subMr}</div>
                   </div>
                 </div>
               );
@@ -638,6 +644,4 @@ export const SportsSection: React.FC = () => {
 
     </div>
   );
-};
-
-export default SportsSection;
+}
