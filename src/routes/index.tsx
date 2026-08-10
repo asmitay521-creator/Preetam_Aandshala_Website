@@ -218,14 +218,11 @@ function IndexComponent() {
   }, []);
 
   const card2Images = useMemo(() => {
-    return store.siteData.sportsImages && store.siteData.sportsImages.length > 0
-      ? store.siteData.sportsImages
-      : [
-          "/images/sports_club_building_card.png",
-          "/images/epic_sports_gym_bg.png",
-          "/images/pickleball-court.png"
-        ];
-  }, [JSON.stringify(store.siteData.sportsImages)]);
+    return [
+      "/images/sports img.png",
+      "/images/pickleball-court.png"
+    ];
+  }, []);
 
   const [card1Idx, setCard1Idx] = useState(0);
   const [card2Idx, setCard2Idx] = useState(0);

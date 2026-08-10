@@ -262,8 +262,7 @@ const initialSiteData: SiteData = {
   sportsTitle: "प्रीतम स्पोर्ट्स अँड फिटनेस क्लब",
   sportsBadge: "अद्ययावत १.५ एकर स्पोर्ट्स संकुल",
   sportsImages: [
-    "/images/sports_club_building_card.png",
-    "/images/epic_sports_gym_bg.png",
+    "/images/sports img.png",
     "/images/pickleball-court.png",
   ],
   sportsBrochureUrl: "/images/Screenshot 2026-07-31 103659.png",
