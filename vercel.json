@@ -5,7 +5,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|images/|favicon.ico|robots.txt|preetam_sports.png).*)",
       "destination": "/index.html"
     }
   ],
