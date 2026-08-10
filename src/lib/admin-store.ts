@@ -256,9 +256,8 @@ const initialSiteData: SiteData = {
   aanandshalaTitle: "प्रीतम ज्येष्ठ नागरिक आनंदशाळा व निवारा",
   aanandshalaBadge: "भारतातील पहिली ज्येष्ठ नागरिक आनंदशाळा",
   aanandshalaImages: [
-    "/images/anandashram_building_card.png",
-    "/images/aandshala_img.png",
-    "/images/Screenshot 2026-07-31 103107.png",
+    "/images/slider4.JPG",
+    "/images/slider3.png",
   ],
   sportsTitle: "प्रीतम स्पोर्ट्स अँड फिटनेस क्लब",
   sportsBadge: "अद्ययावत १.५ एकर स्पोर्ट्स संकुल",

@@ -211,14 +211,11 @@ function IndexComponent() {
 
   // Clean Pure Architectural Renders & Photos (ZERO brochure/poster text)
   const card1Images = useMemo(() => {
-    return store.siteData.aanandshalaImages && store.siteData.aanandshalaImages.length > 0
-      ? store.siteData.aanandshalaImages
-      : [
-          "/images/anandashram_building_card.png",
-          "/images/aandshala_img.png",
-          "/images/Screenshot 2026-07-31 103107.png"
-        ];
-  }, [JSON.stringify(store.siteData.aanandshalaImages)]);
+    return [
+      "/images/slider4.JPG",
+      "/images/slider3.png"
+    ];
+  }, []);
 
   const card2Images = useMemo(() => {
     return store.siteData.sportsImages && store.siteData.sportsImages.length > 0
