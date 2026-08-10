@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAdminStore, BrochureItem, PackageItem, uploadImageToFirebase } from "@/lib/admin-store";
 import { auth, signInWithEmailAndPassword } from "@/firebase";
 
