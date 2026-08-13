@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useAdminStore, uploadImageToFirebase, BrochureItem } from "@/lib/admin-store";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useAdminStore, uploadImageToFirebase, BrochureItem, AboutHighlightItem } from "@/lib/admin-store";
 import { auth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "@/firebase";
 
-type TabKey =
+export type TabKey =
+  | "dashboard"
   | "inquiries"
   | "home-cards"
   | "sliders"
@@ -16,8 +17,55 @@ type TabKey =
   | "packages"
   | "contact";
 
+const VALID_TABS: TabKey[] = [
+  "dashboard",
+  "inquiries",
+  "home-cards",
+  "sliders",
+  "anandshala-schedule",
+  "sports-schedule",
+  "about",
+  "brochures",
+  "testimonials",
+  "gallery",
+  "packages",
+  "contact",
+];
+
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<TabKey>("inquiries");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const getTabFromPath = (pathname: string): TabKey => {
+    const cleanPath = pathname.replace(/\/$/, "");
+    const parts = cleanPath.split("/");
+    const sub = parts[parts.length - 1];
+    if (VALID_TABS.includes(sub as TabKey)) {
+      return sub as TabKey;
+    }
+    return "dashboard";
+  };
+
+  const activeTab = getTabFromPath(location.pathname);
+
+  useEffect(() => {
+    const cleanPath = location.pathname.replace(/\/$/, "");
+    const parts = cleanPath.split("/");
+    const sub = parts[parts.length - 1];
+    if (cleanPath === "/admin" || !VALID_TABS.includes(sub as TabKey)) {
+      navigate(`/admin/${activeTab}`, { replace: true });
+    }
+  }, [location.pathname, activeTab, navigate]);
+
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  const handleTabSelect = (tab: TabKey) => {
+    navigate(`/admin/${tab}`);
+    setIsMobileMenuOpen(false);
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0;
+    }
+  };
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     return localStorage.getItem("preetam_admin_auth") === "true";
   });
@@ -51,12 +99,25 @@ export default function AdminPage() {
   const [newTestimonialVideoUrl, setNewTestimonialVideoUrl] = useState("");
   const [newTestimonialRating, setNewTestimonialRating] = useState(5);
 
-  // Keep forms in sync with store when store loads
+  // Package period tab state (must be top-level, not inside IIFE)
+  const [pkgPeriod, setPkgPeriod] = useState<"days" | "week" | "month" | "year">("days");
+  const [showAddPkgForm, setShowAddPkgForm] = useState(false);
+  const [newPkg, setNewPkg] = useState({ title: "", price: "", sub: "", badge: "", features: [""] });
+
+  // New Contact Form State (top-level)
+  const [showAddContactForm, setShowAddContactForm] = useState(false);
+  const [newContact, setNewContact] = useState({ title: "", name: "", phone: "", email: "" });
+
+  // Keep forms in sync with store on initial load
+  const isFormInitialized = useRef(false);
   useEffect(() => {
-    setSiteForm(store.siteData);
-    setAboutForm(store.aboutData);
-    setScheduleForm(store.scheduleConfig);
-    setSportsScheduleForm(store.sportsScheduleConfig);
+    if (!isFormInitialized.current && store.siteData && Object.keys(store.siteData).length > 0) {
+      setSiteForm(store.siteData);
+      setAboutForm(store.aboutData);
+      setScheduleForm(store.scheduleConfig);
+      setSportsScheduleForm(store.sportsScheduleConfig);
+      isFormInitialized.current = true;
+    }
   }, [store.siteData, store.aboutData, store.scheduleConfig, store.sportsScheduleConfig]);
 
   // Auth Listener
@@ -105,6 +166,36 @@ export default function AdminPage() {
     setTimeout(() => setSaveSuccessMsg(""), 4000);
   };
 
+  const openMediaInNewTab = (url?: string) => {
+    if (!url) return;
+    if (url.startsWith("data:")) {
+      try {
+        const parts = url.split(",");
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        const mime = mimeMatch ? mimeMatch[1] : "application/pdf";
+        const bstr = atob(parts[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        const blob = new Blob([u8arr], { type: mime });
+        const blobUrl = URL.createObjectURL(blob);
+        const win = window.open(blobUrl, "_blank");
+        if (!win) {
+          alert("कृपया फाईल नवीन विंडोमध्ये उघडण्यासाठी पॉप-अप ब्लॉक डिझॅबल करा.");
+        }
+      } catch (e) {
+        const win = window.open();
+        if (win) {
+          win.document.write(`<iframe src="${url}" style="width:100vw; height:100vh; border:none; margin:0; padding:0;"></iframe>`);
+        }
+      }
+    } else {
+      window.open(url, "_blank");
+    }
+  };
+
   // Single Image/File Upload Helper
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -116,8 +207,11 @@ export default function AdminPage() {
     try {
       const file = files[0];
       const url = await uploadImageToFirebase(file);
-      onSuccess(url);
-      showToast("✅ फाईल / फोटो यशस्वीरित्या अपलोड झाला!");
+      if (url) {
+        onSuccess(url);
+      } else {
+        alert("फोटो अपलोड करताना समस्या आली.");
+      }
     } catch (err) {
       alert("अपलोड करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.");
     } finally {
@@ -226,7 +320,7 @@ export default function AdminPage() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#810B38]">प्रीतम आनंदशाळा</h1>
-            <p className="text-xs sm:text-sm font-bold text-pink-700 mt-1">अ‍ॅडमिन लॉगिन पॅनेल (Gulabi Theme)</p>
+            <p className="text-xs sm:text-sm font-bold text-pink-700 mt-1">अ‍ॅडमिन लॉगिन पॅनेल</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-left">
@@ -282,6 +376,7 @@ export default function AdminPage() {
   });
 
   const sidebarMenuItems = [
+    { key: "dashboard", label: "मुख्य डॅशबोर्ड (Overview)", icon: "📊", count: null },
     { key: "inquiries", label: "ग्राहकांच्या चौकशी", icon: "📞", count: store.inquiries.length },
     { key: "home-cards", label: "होमपेज कार्ड्स व सेक्शन्स", icon: "🎴", count: null },
     { key: "sliders", label: "स्लायडर फोटो", icon: "🎠", count: (siteForm.aanandshalaImages?.length || 0) + (siteForm.sportsImages?.length || 0) },
@@ -292,11 +387,11 @@ export default function AdminPage() {
     { key: "testimonials", label: "सदस्य अनुभव व व्हिडिओ", icon: "🎬", count: store.testimonials.length },
     { key: "gallery", label: "फोटो व गॅलरी", icon: "🖼️", count: store.gallery.length },
     { key: "packages", label: "प्रवेश योजना व फी", icon: "🏷️", count: store.packages.length },
-    { key: "contact", label: "संपर्क व माहिती", icon: "⚙️", count: null },
+    { key: "contact", label: "संपर्क व माहिती", icon: "⚙️", count: (siteForm.contactsList || []).length },
   ];
 
   return (
-    <div className="min-h-screen bg-[#fdf7f9] font-sans flex flex-col md:flex-row">
+    <div className="min-h-screen md:h-screen bg-[#fdf7f9] font-sans flex flex-col md:flex-row md:overflow-hidden">
       
       {/* MOBILE TOP BAR WITH TOGGLE BUTTON */}
       <div className="md:hidden bg-[#810B38] text-white p-4 flex items-center justify-between sticky top-0 z-50 shadow-md">
@@ -312,13 +407,23 @@ export default function AdminPage() {
         </button>
       </div>
 
+      {/* MOBILE BACKDROP OVERLAY */}
+      {isMobileMenuOpen && (
+        <div
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 md:hidden"
+        />
+      )}
+
       {/* ==================================================================== */}
       {/* LEFT SIDEBAR (PINK THEME GULABI SIDEBAR) */}
       {/* ==================================================================== */}
       <aside
         className={`${
-          isMobileMenuOpen ? "block" : "hidden"
-        } md:block w-full md:w-72 bg-gradient-to-b from-[#810B38] via-[#6b092b] to-[#4a061d] text-white flex flex-col shrink-0 sticky top-0 h-auto md:h-screen z-40 shadow-2xl p-4 sm:p-6 overflow-y-auto`}
+          isMobileMenuOpen
+            ? "fixed inset-y-0 left-0 z-40 w-72 max-w-[85vw] shadow-2xl flex flex-col"
+            : "hidden"
+        } md:flex md:w-72 bg-gradient-to-b from-[#810B38] via-[#6b092b] to-[#4a061d] text-white flex-col shrink-0 md:h-screen z-40 p-4 sm:p-6 overflow-y-auto`}
       >
         {/* BRAND LOGO HEADER */}
         <div className="flex items-center gap-3 pb-6 border-b border-pink-400/30 mb-6">
@@ -329,7 +434,7 @@ export default function AdminPage() {
             <h1 className="text-base sm:text-lg font-black leading-tight tracking-wide text-white">
               प्रीतम आनंदशाळा
             </h1>
-            <p className="text-[11px] font-bold text-pink-200">अ‍ॅडमिन पॅनेल (Gulabi Theme)</p>
+            <p className="text-[11px] font-bold text-pink-200">अ‍ॅडमिन पॅनेल</p>
           </div>
         </div>
 
@@ -344,8 +449,7 @@ export default function AdminPage() {
               <button
                 key={item.key}
                 onClick={() => {
-                  setActiveTab(item.key as TabKey);
-                  setIsMobileMenuOpen(false);
+                  handleTabSelect(item.key as TabKey);
                 }}
                 className={`w-full py-3.5 px-4 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-between transition-all cursor-pointer ${
                   isActive
@@ -392,9 +496,9 @@ export default function AdminPage() {
       </aside>
 
       {/* ==================================================================== */}
-      {/* MAIN RIGHT CONTENT AREA */}
+      {/* MAIN RIGHT CONTENT AREA (INDEPENDENT SCROLL) */}
       {/* ==================================================================== */}
-      <main className="flex-1 p-4 sm:p-8 max-w-6xl w-full mx-auto overflow-y-auto space-y-6">
+      <main ref={mainContentRef} className="flex-1 p-4 sm:p-8 max-w-6xl w-full mx-auto md:h-screen overflow-y-auto space-y-6">
         
         {/* TOAST SUCCESS NOTIFICATION */}
         {saveSuccessMsg && (
@@ -414,13 +518,256 @@ export default function AdminPage() {
               प्रीतम आनंदशाळा अ‍ॅडमिन पॅनेलवरून सर्व माहिती सोप्या पद्धतीने संपादित करा.
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="px-4 py-1.5 rounded-full bg-pink-100 text-[#810B38] text-xs font-black border border-pink-200">
-              🌸 गुलाबी थीम (Active)
-            </span>
-          </div>
         </div>
+
+        {/* ==================================================================== */}
+        {/* DASHBOARD OVERVIEW PAGE */}
+        {/* ==================================================================== */}
+        {activeTab === "dashboard" && (
+          <div className="space-y-6">
+            
+            {/* WELCOME BANNER */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#810B38] via-[#a20e47] to-[#be185d] p-6 sm:p-8 text-white shadow-xl">
+              <div className="relative z-10 space-y-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-xs font-black backdrop-blur-md">
+                  <span>✨</span> प्रीतम अ‍ॅडमिन मुख्य डॅशबोर्ड
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black leading-tight drop-shadow-sm">
+                  नमस्कार! प्रीतम आनंदशाळा पोर्टलमध्ये स्वागत आहे 🏫
+                </h3>
+                <p className="text-xs sm:text-sm font-medium text-pink-100 max-w-2xl leading-relaxed">
+                  येथून तुम्ही आनंदशाळेची चौकशी, स्लायडर फोटो, वेळापत्रक, प्रवेश योजनांचे दर, ब्रोशर्स व संपर्क माहिती सहज नियंत्रित करू शकता.
+                </p>
+              </div>
+
+              <div className="absolute -right-10 -bottom-10 size-60 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+              <div className="absolute right-1/4 -top-10 size-40 rounded-full bg-pink-400/20 blur-xl pointer-events-none" />
+            </div>
+
+            {/* STATISTICS GRID */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              
+              {/* Card 1: Inquiries */}
+              <div
+                onClick={() => handleTabSelect("inquiries")}
+                className="p-4 rounded-2xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition-all cursor-pointer group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xl sm:text-2xl p-2 rounded-xl bg-pink-50 text-[#810B38] group-hover:scale-110 transition">📞</span>
+                  <span className="text-[10px] font-black text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full">चौकशी</span>
+                </div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-black text-slate-800">{store.inquiries.length}</div>
+                  <div className="text-[11px] font-bold text-slate-500 truncate">ग्राहक संदेश</div>
+                </div>
+              </div>
+
+              {/* Card 2: Sliders */}
+              <div
+                onClick={() => handleTabSelect("sliders")}
+                className="p-4 rounded-2xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition-all cursor-pointer group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xl sm:text-2xl p-2 rounded-xl bg-amber-50 text-amber-700 group-hover:scale-110 transition">🎠</span>
+                  <span className="text-[10px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">फोटो</span>
+                </div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-black text-slate-800">
+                    {(siteForm.aanandshalaImages?.length || 0) + (siteForm.sportsImages?.length || 0)}
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-500 truncate">स्लायडर फोटो</div>
+                </div>
+              </div>
+
+              {/* Card 3: Packages */}
+              <div
+                onClick={() => handleTabSelect("packages")}
+                className="p-4 rounded-2xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition-all cursor-pointer group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xl sm:text-2xl p-2 rounded-xl bg-emerald-50 text-emerald-700 group-hover:scale-110 transition">🏷️</span>
+                  <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">दर</span>
+                </div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-black text-slate-800">{store.packages.length}</div>
+                  <div className="text-[11px] font-bold text-slate-500 truncate">प्रवेश योजना</div>
+                </div>
+              </div>
+
+              {/* Card 4: Brochures */}
+              <div
+                onClick={() => handleTabSelect("brochures")}
+                className="p-4 rounded-2xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition-all cursor-pointer group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xl sm:text-2xl p-2 rounded-xl bg-purple-50 text-purple-700 group-hover:scale-110 transition">📜</span>
+                  <span className="text-[10px] font-black text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full">फायली</span>
+                </div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-black text-slate-800">{store.brochures.length}</div>
+                  <div className="text-[11px] font-bold text-slate-500 truncate">ब्रोशर्स / पत्रक</div>
+                </div>
+              </div>
+
+              {/* Card 5: Testimonials */}
+              <div
+                onClick={() => handleTabSelect("testimonials")}
+                className="p-4 rounded-2xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition-all cursor-pointer group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xl sm:text-2xl p-2 rounded-xl bg-blue-50 text-blue-700 group-hover:scale-110 transition">🎬</span>
+                  <span className="text-[10px] font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">व्हिडिओ</span>
+                </div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-black text-slate-800">{store.testimonials.length}</div>
+                  <div className="text-[11px] font-bold text-slate-500 truncate">सदस्य अनुभव</div>
+                </div>
+              </div>
+
+              {/* Card 6: Contacts */}
+              <div
+                onClick={() => handleTabSelect("contact")}
+                className="p-4 rounded-2xl bg-white border-2 border-pink-100 hover:border-pink-300 shadow-sm hover:shadow-md transition-all cursor-pointer group space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xl sm:text-2xl p-2 rounded-xl bg-rose-50 text-rose-700 group-hover:scale-110 transition">⚙️</span>
+                  <span className="text-[10px] font-black text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">संपर्क</span>
+                </div>
+                <div>
+                  <div className="text-xl sm:text-2xl font-black text-slate-800">
+                    {(siteForm.contactsList || []).length}
+                  </div>
+                  <div className="text-[11px] font-bold text-slate-500 truncate">अतिरिक्त संपर्क</div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* SPLIT GRID: RECENT INQUIRIES & QUICK ACTIONS */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+              {/* Left 2 Cols: Recent Inquiries */}
+              <div className="lg:col-span-2 bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-sm space-y-4">
+                <div className="flex items-center justify-between border-b border-pink-100 pb-3 flex-wrap gap-2">
+                  <div>
+                    <h4 className="text-base font-black text-[#810B38] flex items-center gap-2">
+                      <span>📩</span> अलिकडील ग्राहक चौकशी संदेश (Recent Inquiries)
+                    </h4>
+                    <p className="text-xs text-slate-500 font-bold">वेबसाईटवरून प्राप्त झालेले सर्वात नवीन संदेश.</p>
+                  </div>
+                  <button
+                    onClick={() => handleTabSelect("inquiries")}
+                    className="px-3.5 py-1.5 rounded-xl bg-pink-100 hover:bg-pink-200 text-[#810B38] font-black text-xs cursor-pointer transition"
+                  >
+                    सर्व चौकशी पहा →
+                  </button>
+                </div>
+
+                {store.inquiries.length === 0 ? (
+                  <div className="py-12 text-center text-slate-400 font-bold text-xs bg-pink-50/30 rounded-2xl border border-dashed border-pink-200">
+                    कोणताही चौकशी संदेश आलेला नाही.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {store.inquiries.slice(0, 4).map((inq) => (
+                      <div
+                        key={inq.id}
+                        className="p-4 rounded-2xl bg-pink-50/40 border border-pink-200 flex items-center justify-between flex-wrap gap-3 hover:bg-pink-50 transition"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-black text-sm text-slate-800">{inq.name}</span>
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-white border border-pink-200 text-[#810B38]">
+                              {inq.subject || "चौकशी"}
+                            </span>
+                          </div>
+                          <div className="text-xs font-bold text-emerald-700 flex items-center gap-3">
+                            <span>📞 {inq.phone}</span>
+                            {inq.email && <span className="text-slate-500">✉️ {inq.email}</span>}
+                          </div>
+                          {inq.message && (
+                            <p className="text-xs text-slate-600 font-medium line-clamp-1 italic">
+                              "{inq.message}"
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => setSelectedInquiryModal(inq)}
+                          className="px-3.5 py-1.5 rounded-xl bg-[#810B38] text-white font-black text-xs hover:bg-[#68082c] cursor-pointer shadow-sm active:scale-95"
+                        >
+                          पहा 👁️
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right 1 Col: Quick Actions & System Info */}
+              <div className="space-y-6">
+
+                {/* Quick Shortcuts */}
+                <div className="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-sm space-y-4">
+                  <h4 className="text-base font-black text-[#810B38] flex items-center gap-2 border-b border-pink-100 pb-3">
+                    <span>⚡</span> क्विक ॲक्शन्स (Quick Shortcuts)
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2.5">
+                    <button
+                      onClick={() => handleTabSelect("sliders")}
+                      className="w-full p-3 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-black text-xs flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2"><span>📷</span> स्लायडर फोटो बदला</span>
+                      <span>→</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleTabSelect("packages")}
+                      className="w-full p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 font-black text-xs flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2"><span>🏷️</span> प्रवेश योजना दर बदला</span>
+                      <span>→</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleTabSelect("about")}
+                      className="w-full p-3 rounded-2xl bg-pink-50 hover:bg-pink-100 border border-pink-200 text-[#810B38] font-black text-xs flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2"><span>ℹ️</span> आमच्याविषयी संपादन</span>
+                      <span>→</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleTabSelect("contact")}
+                      className="w-full p-3 rounded-2xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 font-black text-xs flex items-center justify-between transition cursor-pointer text-left"
+                    >
+                      <span className="flex items-center gap-2"><span>⚙️</span> फोन व संपर्क बदला</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Cloud Sync Banner */}
+                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-[#810B38] text-white rounded-3xl p-6 shadow-md space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
+                      <span className="size-2 rounded-full bg-emerald-400 animate-pulse" /> रीअल-टाईम क्लाऊड सिंक
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-300">Live Database</span>
+                  </div>
+                  <div className="text-sm font-black text-white">
+                    🔥 फाईलबेस क्लाऊड डेटाबेस कनेक्टेड
+                  </div>
+                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                    ॲडमिन पॅनेलवर केलेले सर्व संपादन क्लाऊडवर ऑन-द-स्पॉट सेव्ह होते व वेबसाईटवर लगेच दिसते.
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
 
         {/* ==================================================================== */}
         {/* PAGE 1: CUSTOMER INQUIRIES (ग्राहकांच्या चौकशी) */}
@@ -984,28 +1331,89 @@ export default function AdminPage() {
                     onChange={(e) =>
                       handleFileUpload(e, (url) => {
                         const isPdf = e.target.files?.[0]?.type.includes("pdf");
-                        setScheduleForm({
+                        const updated = {
                           ...scheduleForm,
                           posterUrl: url,
-                          posterType: isPdf ? "pdf" : "image",
-                        });
+                          posterType: (isPdf ? "pdf" : "image") as "pdf" | "image",
+                        };
+                        setScheduleForm(updated);
+                        store.updateScheduleConfig(updated);
+                        store.syncAllToFirebaseCloud();
                       })
                     }
                   />
                 </label>
 
-                {scheduleForm.posterUrl && (
-                  <div className="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-pink-200">
-                    <span className="text-xs font-extrabold text-emerald-700">✅ पोस्टर अपलोड आहे</span>
-                    <a href={scheduleForm.posterUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline font-bold">
-                      पहा (View)
-                    </a>
-                    <button
-                      onClick={() => setScheduleForm({ ...scheduleForm, posterUrl: "" })}
-                      className="text-xs text-rose-600 font-bold hover:underline"
-                    >
-                      हटवा
-                    </button>
+                {scheduleForm.posterUrl ? (
+                  <div className="w-full mt-4 p-5 rounded-3xl bg-white border-2 border-pink-200 shadow-lg space-y-4">
+                    <div className="flex items-center justify-between border-b border-pink-100 pb-3 flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-xl text-xs font-black bg-emerald-100 text-emerald-800 flex items-center gap-1 shadow-sm">
+                          <span>✅</span>
+                          {scheduleForm.posterType === "pdf" || scheduleForm.posterUrl.includes(".pdf") || scheduleForm.posterUrl.startsWith("data:application/pdf") ? "PDF पोस्टर फाईल" : "फोटो पोस्टर फाईल"}
+                        </span>
+                        <span className="text-xs font-black text-rose-900">अपलोड केलेले आनंदशाळा वेळापत्रक पोस्टर:</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openMediaInNewTab(scheduleForm.posterUrl)}
+                          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs transition shadow-md inline-flex items-center gap-1.5 cursor-pointer active:scale-95"
+                        >
+                          <span>👁️ नवीन विंडोमध्ये उघडा (View Full Screen)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = { ...scheduleForm, posterUrl: "" };
+                            setScheduleForm(updated);
+                            store.updateScheduleConfig(updated);
+                            store.syncAllToFirebaseCloud();
+                            showToast("🗑️ आनंदशाळा पोस्टर यशस्वीरित्या हटवले!");
+                          }}
+                          className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition shadow-md inline-flex items-center gap-1 cursor-pointer active:scale-95"
+                        >
+                          <span>🗑️ पोस्टर हटवा (Delete)</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {scheduleForm.posterType === "pdf" || scheduleForm.posterUrl.includes(".pdf") || scheduleForm.posterUrl.startsWith("data:application/pdf") ? (
+                      <div className="space-y-3">
+                        <div className="p-4 rounded-2xl bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-rose-600 text-white flex items-center justify-center font-black text-lg shadow-md shrink-0">
+                            📄
+                          </div>
+                          <div>
+                            <h5 className="text-xs font-black text-rose-950">आनंदशाळा वेळापत्रक PDF फाईल तयार आहे</h5>
+                            <p className="text-[11px] font-extrabold text-emerald-700">✨ खालील बॉक्समध्ये व मुख्य वेबसाईटवर ही PDF थेट वाचता येईल.</p>
+                          </div>
+                        </div>
+
+                        {/* Embedded PDF Viewer Box */}
+                        <div className="w-full rounded-2xl overflow-hidden border-2 border-pink-300 shadow-md bg-slate-900">
+                          <iframe
+                            src={scheduleForm.posterUrl}
+                            title="Anandshala Timetable PDF Preview"
+                            className="w-full h-[500px] border-none"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative rounded-2xl overflow-hidden border-2 border-pink-200 bg-slate-900 shadow-inner group p-2 text-center">
+                        <img
+                          src={scheduleForm.posterUrl}
+                          alt="Anandshala Timetable Poster"
+                          className="max-h-[500px] w-auto object-contain mx-auto rounded-xl group-hover:scale-102 transition duration-300"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full mt-2 p-4 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/50 text-center space-y-1">
+                    <span className="text-2xl block">📄</span>
+                    <span className="text-xs font-black text-pink-900">कोणतेही वेळापत्रक फोटो किंवा PDF पोस्टर जोडलेले नाही.</span>
                   </div>
                 )}
               </div>
@@ -1067,28 +1475,89 @@ export default function AdminPage() {
                     onChange={(e) =>
                       handleFileUpload(e, (url) => {
                         const isPdf = e.target.files?.[0]?.type.includes("pdf");
-                        setSportsScheduleForm({
+                        const updated = {
                           ...sportsScheduleForm,
                           posterUrl: url,
-                          posterType: isPdf ? "pdf" : "image",
-                        });
+                          posterType: (isPdf ? "pdf" : "image") as "pdf" | "image",
+                        };
+                        setSportsScheduleForm(updated);
+                        store.updateSportsScheduleConfig(updated);
+                        store.syncAllToFirebaseCloud();
                       })
                     }
                   />
                 </label>
 
-                {sportsScheduleForm.posterUrl && (
-                  <div className="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-indigo-200">
-                    <span className="text-xs font-extrabold text-emerald-700">✅ पोस्टर अपलोड आहे</span>
-                    <a href={sportsScheduleForm.posterUrl} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline font-bold">
-                      पहा (View)
-                    </a>
-                    <button
-                      onClick={() => setSportsScheduleForm({ ...sportsScheduleForm, posterUrl: "" })}
-                      className="text-xs text-rose-600 font-bold hover:underline"
-                    >
-                      हटवा
-                    </button>
+                {sportsScheduleForm.posterUrl ? (
+                  <div className="w-full mt-4 p-5 rounded-3xl bg-white border-2 border-indigo-200 shadow-lg space-y-4">
+                    <div className="flex items-center justify-between border-b border-indigo-100 pb-3 flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-xl text-xs font-black bg-emerald-100 text-emerald-800 flex items-center gap-1 shadow-sm">
+                          <span>✅</span>
+                          {sportsScheduleForm.posterType === "pdf" || sportsScheduleForm.posterUrl.includes(".pdf") || sportsScheduleForm.posterUrl.startsWith("data:application/pdf") ? "PDF पोस्टर फाईल" : "फोटो पोस्टर फाईल"}
+                        </span>
+                        <span className="text-xs font-black text-indigo-900">अपलोड केलेले स्पोर्ट्स वेळापत्रक पोस्टर:</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openMediaInNewTab(sportsScheduleForm.posterUrl)}
+                          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs transition shadow-md inline-flex items-center gap-1.5 cursor-pointer active:scale-95"
+                        >
+                          <span>👁️ नवीन विंडोमध्ये उघडा (View Full Screen)</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = { ...sportsScheduleForm, posterUrl: "" };
+                            setSportsScheduleForm(updated);
+                            store.updateSportsScheduleConfig(updated);
+                            store.syncAllToFirebaseCloud();
+                            showToast("🗑️ स्पोर्ट्स पोस्टर यशस्वीरित्या हटवले!");
+                          }}
+                          className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition shadow-md inline-flex items-center gap-1 cursor-pointer active:scale-95"
+                        >
+                          <span>🗑️ पोस्टर हटवा (Delete)</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {sportsScheduleForm.posterType === "pdf" || sportsScheduleForm.posterUrl.includes(".pdf") || sportsScheduleForm.posterUrl.startsWith("data:application/pdf") ? (
+                      <div className="space-y-3">
+                        <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-indigo-700 text-white flex items-center justify-center font-black text-lg shadow-md shrink-0">
+                            📄
+                          </div>
+                          <div>
+                            <h5 className="text-xs font-black text-indigo-950">स्पोर्ट्स क्लब वेळापत्रक PDF फाईल तयार आहे</h5>
+                            <p className="text-[11px] font-extrabold text-emerald-700">✨ खालील बॉक्समध्ये व मुख्य वेबसाईटवर ही PDF थेट वाचता येईल.</p>
+                          </div>
+                        </div>
+
+                        {/* Embedded PDF Viewer Box */}
+                        <div className="w-full rounded-2xl overflow-hidden border-2 border-indigo-300 shadow-md bg-slate-900">
+                          <iframe
+                            src={sportsScheduleForm.posterUrl}
+                            title="Sports Timetable PDF Preview"
+                            className="w-full h-[500px] border-none"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative rounded-2xl overflow-hidden border-2 border-indigo-200 bg-slate-900 shadow-inner group p-2 text-center">
+                        <img
+                          src={sportsScheduleForm.posterUrl}
+                          alt="Sports Timetable Poster"
+                          className="max-h-[500px] w-auto object-contain mx-auto rounded-xl group-hover:scale-102 transition duration-300"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="w-full mt-2 p-4 rounded-2xl border-2 border-dashed border-indigo-300 bg-indigo-50/50 text-center space-y-1">
+                    <span className="text-2xl block">📄</span>
+                    <span className="text-xs font-black text-indigo-900">कोणतेही स्पोर्ट्स वेळापत्रक फोटो किंवा PDF पोस्टर जोडलेले नाही.</span>
                   </div>
                 )}
               </div>
@@ -1131,49 +1600,43 @@ export default function AdminPage() {
         {/* ==================================================================== */}
         {activeTab === "about" && (
           <div className="bg-white rounded-3xl p-6 shadow-sm border-2 border-pink-100 space-y-6">
-            <div className="border-b border-pink-100 pb-4">
-              <h3 className="text-lg font-black text-[#810B38]">ℹ️ आमच्याविषयी माहिती संपादन (About Us)</h3>
-              <p className="text-xs text-slate-500 font-bold">प्रीतम आनंदशाळेचा प्रवास, संस्थापक कथा आणि फोटो संपादन.</p>
+
+            {/* ── 1. MAIN TITLE ─────────────────────────────── */}
+            <div className="space-y-2">
+              <label className="block text-sm font-black text-[#810B38] uppercase tracking-wide flex items-center gap-1.5">
+                🏷️ मुख्य शीर्षक (Main Title):
+              </label>
+              <input
+                type="text"
+                value={aboutForm.mainTitle || ""}
+                onChange={(e) => setAboutForm({ ...aboutForm, mainTitle: e.target.value })}
+                className="w-full px-4 py-3 rounded-2xl border-2 border-pink-200 font-black text-base bg-white text-slate-800 focus:outline-none focus:border-[#810B38] shadow-inner transition"
+                placeholder="उदा. प्रीतम आनंदशाळा — आमच्याविषयी"
+              />
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">आनंदशाळा कथा १ (Story Paragraph 1)</label>
-                <textarea
-                  value={aboutForm.storyP1 || ""}
-                  onChange={(e) => setAboutForm({ ...aboutForm, storyP1: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-pink-200 font-medium text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">आनंदशाळा कथा २ (Story Paragraph 2)</label>
-                <textarea
-                  value={aboutForm.storyP2 || ""}
-                  onChange={(e) => setAboutForm({ ...aboutForm, storyP2: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-pink-200 font-medium text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">पुरस्कार व सन्मान (Award Notice)</label>
-                <input
-                  type="text"
-                  value={aboutForm.awardNotice || ""}
-                  onChange={(e) => setAboutForm({ ...aboutForm, awardNotice: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-pink-200 font-bold text-sm"
-                />
-              </div>
+            {/* ── 2. MAIN CONTENT ───────────────────────────── */}
+            <div className="space-y-2">
+              <label className="block text-sm font-black text-[#810B38] uppercase tracking-wide flex items-center gap-1.5">
+                📝 मुख्य मजकूर (Main Content):
+              </label>
+              <textarea
+                value={aboutForm.storyP1 || ""}
+                onChange={(e) => setAboutForm({ ...aboutForm, storyP1: e.target.value })}
+                rows={6}
+                className="w-full px-4 py-3 rounded-2xl border-2 border-pink-200 font-medium text-sm bg-white text-slate-800 focus:outline-none focus:border-[#810B38] shadow-inner leading-relaxed resize-y transition"
+                placeholder="आनंदशाळेची संपूर्ण माहिती, इतिहास व प्रवास येथे लिहा..."
+              />
             </div>
 
-            {/* ABOUT PHOTOS SHOWCASE */}
-            <div className="p-6 rounded-2xl bg-pink-50/70 border-2 border-pink-200 space-y-4">
+            {/* ── 3. PHOTOS ─────────────────────────────────── */}
+            <div className="space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <h4 className="text-base font-black text-[#810B38]">🖼️ अबाउट फोटो संकुल (About Photos)</h4>
-                <label className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#810B38] to-[#be185d] text-white font-extrabold text-xs shadow-md cursor-pointer inline-flex items-center gap-2">
-                  <span>➕ नवीन फोटो जोडा</span>
+                <label className="text-sm font-black text-[#810B38] uppercase tracking-wide flex items-center gap-1.5">
+                  🖼️ फोटो संकुल (Photos):
+                </label>
+                <label className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#810B38] to-[#be185d] hover:opacity-90 text-white font-black text-xs shadow-md cursor-pointer inline-flex items-center gap-2 active:scale-95 transition">
+                  📷 फोटो अपलोड करा
                   <input
                     type="file"
                     accept="image/*"
@@ -1186,6 +1649,7 @@ export default function AdminPage() {
                         setAboutForm({ ...aboutForm, photos: updated });
                         store.updateAboutData({ photos: updated });
                         store.syncAllToFirebaseCloud();
+                        showToast("✅ फोटो अपलोड व सेव्ह झाले!");
                       })
                     }
                   />
@@ -1193,42 +1657,68 @@ export default function AdminPage() {
               </div>
 
               {(!aboutForm.photos || aboutForm.photos.length === 0) ? (
-                <div className="text-center py-6 text-slate-400 font-bold text-xs">
-                  कोणतेही कस्टम अबाउट फोटो जोडलेले नाहीत.
+                <div className="w-full py-12 rounded-2xl border-2 border-dashed border-pink-300 bg-pink-50/40 text-center space-y-2">
+                  <span className="text-4xl block">🖼️</span>
+                  <span className="text-sm font-black text-pink-900 block">अजून कोणतेही फोटो जोडलेले नाहीत.</span>
+                  <span className="text-xs font-bold text-pink-500 block">वरील बटणावर क्लिक करून फोटो अपलोड करा.</span>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                   {aboutForm.photos.map((imgUrl, idx) => (
-                    <div key={idx} className="group relative rounded-2xl overflow-hidden border-2 border-pink-200 bg-white shadow-sm">
-                      <img src={imgUrl} alt={`About ${idx}`} className="w-full h-28 object-cover" />
-                      <button
-                        onClick={() => {
-                          if (confirm("नक्की हा अबाउट फोटो डिलीट करायचा?")) {
-                            const updated = aboutForm.photos?.filter((_, i) => i !== idx);
-                            setAboutForm({ ...aboutForm, photos: updated });
-                            store.updateAboutData({ photos: updated });
-                            store.syncAllToFirebaseCloud();
-                            showToast("फोटो डिलीट झाला!");
-                          }
-                        }}
-                        className="absolute top-2 right-2 bg-rose-600 text-white size-7 rounded-full text-xs font-black flex items-center justify-center shadow-md cursor-pointer"
-                      >
-                        ✕
-                      </button>
+                    <div key={idx} className="group relative rounded-2xl overflow-hidden border-2 border-pink-200 bg-slate-900 shadow-md aspect-square">
+                      <img
+                        src={imgUrl}
+                        alt={`About Photo ${idx + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openMediaInNewTab(imgUrl)}
+                          className="w-full py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] cursor-pointer text-center"
+                        >
+                          👁️ पहा
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm("हा फोटो डिलीट करायचा आहे?")) {
+                              const updated = aboutForm.photos?.filter((_, i) => i !== idx);
+                              setAboutForm({ ...aboutForm, photos: updated });
+                              store.updateAboutData({ photos: updated });
+                              store.syncAllToFirebaseCloud();
+                              showToast("🗑️ फोटो डिलीट झाला!");
+                            }
+                          }}
+                          className="w-full py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] cursor-pointer text-center"
+                        >
+                          🗑️ डिलीट
+                        </button>
+                      </div>
+                      <span className="absolute top-2 left-2 bg-black/60 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                        #{idx + 1}
+                      </span>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            <div className="flex justify-end pt-2">
+            {/* ── SAVE BUTTON ───────────────────────────────── */}
+            <div className="flex justify-end border-t border-pink-100 pt-4">
               <button
-                onClick={saveAboutInfo}
-                className="px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg cursor-pointer"
+                type="button"
+                onClick={() => {
+                  store.updateAboutData({ mainTitle: aboutForm.mainTitle, storyP1: aboutForm.storyP1, photos: aboutForm.photos });
+                  store.syncAllToFirebaseCloud();
+                  showToast("💾 माहिती यशस्वीरित्या सेव्ह झाली!");
+                }}
+                className="px-8 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-lg cursor-pointer transition active:scale-95"
               >
-                💾 आमच्याविषयी माहिती सेव्ह करा (Save About)
+                💾 सेव्ह करा (Save)
               </button>
             </div>
+
           </div>
         )}
 
@@ -1644,66 +2134,258 @@ export default function AdminPage() {
         {/* ==================================================================== */}
         {/* PAGE 9: PACKAGES & PRICING (प्रवेश योजना व फी) */}
         {/* ==================================================================== */}
-        {activeTab === "packages" && (
-          <div className="bg-white rounded-3xl p-6 shadow-sm border-2 border-pink-100 space-y-6">
-            <div className="border-b border-pink-100 pb-4">
-              <h3 className="text-lg font-black text-[#810B38]">🏷️ आनंदशाळा प्रवेश योजना व फी (Packages)</h3>
-              <p className="text-xs text-slate-500 font-bold">मासिक फी, १ दिवस सहल पास आणि इतर योजनांचे दर संपादित करा.</p>
-            </div>
+        {activeTab === "packages" && (() => {
+          type PeriodType = "days" | "week" | "month" | "year";
+          const periods: { key: PeriodType; label: string; icon: string; color: string }[] = [
+            { key: "days",  label: "दिवस (Day)",    icon: "☀️", color: "amber"   },
+            { key: "week",  label: "आठवडा (Week)",  icon: "📅", color: "blue"    },
+            { key: "month", label: "महिना (Month)", icon: "🗓️", color: "violet"  },
+            { key: "year",  label: "वर्ष (Year)",   icon: "🏆", color: "emerald" },
+          ];
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {store.packages.map((pkg) => (
-                <div key={pkg.id} className="p-5 rounded-2xl border-2 border-pink-200 bg-[#fffafd] space-y-3 relative shadow-sm">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-black px-3 py-1 rounded-full bg-pink-100 text-[#810B38]">{pkg.badge}</span>
+          const colorMap: Record<string, string> = {
+            amber:   "border-amber-400 bg-amber-50 text-amber-800",
+            blue:    "border-blue-400 bg-blue-50 text-blue-800",
+            violet:  "border-violet-400 bg-violet-50 text-violet-800",
+            emerald: "border-emerald-400 bg-emerald-50 text-emerald-800",
+          };
+          const activeBtnMap: Record<string, string> = {
+            amber:   "bg-amber-500 text-white border-amber-500",
+            blue:    "bg-blue-600 text-white border-blue-600",
+            violet:  "bg-violet-600 text-white border-violet-600",
+            emerald: "bg-emerald-600 text-white border-emerald-600",
+          };
+          const badgeMap: Record<string, string> = {
+            amber:   "bg-amber-100 text-amber-800",
+            blue:    "bg-blue-100 text-blue-800",
+            violet:  "bg-violet-100 text-violet-800",
+            emerald: "bg-emerald-100 text-emerald-800",
+          };
+
+          // Use top-level states (no useState inside IIFE — Rules of Hooks)
+          const activePeriod = periods.find(p => p.key === pkgPeriod)!;
+          const filteredPkgs = store.packages.filter(p => p.periodType === pkgPeriod);
+
+          return (
+            <div className="bg-white rounded-3xl p-6 shadow-sm border-2 border-pink-100 space-y-5">
+              {/* Header */}
+              <div className="border-b border-pink-100 pb-4">
+                <h3 className="text-lg font-black text-[#810B38]">🏷️ प्रवेश योजना व फी (Packages)</h3>
+                <p className="text-xs text-slate-500 font-bold mt-0.5">दिवस / आठवडा / महिना / वर्ष — सर्व योजना एकत्र व्यवस्थापित करा.</p>
+              </div>
+
+              {/* Period Tabs */}
+              <div className="flex flex-wrap gap-2">
+                {periods.map(p => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => { setPkgPeriod(p.key); setShowAddPkgForm(false); }}
+                    className={`px-4 py-2 rounded-2xl text-xs font-black border-2 cursor-pointer transition active:scale-95 ${pkgPeriod === p.key ? activeBtnMap[p.color] : "bg-white border-slate-200 text-slate-600 hover:border-pink-300"}`}
+                  >
+                    {p.icon} {p.label}
+                    <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-black ${pkgPeriod === p.key ? "bg-white/30 text-white" : "bg-slate-100 text-slate-500"}`}>
+                      {store.packages.filter(x => x.periodType === p.key).length}
+                    </span>
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setShowAddPkgForm(v => !v)}
+                  className="ml-auto px-4 py-2 rounded-2xl text-xs font-black border-2 border-[#810B38] bg-[#810B38] text-white hover:bg-[#68082c] cursor-pointer transition active:scale-95"
+                >
+                  {showAddPkgForm ? "✕ बंद करा" : "➕ नवीन योजना जोडा"}
+                </button>
+              </div>
+
+              {/* Add New Package Form */}
+              {showAddPkgForm && (
+                <div className={`p-5 rounded-3xl border-2 ${colorMap[activePeriod.color]} space-y-4`}>
+                  <h4 className="text-sm font-black text-slate-800">
+                    {activePeriod.icon} नवीन {activePeriod.label} योजना जोडा:
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-black text-slate-600 mb-1">योजनेचे नाव (Title) *</label>
+                      <input type="text" value={newPkg.title}
+                        onChange={e => setNewPkg({...newPkg, title: e.target.value})}
+                        className="w-full px-3 py-2 rounded-xl border-2 border-pink-200 text-sm font-bold bg-white"
+                        placeholder="उदा. एक दिवस सहल पास" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black text-slate-600 mb-1">किंमत / फी (Price) *</label>
+                      <input type="text" value={newPkg.price}
+                        onChange={e => setNewPkg({...newPkg, price: e.target.value})}
+                        className="w-full px-3 py-2 rounded-xl border-2 border-pink-200 text-sm font-bold bg-white text-emerald-700"
+                        placeholder="उदा. ₹ ६०० /-" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black text-slate-600 mb-1">बॅज लेबल (Badge)</label>
+                      <input type="text" value={newPkg.badge}
+                        onChange={e => setNewPkg({...newPkg, badge: e.target.value})}
+                        className="w-full px-3 py-2 rounded-xl border-2 border-pink-200 text-sm font-bold bg-white"
+                        placeholder="उदा. १ दिवस पास" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-black text-slate-600 mb-1">थोडक्यात वर्णन (Subtitle)</label>
+                      <input type="text" value={newPkg.sub}
+                        onChange={e => setNewPkg({...newPkg, sub: e.target.value})}
+                        className="w-full px-3 py-2 rounded-xl border-2 border-pink-200 text-sm font-medium bg-white"
+                        placeholder="उदा. वेळ: सकाळी ११ ते सायं. ५" />
+                    </div>
                   </div>
 
+                  {/* Features */}
                   <div>
-                    <label className="block text-[11px] font-extrabold text-slate-600 mb-1">योजनेचे नाव (Plan Name)</label>
-                    <input
-                      type="text"
-                      value={pkg.title}
-                      onChange={(e) => store.updatePackage(pkg.id, { title: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-pink-200 font-bold text-sm"
-                    />
+                    <label className="block text-[11px] font-black text-slate-600 mb-2">सुविधा / वैशिष्ट्ये (Features)</label>
+                    <div className="space-y-2">
+                      {newPkg.features.map((f, fi) => (
+                        <div key={fi} className="flex gap-2">
+                          <input type="text" value={f}
+                            onChange={e => {
+                              const upd = [...newPkg.features];
+                              upd[fi] = e.target.value;
+                              setNewPkg({...newPkg, features: upd});
+                            }}
+                            className="flex-1 px-3 py-2 rounded-xl border border-pink-200 text-xs font-medium bg-white"
+                            placeholder={`सुविधा #${fi + 1}`} />
+                          {newPkg.features.length > 1 && (
+                            <button type="button" onClick={() => setNewPkg({...newPkg, features: newPkg.features.filter((_,i)=>i!==fi)})}
+                              className="px-2.5 py-1 rounded-xl bg-rose-100 text-rose-700 font-black text-xs cursor-pointer hover:bg-rose-200">✕</button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => setNewPkg({...newPkg, features: [...newPkg.features, ""]})}
+                        className="text-xs font-black text-[#810B38] hover:underline cursor-pointer">
+                        + आणखी सुविधा जोडा
+                      </button>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-extrabold text-slate-600 mb-1">फी / किंमत (Price)</label>
-                    <input
-                      type="text"
-                      value={pkg.price}
-                      onChange={(e) => store.updatePackage(pkg.id, { price: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-pink-200 font-bold text-sm text-emerald-700"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-extrabold text-slate-600 mb-1">थोडक्यात वर्णन (Subtitle)</label>
-                    <input
-                      type="text"
-                      value={pkg.sub}
-                      onChange={(e) => store.updatePackage(pkg.id, { sub: e.target.value })}
-                      className="w-full px-3 py-2 rounded-xl border border-pink-200 font-medium text-xs"
-                    />
+                  <div className="flex gap-3 pt-2">
+                    <button type="button"
+                      onClick={() => {
+                        if (!newPkg.title.trim() || !newPkg.price.trim()) { showToast("❌ नाव व किंमत आवश्यक आहे!"); return; }
+                        store.addPackage({ title: newPkg.title, price: newPkg.price, sub: newPkg.sub, badge: newPkg.badge || newPkg.title, periodType: pkgPeriod, features: newPkg.features.filter(f => f.trim()), featured: false });
+                        store.syncAllToFirebaseCloud();
+                        setNewPkg({ title: "", price: "", sub: "", badge: "", features: [""] });
+                        setShowAddPkgForm(false);
+                        showToast("✅ नवीन योजना जोडली!");
+                      }}
+                      className="px-6 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs cursor-pointer active:scale-95 shadow-md">
+                      ✅ जोडा (Add)
+                    </button>
+                    <button type="button" onClick={() => setShowAddPkgForm(false)}
+                      className="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs cursor-pointer active:scale-95">
+                      रद्द करा
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
 
-            <div className="flex justify-end pt-2">
-              <button
-                onClick={() => {
-                  store.syncAllToFirebaseCloud();
-                  showToast("✅ सर्व योजनांचे दर सेव्ह झाले!");
-                }}
-                className="px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg cursor-pointer"
-              >
-                💾 सर्व योजना सेव्ह करा (Save Packages)
-              </button>
+              {/* Package Cards */}
+              {filteredPkgs.length === 0 ? (
+                <div className="py-12 text-center rounded-2xl border-2 border-dashed border-pink-200 bg-pink-50/30 space-y-2">
+                  <span className="text-3xl block">{activePeriod.icon}</span>
+                  <p className="text-sm font-black text-slate-500">{activePeriod.label} साठी कोणतीही योजना नाही.</p>
+                  <p className="text-xs text-slate-400 font-bold">वरील "नवीन योजना जोडा" वापरा.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {filteredPkgs.map((pkg) => (
+                    <div key={pkg.id} className={`p-5 rounded-3xl border-2 ${colorMap[activePeriod.color]} space-y-4 shadow-sm`}>
+                      {/* Card Header */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`text-xs font-black px-3 py-1 rounded-full ${badgeMap[activePeriod.color]}`}>
+                          {activePeriod.icon} {pkg.badge || activePeriod.label}
+                        </span>
+                        <button type="button"
+                          onClick={() => { if(confirm("ही योजना डिलीट करायची आहे?")) { store.deletePackage(pkg.id); store.syncAllToFirebaseCloud(); showToast("🗑️ योजना डिलीट झाली!"); }}}
+                          className="px-2.5 py-1 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 font-black text-[11px] cursor-pointer border border-rose-200">
+                          🗑️ डिलीट
+                        </button>
+                      </div>
+
+                      {/* Fields */}
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 mb-1 uppercase">बॅज लेबल (Badge)</label>
+                          <input type="text" value={pkg.badge}
+                            onChange={e => store.updatePackage(pkg.id, { badge: e.target.value })}
+                            className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold bg-white/80" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 mb-1 uppercase">योजनेचे नाव (Plan Name) *</label>
+                          <input type="text" value={pkg.title}
+                            onChange={e => store.updatePackage(pkg.id, { title: e.target.value })}
+                            className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-bold bg-white/80" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 mb-1 uppercase">किंमत / फी (Price) *</label>
+                          <input type="text" value={pkg.price}
+                            onChange={e => store.updatePackage(pkg.id, { price: e.target.value })}
+                            className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm font-bold bg-white/80 text-emerald-700" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 mb-1 uppercase">थोडक्यात वर्णन (Subtitle)</label>
+                          <input type="text" value={pkg.sub}
+                            onChange={e => store.updatePackage(pkg.id, { sub: e.target.value })}
+                            className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium bg-white/80" />
+                        </div>
+
+                        {/* Features */}
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase">सुविधा (Features)</label>
+                          <div className="space-y-1.5">
+                            {(pkg.features || []).map((f, fi) => (
+                              <div key={fi} className="flex gap-2">
+                                <input type="text" value={f}
+                                  onChange={e => {
+                                    const upd = [...(pkg.features || [])];
+                                    upd[fi] = e.target.value;
+                                    store.updatePackage(pkg.id, { features: upd });
+                                  }}
+                                  className="flex-1 px-2.5 py-1.5 rounded-xl border border-slate-200 text-[11px] font-medium bg-white/80"
+                                  placeholder={`सुविधा #${fi + 1}`} />
+                                <button type="button"
+                                  onClick={() => store.updatePackage(pkg.id, { features: (pkg.features||[]).filter((_,i)=>i!==fi) })}
+                                  className="px-2 py-1 rounded-xl bg-rose-100 text-rose-600 font-black text-[10px] cursor-pointer hover:bg-rose-200">✕</button>
+                              </div>
+                            ))}
+                            <button type="button"
+                              onClick={() => store.updatePackage(pkg.id, { features: [...(pkg.features||[]), ""] })}
+                              className="text-[11px] font-black text-[#810B38] hover:underline cursor-pointer">
+                              + सुविधा जोडा
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Featured toggle */}
+                        <div className="flex items-center gap-2 pt-1">
+                          <input type="checkbox" id={`feat-${pkg.id}`} checked={!!pkg.featured}
+                            onChange={e => store.updatePackage(pkg.id, { featured: e.target.checked })}
+                            className="w-4 h-4 accent-[#810B38] cursor-pointer" />
+                          <label htmlFor={`feat-${pkg.id}`} className="text-xs font-black text-slate-700 cursor-pointer">
+                            ⭐ Featured / लोकप्रिय योजना म्हणून दाखवा
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Save All */}
+              <div className="flex justify-end border-t border-pink-100 pt-4">
+                <button type="button"
+                  onClick={() => { store.syncAllToFirebaseCloud(); showToast("💾 सर्व योजना सेव्ह झाल्या!"); }}
+                  className="px-8 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-lg cursor-pointer transition active:scale-95">
+                  💾 सर्व योजना सेव्ह करा (Save All)
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* ==================================================================== */}
         {/* PAGE 10: CONTACT & SITE INFO (संपर्क व मुख्य माहिती) */}
@@ -1711,13 +2393,14 @@ export default function AdminPage() {
         {activeTab === "contact" && (
           <div className="bg-white rounded-3xl p-6 shadow-sm border-2 border-pink-100 space-y-6">
             <div className="border-b border-pink-100 pb-4">
-              <h3 className="text-lg font-black text-[#810B38]">⚙️ संपर्क माहिती व फोन नंबर्स</h3>
-              <p className="text-xs text-slate-500 font-bold">वेबसाईटवर दिसणारे मोबाईल नंबर, पत्ता व नोटीस संदेश येथे बदला.</p>
+              <h3 className="text-lg font-black text-[#810B38]">⚙️ संपर्क माहिती व फोन नंबर्स (Contact & Site Info)</h3>
+              <p className="text-xs text-slate-500 font-bold">वेबसाईटवर दिसणारे मोबाईल नंबर, पत्ता, नोटीस आणि नवीन संपर्क जोडण्यासाठी खालील पर्याय वापरा.</p>
             </div>
 
+            {/* Main Primary Contact Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">मोबाईल नंबर १ (Primary Phone)</label>
+                <label className="block text-xs font-extrabold text-slate-700 mb-1">📞 मोबाईल नंबर १ (Primary Phone)</label>
                 <input
                   type="text"
                   value={siteForm.phone1 || ""}
@@ -1727,7 +2410,7 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">मोबाईल नंबर २ (Secondary Phone)</label>
+                <label className="block text-xs font-extrabold text-slate-700 mb-1">📞 मोबाईल नंबर २ (Secondary Phone)</label>
                 <input
                   type="text"
                   value={siteForm.phone2 || ""}
@@ -1737,7 +2420,7 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">ईमेल पत्ता (Email)</label>
+                <label className="block text-xs font-extrabold text-slate-700 mb-1">✉️ ईमेल पत्ता (Email)</label>
                 <input
                   type="email"
                   value={siteForm.email || ""}
@@ -1747,7 +2430,7 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-slate-700 mb-1">पत्ता (Address)</label>
+                <label className="block text-xs font-extrabold text-slate-700 mb-1">📍 पत्ता (Address)</label>
                 <input
                   type="text"
                   value={siteForm.address || ""}
@@ -1768,12 +2451,208 @@ export default function AdminPage() {
               />
             </div>
 
+            {/* ── ADDITIONAL CONTACTS SECTION ───────────────────────────── */}
+            <div className="p-5 rounded-3xl bg-pink-50/50 border-2 border-pink-200 space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <h4 className="text-base font-black text-[#810B38] flex items-center gap-2">
+                    <span>📇</span> अतिरिक्त संपर्क व्यक्ती व विभाग (Additional Contacts & Helplines)
+                  </h4>
+                  <p className="text-xs text-slate-500 font-bold">विभाग / व्यवस्थापक / इमर्जन्सी संपर्क क्रमांक जोडा किंवा बदला.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAddContactForm((v) => !v)}
+                  className="px-4 py-2 rounded-2xl text-xs font-black bg-[#810B38] text-white hover:bg-[#68082c] cursor-pointer transition active:scale-95 shadow-sm"
+                >
+                  {showAddContactForm ? "✕ बंद करा" : "➕ नवीन संपर्क जोडा"}
+                </button>
+              </div>
+
+              {/* Add New Contact Form */}
+              {showAddContactForm && (
+                <div className="p-4 rounded-2xl bg-white border-2 border-pink-300 space-y-3 shadow-inner">
+                  <h5 className="text-xs font-black text-[#810B38]">➕ नवीन संपर्क माहिती प्रविष्ट करा:</h5>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-extrabold text-slate-600 mb-1">विभाग / पदनाम (Title/Dept) *</label>
+                      <input
+                        type="text"
+                        value={newContact.title}
+                        onChange={(e) => setNewContact({ ...newContact, title: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-pink-200 font-bold text-xs bg-pink-50/30"
+                        placeholder="उदा. चौकशी कक्ष / हेल्पलाईन / व्यवस्थापक"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-extrabold text-slate-600 mb-1">व्यक्तिचे नाव / उपशीर्षक (Name/Subtitle)</label>
+                      <input
+                        type="text"
+                        value={newContact.name}
+                        onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-pink-200 font-bold text-xs bg-pink-50/30"
+                        placeholder="उदा. श्री. सचिन पाटील (ऑफीस व्यवस्थापक)"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-extrabold text-slate-600 mb-1">मोबाईल नंबर (Phone) *</label>
+                      <input
+                        type="text"
+                        value={newContact.phone}
+                        onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-pink-200 font-bold text-xs bg-pink-50/30 text-emerald-700"
+                        placeholder="उदा. +91 98500 12345"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-extrabold text-slate-600 mb-1">ईमेल पत्ता (Email - optional)</label>
+                      <input
+                        type="email"
+                        value={newContact.email}
+                        onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
+                        className="w-full px-3 py-2 rounded-xl border border-pink-200 font-bold text-xs bg-pink-50/30"
+                        placeholder="उदा. info@aanadshala.org"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!newContact.title.trim() || !newContact.phone.trim()) {
+                          showToast("❌ विभाग नाव व मोबाईल नंबर आवश्यक आहे!");
+                          return;
+                        }
+                        const itemToAdd = {
+                          id: `cnt-${Date.now()}`,
+                          title: newContact.title.trim(),
+                          name: newContact.name.trim(),
+                          phone: newContact.phone.trim(),
+                          email: newContact.email.trim(),
+                        };
+                        const updatedList = [...(siteForm.contactsList || []), itemToAdd];
+                        const updatedSiteForm = { ...siteForm, contactsList: updatedList };
+                        setSiteForm(updatedSiteForm);
+                        store.updateSiteData(updatedSiteForm);
+                        store.syncAllToFirebaseCloud();
+                        setNewContact({ title: "", name: "", phone: "", email: "" });
+                        setShowAddContactForm(false);
+                        showToast("✅ नवीन संपर्क जोडला व सेव्ह झाला!");
+                      }}
+                      className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs cursor-pointer shadow-md active:scale-95"
+                    >
+                      ✅ जोडा (Add Contact)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddContactForm(false)}
+                      className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs cursor-pointer active:scale-95"
+                    >
+                      रद्द करा
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Contact List Cards */}
+              {(!siteForm.contactsList || siteForm.contactsList.length === 0) ? (
+                <div className="py-6 text-center rounded-2xl border-2 border-dashed border-pink-200 bg-white text-slate-400 font-bold text-xs">
+                  कोणताही अतिरिक्त संपर्क जोडलेला नाही. जोडण्यासाठी वरील "नवीन संपर्क जोडा" वापरा.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {siteForm.contactsList.map((cnt, idx) => (
+                    <div key={cnt.id || idx} className="p-4 rounded-2xl bg-white border-2 border-pink-200 space-y-3 shadow-sm relative">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black px-2.5 py-1 rounded-lg bg-pink-100 text-[#810B38]">
+                          📞 संपर्क #{idx + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm("हा संपर्क डिलीट करायचा आहे?")) {
+                              const updatedList = (siteForm.contactsList || []).filter((_, i) => i !== idx);
+                              const updatedSiteForm = { ...siteForm, contactsList: updatedList };
+                              setSiteForm(updatedSiteForm);
+                              store.updateSiteData(updatedSiteForm);
+                              store.syncAllToFirebaseCloud();
+                              showToast("🗑️ संपर्क डिलीट झाला!");
+                            }
+                          }}
+                          className="px-2 py-0.5 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 font-black text-[10px] cursor-pointer"
+                        >
+                          🗑️ डिलीट
+                        </button>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 uppercase mb-0.5">विभाग / पदनाम (Title)</label>
+                          <input
+                            type="text"
+                            value={cnt.title || ""}
+                            onChange={(e) => {
+                              const updated = [...(siteForm.contactsList || [])];
+                              updated[idx] = { ...updated[idx], title: e.target.value };
+                              setSiteForm({ ...siteForm, contactsList: updated });
+                            }}
+                            className="w-full px-3 py-1.5 rounded-xl border border-slate-200 font-bold text-xs bg-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-500 uppercase mb-0.5">नाव / उपशीर्षक (Name)</label>
+                          <input
+                            type="text"
+                            value={cnt.name || ""}
+                            onChange={(e) => {
+                              const updated = [...(siteForm.contactsList || [])];
+                              updated[idx] = { ...updated[idx], name: e.target.value };
+                              setSiteForm({ ...siteForm, contactsList: updated });
+                            }}
+                            className="w-full px-3 py-1.5 rounded-xl border border-slate-200 font-medium text-xs bg-white"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-0.5">फोन (Phone)</label>
+                            <input
+                              type="text"
+                              value={cnt.phone || ""}
+                              onChange={(e) => {
+                                const updated = [...(siteForm.contactsList || [])];
+                                updated[idx] = { ...updated[idx], phone: e.target.value };
+                                setSiteForm({ ...siteForm, contactsList: updated });
+                              }}
+                              className="w-full px-3 py-1.5 rounded-xl border border-slate-200 font-bold text-xs bg-white text-emerald-700"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-0.5">ईमेल (Email)</label>
+                            <input
+                              type="text"
+                              value={cnt.email || ""}
+                              onChange={(e) => {
+                                const updated = [...(siteForm.contactsList || [])];
+                                updated[idx] = { ...updated[idx], email: e.target.value };
+                                setSiteForm({ ...siteForm, contactsList: updated });
+                              }}
+                              className="w-full px-3 py-1.5 rounded-xl border border-slate-200 font-medium text-xs bg-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end pt-2">
               <button
                 onClick={saveSiteInfo}
-                className="px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg cursor-pointer"
+                className="px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow-lg cursor-pointer transition active:scale-95"
               >
-                💾 संपर्क माहिती सेव्ह करा (Save Info)
+                💾 सर्व संपर्क माहिती सेव्ह करा (Save Info)
               </button>
             </div>
           </div>

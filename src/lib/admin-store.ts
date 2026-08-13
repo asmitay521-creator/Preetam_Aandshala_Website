@@ -3,30 +3,208 @@ import { db, storage } from "@/firebase";
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-export async function uploadImageToFirebase(file: File, pathFolder = "admin_uploads"): Promise<string> {
-  return new Promise((resolve) => {
-    try {
-      const fileRef = ref(storage, `${pathFolder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`);
-      const uploadPromise = uploadBytes(fileRef, file).then((snapshot) => getDownloadURL(snapshot.ref));
-      const timeoutPromise = new Promise<string>((_, reject) =>
-        setTimeout(() => reject(new Error("Firebase Storage Timeout")), 1200)
-      );
+export async function compressImageToBlob(
+  file: File,
+  maxWidth = 1200,
+  maxHeight = 1200,
+  quality = 0.8
+): Promise<Blob | File> {
+  if (typeof window === "undefined" || !file.type.startsWith("image/")) {
+    return file;
+  }
 
-      Promise.race([uploadPromise, timeoutPromise])
-        .then((url) => resolve(url))
-        .catch(() => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve((e.target?.result as string) || "");
-          reader.onerror = () => resolve("");
-          reader.readAsDataURL(file);
-        });
+  return new Promise((resolve) => {
+    let resolved = false;
+    const safeResolve = (result: Blob | File) => {
+      if (!resolved) {
+        resolved = true;
+        resolve(result);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      safeResolve(file);
+    }, 3000);
+
+    try {
+      const objectUrl = URL.createObjectURL(file);
+      const img = new Image();
+
+      img.onload = () => {
+        clearTimeout(timer);
+        try {
+          let width = img.width || 800;
+          let height = img.height || 600;
+
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob(
+              (blob) => {
+                URL.revokeObjectURL(objectUrl);
+                safeResolve(blob || file);
+              },
+              "image/jpeg",
+              quality
+            );
+          } else {
+            URL.revokeObjectURL(objectUrl);
+            safeResolve(file);
+          }
+        } catch (e) {
+          URL.revokeObjectURL(objectUrl);
+          safeResolve(file);
+        }
+      };
+
+      img.onerror = () => {
+        clearTimeout(timer);
+        URL.revokeObjectURL(objectUrl);
+        safeResolve(file);
+      };
+
+      img.src = objectUrl;
     } catch (err) {
+      clearTimeout(timer);
+      safeResolve(file);
+    }
+  });
+}
+
+export async function compressImage(
+  file: File,
+  maxWidth = 800,
+  maxHeight = 800,
+  quality = 0.7
+): Promise<string> {
+  return new Promise((resolve) => {
+    let resolved = false;
+    const safeResolve = (url: string) => {
+      if (!resolved) {
+        resolved = true;
+        resolve(url);
+      }
+    };
+
+    const timer = setTimeout(() => {
       const reader = new FileReader();
-      reader.onload = (e) => resolve((e.target?.result as string) || "");
-      reader.onerror = () => resolve("");
+      reader.onload = (e) => safeResolve((e.target?.result as string) || "");
+      reader.onerror = () => safeResolve("");
+      reader.readAsDataURL(file);
+    }, 2500);
+
+    if (typeof window === "undefined" || !file.type.startsWith("image/")) {
+      clearTimeout(timer);
+      const reader = new FileReader();
+      reader.onload = (e) => safeResolve((e.target?.result as string) || "");
+      reader.onerror = () => safeResolve("");
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    try {
+      const objectUrl = URL.createObjectURL(file);
+      const img = new Image();
+
+      img.onload = () => {
+        clearTimeout(timer);
+        try {
+          let width = img.width || 600;
+          let height = img.height || 400;
+
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(width, 1);
+          canvas.height = Math.max(height, 1);
+          const ctx = canvas.getContext("2d");
+
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL("image/jpeg", quality);
+            URL.revokeObjectURL(objectUrl);
+            safeResolve(dataUrl);
+          } else {
+            URL.revokeObjectURL(objectUrl);
+            const reader = new FileReader();
+            reader.onload = (e) => safeResolve((e.target?.result as string) || "");
+            reader.onerror = () => safeResolve("");
+            reader.readAsDataURL(file);
+          }
+        } catch (err) {
+          URL.revokeObjectURL(objectUrl);
+          const reader = new FileReader();
+          reader.onload = (e) => safeResolve((e.target?.result as string) || "");
+          reader.onerror = () => safeResolve("");
+          reader.readAsDataURL(file);
+        }
+      };
+
+      img.onerror = () => {
+        clearTimeout(timer);
+        URL.revokeObjectURL(objectUrl);
+        const reader = new FileReader();
+        reader.onload = (e) => safeResolve((e.target?.result as string) || "");
+        reader.onerror = () => safeResolve("");
+        reader.readAsDataURL(file);
+      };
+
+      img.src = objectUrl;
+    } catch (err) {
+      clearTimeout(timer);
+      const reader = new FileReader();
+      reader.onload = (e) => safeResolve((e.target?.result as string) || "");
+      reader.onerror = () => safeResolve("");
       reader.readAsDataURL(file);
     }
   });
+}
+
+export async function uploadImageToFirebase(file: File, pathFolder = "admin_uploads"): Promise<string> {
+  const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.]/g, "_");
+  const fileRef = ref(storage, `${pathFolder}/${Date.now()}_${sanitizedFileName}`);
+
+  try {
+    const payload = file.type.startsWith("image/") ? await compressImageToBlob(file, 1400, 1400, 0.8) : file;
+    
+    // Attempt Firebase Storage Upload with 8s timeout
+    const uploadPromise = uploadBytes(fileRef, payload).then((snapshot) => getDownloadURL(snapshot.ref));
+    const timeoutPromise = new Promise<string>((_, reject) =>
+      setTimeout(() => reject(new Error("Firebase Storage Timeout")), 8000)
+    );
+
+    const downloadUrl = await Promise.race([uploadPromise, timeoutPromise]);
+    if (downloadUrl && downloadUrl.startsWith("http")) {
+      return downloadUrl;
+    }
+    throw new Error("Invalid URL from storage");
+  } catch (err) {
+    console.warn("Firebase Storage upload warning, attempting compressed fallback:", err);
+    const fallbackUrl = await compressImage(file, 600, 600, 0.6);
+    return fallbackUrl || "";
+  }
 }
 
 // ============================================================================
@@ -101,6 +279,14 @@ export type SportsPackageItem = {
   features: string[];
 };
 
+export type ExtraContactItem = {
+  id: string;
+  title: string;
+  name?: string;
+  phone: string;
+  email?: string;
+};
+
 export type SiteData = {
   nameMr: string;
   tagline: string;
@@ -128,6 +314,7 @@ export type SiteData = {
   sportsFacilities?: SportsFacilityItem[];
   sportsPackages?: SportsPackageItem[];
   sportsGallery?: string[];
+  contactsList?: ExtraContactItem[];
 };
 
 export type HomeNewsItem = {
@@ -146,7 +333,7 @@ export type PackageItem = {
   price: string;
   sub: string;
   badge: string;
-  periodType: "days" | "month" | "year";
+  periodType: "days" | "week" | "month" | "year";
   features: string[];
   featured?: boolean;
 };
@@ -167,6 +354,7 @@ export type AboutParagraphItem = {
 };
 
 export type AboutData = {
+  mainTitle?: string;
   storyP1: string;
   storyP2: string;
   storyP3: string;
@@ -297,6 +485,10 @@ const initialSiteData: SiteData = {
     "/images/Screenshot 2026-07-31 103659.png",
     "/images/pickleball-court.png",
     "/images/sports_club_building_card.png",
+  ],
+  contactsList: [
+    { id: "cnt-1", title: "आनंदशाळा हेल्पलाईन", name: "ॲडव्हान्स बुकिंग / चौकशी", phone: "93702 37633", email: "preetamanandshala@gmail.com" },
+    { id: "cnt-2", title: "कार्यालय मुख्य फोन", name: "ऑफीस / प्रशासकीय कामे", phone: "94232 58859", email: "preetamanandshala@gmail.com" },
   ],
 };
 
@@ -685,8 +877,11 @@ const STORAGE_KEYS = {
   sportsSchedule: "anandshala_sports_schedule_data_v1",
 };
 
+const memoryStore: Record<string, any> = {};
+
 export function getStoredData<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
+  if (memoryStore[key] !== undefined) return memoryStore[key];
   try {
     const item = localStorage.getItem(key);
     if (!item) return fallback;
@@ -702,13 +897,13 @@ export function getStoredData<T>(key: string, fallback: T): T {
 
 export function setStoredData<T>(key: string, data: T): void {
   if (typeof window === "undefined") return;
+  memoryStore[key] = data;
   try {
     localStorage.setItem(key, JSON.stringify(data));
-    window.dispatchEvent(new Event("admin_store_updated"));
   } catch (e: any) {
-    console.error("LocalStorage save error:", e);
-    window.dispatchEvent(new Event("admin_store_updated"));
+    console.warn("LocalStorage save warning (using in-memory fallback):", e);
   }
+  window.dispatchEvent(new Event("admin_store_updated"));
 
   // Asynchronously sync to Firestore Database
   try {
@@ -1080,10 +1275,6 @@ export function useAdminStore() {
     setStoredData(STORAGE_KEYS.sportsSchedule, updated);
   };
 
-  const activeBrochures = brochures.filter(
-    (b) => b.id !== "broch-2" && b.category !== "स्पोर्ट्स क्लब ब्रोशर" && !b.category.includes("स्पोर्ट्स")
-  );
-
   const sportsInquiries = inquiries.filter(isSportsInquiryItem);
   const anandshalaInquiries = inquiries.filter((i) => !isSportsInquiryItem(i));
 
@@ -1119,10 +1310,10 @@ export function useAdminStore() {
     }
 
     if (successCount === 0 && firstError) {
-      throw firstError;
+      console.warn("Cloud sync warning: Firestore offline or permission missing.", firstError);
+    } else {
+      console.log(`🔥 Successfully synced ${successCount} collection items to Firestore Cloud Database!`);
     }
-
-    console.log(`🔥 Successfully synced ${successCount} collection items to Firestore Cloud Database!`);
     return successCount;
   };
 
@@ -1135,7 +1326,7 @@ export function useAdminStore() {
     anandshalaInquiries,
     testimonials,
     packages,
-    brochures: activeBrochures,
+    brochures,
     homeNews,
     scheduleConfig,
     sportsScheduleConfig,

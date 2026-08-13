@@ -24,6 +24,7 @@ import {
   X
 } from "lucide-react";
 import { Reveal } from "@/components/site/Reveal";
+import { useAdminStore } from "@/lib/admin-store";
 import "./PricingSection.css";
 
 interface RateItem {
@@ -172,6 +173,7 @@ interface SelectedPackageModal {
 }
 
 const PricingSection: React.FC = () => {
+  const store = useAdminStore();
   const [activeTab, setActiveTab] = useState<FreqType>("overview");
   const [clickedTab, setClickedTab] = useState<FreqType | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<SelectedPackageModal | null>(null);

@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
 import { navLinks, site } from "@/lib/site-info";
 import { useLanguage } from "@/lib/use-language";
+import { useAdminStore } from "@/lib/admin-store";
 
 export function SiteFooter() {
   const { isEn } = useLanguage();
+  const store = useAdminStore();
+  const siteData = store.siteData;
+
+  const phoneList = [siteData.phone1, siteData.phone2].filter(Boolean);
+  const emailAddr = siteData.email || site.email;
+  const addressText = isEn ? site.addressEn : (siteData.address || site.addressMr);
 
   return (
     <footer className="relative mt-0 overflow-hidden text-slate-100 bg-slate-900 border-t border-slate-800">
@@ -89,7 +96,7 @@ export function SiteFooter() {
               {isEn ? "Contact Us" : "संपर्क"}
             </h4>
             <ul className="space-y-4 text-sm">
-              {site.phones.map((p) => (
+              {phoneList.map((p) => (
                 <li key={p}>
                   <a
                     href={`tel:${p.replace(/\s/g, "")}`}
@@ -104,20 +111,20 @@ export function SiteFooter() {
               ))}
               <li>
                 <a
-                  href={`mailto:${site.email}`}
+                  href={`mailto:${emailAddr}`}
                   className="group flex items-center gap-3 font-medium text-slate-400 transition-all duration-300 hover:text-[#f472b6]"
                 >
                   <div className="grid size-8 place-items-center rounded-lg bg-slate-800 text-[#f472b6] group-hover:bg-[#f472b6] group-hover:text-white transition-all duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                   </div>
-                  <span className="break-all">{site.email}</span>
+                  <span className="break-all">{emailAddr}</span>
                 </a>
               </li>
               <li className="flex items-start gap-3 pt-1 leading-relaxed font-medium text-slate-400">
                 <div className="grid size-8 place-items-center rounded-lg bg-slate-800 text-[#f472b6] shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                 </div>
-                <span>{isEn ? site.addressEn : site.addressMr}</span>
+                <span>{addressText}</span>
               </li>
             </ul>
           </div>

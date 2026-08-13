@@ -25,6 +25,7 @@ import {
   PhoneCall
 } from "lucide-react";
 
+import { useAdminStore } from "@/lib/admin-store";
 import "./brochure.css";
 import buildingImage from "../assets/anandshala-building.png";
 
@@ -40,6 +41,7 @@ interface ModalDetail {
 
 const Brochure: React.FC = () => {
   const { isEn } = useLanguage();
+  const store = useAdminStore();
   const [selectedDetail, setSelectedDetail] = useState<ModalDetail | null>(null);
 
   const photoItems: ModalDetail[] = [
@@ -464,6 +466,46 @@ const Brochure: React.FC = () => {
         </motion.div>
 
       </div>
+
+      {/* DYNAMIC BROCHURES SECTION FROM ADMIN STORE */}
+      {store.brochures && store.brochures.length > 0 && (
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          <div className="text-center mb-8">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-100 text-[#810B38] font-black text-xs sm:text-sm border border-pink-300">
+              <Sparkles size={16} />
+              <span>अधिकृत माहिती पत्रके व ब्रोशर (Download Brochures)</span>
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black text-[#541A1A] mt-2">
+              डाउनलोड करा अधिकृत माहिती पत्रके
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {store.brochures.map((b) => (
+              <div key={b.id} className="bg-white rounded-2xl p-5 border-2 border-pink-200 shadow-lg flex flex-col justify-between space-y-4 hover:shadow-xl transition">
+                <div>
+                  <span className="inline-block bg-pink-50 text-[#810B38] text-[11px] font-black px-3 py-1 rounded-full border border-pink-200 mb-2">
+                    {b.category}
+                  </span>
+                  <h3 className="font-black text-slate-800 text-base sm:text-lg leading-tight">{b.title}</h3>
+                  {b.description && <p className="text-xs text-slate-600 font-semibold mt-2">{b.description}</p>}
+                </div>
+                <div className="pt-2 border-t border-pink-100 flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-400">{b.date}</span>
+                  <a
+                    href={b.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-gradient-to-r from-[#810B38] to-[#be185d] text-white font-extrabold text-xs rounded-xl shadow hover:opacity-95 transition"
+                  >
+                    {b.fileType === "pdf" ? "📄 PDF पहा / डाउनलोड" : "🖼️ फोटो पहा"}
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ══════════════════════════════════════════════════════════════
           POPUP MODAL WINDOW FOR CLICKED ITEM

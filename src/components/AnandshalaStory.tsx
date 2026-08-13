@@ -24,10 +24,13 @@ import {
   Gift
 } from "lucide-react";
 
+import { useAdminStore } from "@/lib/admin-store";
 import buildingImage from "../assets/anandshala-building.png";
 
 const AnandshalaStory: React.FC = () => {
   const { isEn } = useLanguage();
+  const store = useAdminStore();
+  const about = store.aboutData;
 
   const [selectedPillar, setSelectedPillar] = useState<{
     title: string;
@@ -241,7 +244,7 @@ const AnandshalaStory: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              माझ्या जन्माची बीजे रुजली गेली ती <strong>श्री. अभिनव जगन्नाथ कामाजी</strong>, रा. सांगली यांच्या स्वप्न प्रकल्पातून. अभिनव यांनी <strong>२६ जानेवारी २००० रोजी</strong> व्यवसाय सुरु केला व प्रत्येक वर्षी वर्धापन दिन, वाढदिवस, ज्येष्ठ नागरिक आनंद मेळावा व सहलीचे आयोजन करुन साजरा करतात. दि. <strong>१५ ऑगस्ट २०२३ रोजी</strong> स्वातंत्र्य दिनाच्या व ज्येष्ठ नागरिक आनंद मेळाव्याच्या शुभ मुहूर्तावर भूमिपूजन संपन्न झाले.
+              {about?.storyP1 || "माझ्या जन्माची बीजे रुजली ती श्री. अभिनय जगन्नाथ कामाजी यांच्या स्वप्न प्रकल्पातून. अभिनव यांनी २६ जानेवारी २००० रोजी व्यवसाय सुरु केला व प्रत्येक वर्षी वाढदिवस व मेळावा साजरा करतात."}
             </motion.p>
 
             <motion.p 
@@ -251,8 +254,27 @@ const AnandshalaStory: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              माझा जन्म म्हणजेच <strong>शुभारंभ दि. २६ जानेवारी २०२६</strong> आपल्या उपस्थितीत होईलच! सर्व ज्येष्ठ नागरिकांनी प्रवेशाची तयारी करुन स्वतःचे व इतरांचे म्हातारपण आनंदाने, उत्साहाने व निरोगी घालवण्यासाठी प्रवेश घेऊन माझ्या कुशीत यायचे आहे हे विसरु नये.
+              {about?.storyP2 || "माणूस हा एकत्र राहणारा, बोलणारा, नाती जपणारा असतो. पाल्य मोठे होऊन दूर देशी जाते तेव्हा मागे उरतात त्या आठवणी आणि एकांत... याच विचारातून ही संकल्पना समोर आली."}
             </motion.p>
+
+            {about?.storyP3 && (
+              <motion.p 
+                className="as-story-paragraph"
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                {about.storyP3}
+              </motion.p>
+            )}
+
+            {about?.awardNotice && (
+              <div className="mt-4 p-3 bg-pink-100/80 border border-pink-300 rounded-xl text-xs sm:text-sm font-black text-[#810B38] flex items-center gap-2">
+                <Award className="size-5 text-pink-600 shrink-0" />
+                <span>{about.awardNotice}</span>
+              </div>
+            )}
           </motion.div>
 
           {/* Right Side: Visual Overlapping Image Showcase */}
@@ -271,14 +293,14 @@ const AnandshalaStory: React.FC = () => {
                 transition={{ duration: 0.4 }}
               >
                 <img 
-                  src="/images/anandshala_building_sky.jpg" 
+                  src={(about?.photos && about.photos[0]) || "/images/anandshala_building_sky.jpg"} 
                   alt="प्रीतम आनंदशाळा इमारत" 
                   className="as-main-img" 
                 />
                 <div className="as-img-overlay-gradient" />
               </motion.div>
 
-              {/* Overlapping Event Image with Entrance & Hover Animations */}
+              {/* Overlapping Event Image */}
               <motion.div 
                 className="as-overlap-img-box"
                 initial={{ opacity: 0, scale: 0.8, y: 40 }}
@@ -288,8 +310,8 @@ const AnandshalaStory: React.FC = () => {
                 transition={{ duration: 0.7, delay: 0.3 }}
               >
                 <img 
-                  src="/images/imgever.JPG" 
-                  alt="आनंदशाळा स्नेहमिलन व दीपप्रज्वलन सोहळा" 
+                  src={(about?.photos && about.photos[1]) || "/images/imgever.JPG"} 
+                  alt="आनंदशाळा स्नेहमिलन सोहळा" 
                   className="as-overlap-img"
                   onError={(e) => { e.currentTarget.src = "/images/anandshala_building_sky.jpg"; }}
                 />

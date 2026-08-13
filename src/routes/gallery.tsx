@@ -15,33 +15,49 @@ import {
   RotateCcw
 } from "lucide-react";
 
-// ===== Gallery Data (100% Unique & Real Photos) =====
-const galleryImages = [
-  { id: 1,  titleEn: "Inauguration Ceremony", titleMr: "भव्य शुभारंभ व दीपप्रज्वलन सोहळा", date: "26 Jan 2026", image: "/images/gallery imgage1.JPG" },
-  { id: 2,  titleEn: "Senior Citizens Anandshala Gathering", titleMr: "ज्येष्ठ नागरिक आनंद मेळावा", date: "26 Jan 2026", image: "/images/gallery image2.JPG" },
-  { id: 3,  titleEn: "Cultural Performance & Event", titleMr: "सांस्कृतिक कार्यक्रम व नृत्य सादरीकरण", date: "26 Jan 2026", image: "/images/gallery image3.JPG" },
-  { id: 4,  titleEn: "Annual Function Celebration", titleMr: "वार्षिक स्नेहसंमेलन सोहळा", date: "26 Jan 2026", image: "/images/gallery image4.JPG" },
-  { id: 5,  titleEn: "Dignitaries & Chief Guests Visit", titleMr: "प्रमुख पाहुणे व मान्यवर सत्कार", date: "26 Jan 2026", image: "/images/gallery image5.JPG" },
-  { id: 6,  titleEn: "Sports & Fitness Activities", titleMr: "क्रीडा व विरंगुळा उपक्रम", date: "26 Jan 2026", image: "/images/gallery image6.JPG" },
-  { id: 7,  titleEn: "Anandshala Campus Architecture", titleMr: "आनंदशाळा संकुल व निसर्गरम्य परिसर", date: "26 Jan 2026", image: "/images/gallery image7.JPG" },
-  { id: 8,  titleEn: "Felicitation & Senior Meet", titleMr: "ज्येष्ठ नागरिक सत्कार सोहळा", date: "26 Jan 2026", image: "/images/gallery image8.JPG" },
-  { id: 9,  titleEn: "Original Campus Panorama", titleMr: "आनंदशाळा भव्य मूळ परिसर", date: "2024", image: "/images/Anadshala original.JPG" },
-  { id: 10, titleEn: "Event Celebration Photo 1", titleMr: "आनंद सोहळा विशेष क्षण १", date: "2024", image: "/images/slider1.JPG" },
-  { id: 11, titleEn: "Event Celebration Photo 2", titleMr: "आनंद सोहळा विशेष क्षण २", date: "2024", image: "/images/slider2.JPG" },
-  { id: 12, titleEn: "Event Celebration Photo 4", titleMr: "आनंद सोहळा विशेष क्षण ४", date: "2024", image: "/images/slider4.JPG" },
-  { id: 13, titleEn: "Memorable Gathering", titleMr: "आनंदी आठवणी सोहळा", date: "2024", image: "/images/imgever.JPG" },
-  { id: 14, titleEn: "Pickleball & Sports Court", titleMr: "पिकलबॉल कोर्ट व क्रीडा संकुल", date: "2024", image: "/images/pickleball-court.png" },
-  { id: 15, titleEn: "Sports Complex View", titleMr: "सुसज्ज स्पोर्ट्स क्लब संकुल", date: "2024", image: "/images/sports img.png" },
+import { useAdminStore } from "@/lib/admin-store";
+
+// ===== Fallback Gallery Data =====
+const fallbackGalleryImages = [
+  { id: "1", titleEn: "Inauguration Ceremony", titleMr: "भव्य शुभारंभ व दीपप्रज्वलन सोहळा", date: "26 Jan 2026", url: "/images/gallery imgage1.JPG", category: ["सर्व", "सोहळा"] },
+  { id: "2", titleEn: "Senior Citizens Anandshala Gathering", titleMr: "ज्येष्ठ नागरिक आनंद मेळावा", date: "26 Jan 2026", url: "/images/gallery image2.JPG", category: ["सर्व", "उपक्रम"] },
+  { id: "3", titleEn: "Cultural Performance & Event", titleMr: "सांस्कृतिक कार्यक्रम व नृत्य सादरीकरण", date: "26 Jan 2026", url: "/images/gallery image3.JPG", category: ["सर्व", "सांस्कृतिक"] },
+  { id: "4", titleEn: "Annual Function Celebration", titleMr: "वार्षिक स्नेहसंमेलन सोहळा", date: "26 Jan 2026", url: "/images/gallery image4.JPG", category: ["सर्व", "सोहळा"] },
+  { id: "5", titleEn: "Dignitaries & Chief Guests Visit", titleMr: "प्रमुख पाहुणे व मान्यवर सत्कार", date: "26 Jan 2026", url: "/images/gallery image5.JPG", category: ["सर्व", "सत्कार"] },
+  { id: "6", titleEn: "Sports & Fitness Activities", titleMr: "क्रीडा व विरंगुळा उपक्रम", date: "26 Jan 2026", url: "/images/gallery image6.JPG", category: ["सर्व", "स्पोर्ट्स"] },
+  { id: "7", titleEn: "Anandshala Campus Architecture", titleMr: "आनंदशाळा संकुल व निसर्गरम्य परिसर", date: "26 Jan 2026", url: "/images/gallery image7.JPG", category: ["सर्व", "परिसर"] },
+  { id: "8", titleEn: "Felicitation & Senior Meet", titleMr: "ज्येष्ठ नागरिक सत्कार सोहळा", date: "26 Jan 2026", url: "/images/gallery image8.JPG", category: ["सर्व", "सत्कार"] },
 ];
 
 function Gallery() {
   const { isEn } = useLanguage();
+  const store = useAdminStore();
+  const [selectedCategory, setSelectedCategory] = useState<string>("सर्व");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const filteredImages = galleryImages;
+  const rawImages = store.gallery && store.gallery.length > 0 ? store.gallery : fallbackGalleryImages;
+
+  // Compute unique categories
+  const categoriesSet = new Set<string>(["सर्व"]);
+  rawImages.forEach((item: any) => {
+    if (Array.isArray(item.category)) {
+      item.category.forEach((c: string) => categoriesSet.add(c));
+    } else if (typeof item.category === "string" && item.category) {
+      categoriesSet.add(item.category);
+    }
+  });
+  const categoriesList = Array.from(categoriesSet);
+
+  const filteredImages = rawImages.filter((item: any) => {
+    if (selectedCategory === "सर्व") return true;
+    if (Array.isArray(item.category)) {
+      return item.category.includes(selectedCategory);
+    }
+    return item.category === selectedCategory;
+  });
 
   const openImage = (index: number) => {
     setSelectedIndex(index);
@@ -97,7 +113,7 @@ function Gallery() {
     };
   }, [isPlaying, selectedIndex, filteredImages.length]);
 
-  const activePhoto = selectedIndex !== null ? filteredImages[selectedIndex] : null;
+  const activePhoto: any = selectedIndex !== null ? filteredImages[selectedIndex] : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] via-[#f1f5f9] to-[#ffffff]">
@@ -181,6 +197,25 @@ function Gallery() {
 
 
 
+          {/* CATEGORY FILTER PILLS */}
+          {categoriesList.length > 1 && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+              {categoriesList.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                    selectedCategory === cat
+                      ? "bg-[#810B38] text-white shadow-md scale-105"
+                      : "bg-white text-slate-700 hover:bg-pink-50 border border-slate-200"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+
         {/* ===== GALLERY CARDS GRID ===== */}
         {filteredImages.length === 0 ? (
           <div className="text-center py-16 text-slate-400 font-semibold">
@@ -188,33 +223,37 @@ function Gallery() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.03 }}
-                onClick={() => {
-                  setSelectedIndex(index);
-                  setIsPlaying(false);
-                  setZoomLevel(1);
-                }}
-                className="gallery-card-anim gal-img-wrapper group cursor-pointer relative w-full h-[260px] sm:h-[300px] rounded-2xl overflow-hidden shadow-md"
-              >
-                {/* 100% PURE FULL-COVERAGE CRYSTAL CLEAR PHOTO */}
-                <img
-                  src={item.image}
-                  alt={isEn ? item.titleEn : item.titleMr}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/gallery imgage1.JPG";
+            {filteredImages.map((item: any, index: number) => {
+              const imgSrc = item.url || item.image || "/images/gallery imgage1.JPG";
+              const titleText = item.caption || (isEn ? item.titleEn : item.titleMr) || "आनंदशाळा फोटो";
+              return (
+                <motion.div
+                  key={item.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.03 }}
+                  onClick={() => {
+                    setSelectedIndex(index);
+                    setIsPlaying(false);
+                    setZoomLevel(1);
                   }}
-                />
-
-
-              </motion.div>
-            ))}
+                  className="gallery-card-anim gal-img-wrapper group cursor-pointer relative w-full h-[260px] sm:h-[300px] rounded-2xl overflow-hidden shadow-md"
+                >
+                  <img
+                    src={imgSrc}
+                    alt={titleText}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/images/gallery imgage1.JPG";
+                    }}
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-white text-xs sm:text-sm font-extrabold line-clamp-2">{titleText}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -306,7 +345,7 @@ function Gallery() {
                 className="relative max-h-[85vh] max-w-[90vw] rounded-2xl overflow-auto shadow-2xl border border-white/10 flex items-center justify-center bg-black/90 p-2"
               >
                 <img
-                  src={activePhoto.image}
+                  src={activePhoto.url || activePhoto.image || ""}
                   alt=""
                   style={{
                     transform: `scale(${zoomLevel})`,

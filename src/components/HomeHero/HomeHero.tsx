@@ -15,7 +15,9 @@ export const HomeHero: React.FC = () => {
   const { isEn } = useLanguage();
   const store = useAdminStore();
 
-  const heroSlides = [
+  const storeImages = (store.siteData.aanandshalaImages || []).filter(Boolean);
+
+  const defaultSlides = [
     {
       image: "/images/slider1.JPG",
       tag: isEn ? "🏛️ Main Anandshala Campus" : "🏛️ मुख्य आनंदशाळा वास्तू",
@@ -35,6 +37,15 @@ export const HomeHero: React.FC = () => {
       subtitle: isEn ? "Vibrant, joyful & secure golden years with peer friends" : "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित जीवन सोहळा",
     },
   ];
+
+  const customSlides = storeImages.map((imgUrl, i) => ({
+    image: imgUrl,
+    tag: isEn ? `📸 Anandshala Photo ${i + 1}` : `📸 आनंदशाळा फोटो ${i + 1}`,
+    title: store.siteData.nameMr || "प्रीतम ज्येष्ठ नागरिक आनंदशाळा",
+    subtitle: store.siteData.tagline || "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते....",
+  }));
+
+  const heroSlides = customSlides.length > 0 ? customSlides : defaultSlides;
 
   // Preload all slider images in browser memory for zero delay
   useEffect(() => {

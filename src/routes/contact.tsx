@@ -6,7 +6,7 @@ import { site, sportsClub } from "@/lib/site-info";
 import { useLanguage } from "@/lib/use-language";
 
 function Contact() {
-  const { addInquiry } = useAdminStore();
+  const { addInquiry, siteData } = useAdminStore();
   const { isEn } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
@@ -14,6 +14,11 @@ function Contact() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("आनंदशाळा प्रवेश चौकशी");
   const [message, setMessage] = useState("");
+
+  const mainPhone1 = siteData.phone1 || (site.phones && site.phones[0]) || "+91-9370237633";
+  const mainPhone2 = siteData.phone2 || "+91-9423258859";
+  const mainEmail = siteData.email || site.email;
+  const extraContacts = siteData.contactsList || [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +95,7 @@ function Contact() {
             </div>
             <div>
               <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "Anandshala Helpline" : "आनंदशाळा हेल्पलाईन"}</p>
-              <a href="tel:+919370237633" className="text-[15px] font-black text-[#f472b6] tracking-wide">+91-9370237633</a>
+              <a href={`tel:${mainPhone1.replace(/\s+/g, "")}`} className="text-[15px] font-black text-[#f472b6] tracking-wide">{mainPhone1}</a>
             </div>
           </div>
 
@@ -101,7 +106,7 @@ function Contact() {
             </div>
             <div>
               <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "Office Contact" : "कार्यालय संपर्क"}</p>
-              <a href="tel:+919423258859" className="text-[15px] font-black text-[#662d91] tracking-wide">+91-9423258859</a>
+              <a href={`tel:${mainPhone2.replace(/\s+/g, "")}`} className="text-[15px] font-black text-[#662d91] tracking-wide">{mainPhone2}</a>
             </div>
           </div>
 
@@ -112,7 +117,7 @@ function Contact() {
             </div>
             <div>
               <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "WhatsApp Chat" : "चॅट WhatsApp"}</p>
-              <a href={sportsClub.whatsapp} target="_blank" rel="noopener noreferrer" className="text-[15px] font-black text-[#0071bc] tracking-wide">+91-9370237633</a>
+              <a href={sportsClub.whatsapp} target="_blank" rel="noopener noreferrer" className="text-[15px] font-black text-[#0071bc] tracking-wide">{mainPhone1}</a>
             </div>
           </div>
 
@@ -123,9 +128,26 @@ function Contact() {
             </div>
             <div>
               <p className="text-xs font-bold text-slate-500 mb-1">{isEn ? "Email Address" : "ई-मेल पत्ता"}</p>
-              <a href={`mailto:${site.email}`} className="text-[13px] font-black text-[#f26522] tracking-wide truncate block w-[160px] sm:w-full">{site.email}</a>
+              <a href={`mailto:${mainEmail}`} className="text-[13px] font-black text-[#f26522] tracking-wide truncate block w-[160px] sm:w-full">{mainEmail}</a>
             </div>
           </div>
+
+          {/* Dynamic Additional Contacts */}
+          {extraContacts.map((cnt) => (
+            <div key={cnt.id} className="flex items-center gap-4 bg-white rounded-[20px] p-6 shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                <Phone size={24} />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 mb-1">{cnt.title}</p>
+                {cnt.name && <p className="text-[11px] font-medium text-slate-400">{cnt.name}</p>}
+                <a href={`tel:${cnt.phone.replace(/\s+/g, "")}`} className="text-[14px] font-black text-emerald-600 tracking-wide block">{cnt.phone}</a>
+                {cnt.email && (
+                  <a href={`mailto:${cnt.email}`} className="text-[11px] font-bold text-slate-500 truncate block hover:underline">{cnt.email}</a>
+                )}
+              </div>
+            </div>
+          ))}
 
         </div>
 

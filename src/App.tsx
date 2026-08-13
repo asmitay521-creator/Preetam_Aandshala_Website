@@ -24,7 +24,7 @@ export default function App() {
           <Route path="/brochure" element={<BrochurePage />} />
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/*" element={<AdminPage />} />
           <Route path="*" element={<IndexComponent />} />
         </Routes>
       </main>
