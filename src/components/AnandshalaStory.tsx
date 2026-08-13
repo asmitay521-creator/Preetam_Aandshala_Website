@@ -16,7 +16,12 @@ import {
   Calendar,
   Quote,
   ShieldCheck,
-  Star
+  Star,
+  GraduationCap,
+  Stethoscope,
+  Bus,
+  Utensils,
+  Gift
 } from "lucide-react";
 
 import buildingImage from "../assets/anandshala-building.png";
@@ -236,9 +241,7 @@ const AnandshalaStory: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              माझ्या जन्माची बीजे रुजली ती <strong>श्री. अभिनव जगन्नाथ काकाणी</strong> (ता. सांगली) यांच्या स्वप्नातून. 
-              अभिनव यांनी <strong>२६ जानेवारी २०००</strong> रोजी व्यवसायाची सुरुवात केली. 
-              दरवर्षी वाढदिवस दिन, स्नेहमेळावा व ज्येष्ठ नागरिक मेळावा आयोजित करून तो अत्यंत उत्साहात व प्रेमाने साजरा केला जातो.
+              माझ्या जन्माची बीजे रुजली गेली ती <strong>श्री. अभिनव जगन्नाथ कामाजी</strong>, रा. सांगली यांच्या स्वप्न प्रकल्पातून. अभिनव यांनी <strong>२६ जानेवारी २००० रोजी</strong> व्यवसाय सुरु केला व प्रत्येक वर्षी वर्धापन दिन, वाढदिवस, ज्येष्ठ नागरिक आनंद मेळावा व सहलीचे आयोजन करुन साजरा करतात. दि. <strong>१५ ऑगस्ट २०२३ रोजी</strong> स्वातंत्र्य दिनाच्या व ज्येष्ठ नागरिक आनंद मेळाव्याच्या शुभ मुहूर्तावर भूमिपूजन संपन्न झाले.
             </motion.p>
 
             <motion.p 
@@ -248,36 +251,8 @@ const AnandshalaStory: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              ज्येष्ठ नागरिकांना हक्काचे व्यासपीठ, आरोग्यदायी वातावरण आणि विरंगुळा मिळावा या उद्देशाने सांगली शहरात 
-              <strong> १.५ एकर निसर्गरम्य जागेवर </strong> हा भव्य प्रकल्प साकारला आहे.
+              माझा जन्म म्हणजेच <strong>शुभारंभ दि. २६ जानेवारी २०२६</strong> आपल्या उपस्थितीत होईलच! सर्व ज्येष्ठ नागरिकांनी प्रवेशाची तयारी करुन स्वतःचे व इतरांचे म्हातारपण आनंदाने, उत्साहाने व निरोगी घालवण्यासाठी प्रवेश घेऊन माझ्या कुशीत यायचे आहे हे विसरु नये.
             </motion.p>
-
-            {/* Animated Trust Badges */}
-            <div className="as-trust-pills">
-              <motion.div 
-                className="as-trust-item"
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                whileHover={{ scale: 1.04, y: -2, backgroundColor: "#fce7f3" }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.6 }}
-              >
-                <ShieldCheck className="as-trust-icon" />
-                <span>१००% सुरक्षित व आपुलकीचे वातावरण</span>
-              </motion.div>
-
-              <motion.div 
-                className="as-trust-item"
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                whileHover={{ scale: 1.04, y: -2, backgroundColor: "#fce7f3" }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.7 }}
-              >
-                <Star className="as-trust-icon" />
-                <span>भारतातील एकमेव अद्वितीय संकल्पना</span>
-              </motion.div>
-            </div>
           </motion.div>
 
           {/* Right Side: Visual Overlapping Image Showcase */}
@@ -296,7 +271,7 @@ const AnandshalaStory: React.FC = () => {
                 transition={{ duration: 0.4 }}
               >
                 <img 
-                  src={buildingImage} 
+                  src="/images/anandshala_building_sky.jpg" 
                   alt="प्रीतम आनंदशाळा इमारत" 
                   className="as-main-img" 
                 />
@@ -316,156 +291,177 @@ const AnandshalaStory: React.FC = () => {
                   src="/images/imgever.JPG" 
                   alt="आनंदशाळा स्नेहमिलन व दीपप्रज्वलन सोहळा" 
                   className="as-overlap-img"
-                  onError={(e) => { e.currentTarget.src = buildingImage; }}
+                  onError={(e) => { e.currentTarget.src = "/images/anandshala_building_sky.jpg"; }}
                 />
                 <div className="as-founder-label">
                   <span className="as-founder-name">आनंदशाळा सोहळा</span>
                   <span className="as-founder-role">स्नेहमिलन व दीपप्रज्वलन</span>
                 </div>
               </motion.div>
-
-              {/* Floating Glass Badge with Continuous Motion */}
-              <motion.div 
-                className="as-floating-glass-badge"
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                animate={{ y: [0, -10, 0], rotate: [0, 1, 0] }}
-                transition={{ 
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                  rotate: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                  opacity: { duration: 0.5, delay: 0.5 },
-                  scale: { duration: 0.5, delay: 0.5 }
-                }}
-              >
-                <div className="as-glass-badge-icon">
-                  <Sparkles size={20} />
-                </div>
-                <div className="as-glass-badge-text">
-                  <strong>सांगलीचे भूषण</strong>
-                  <span>सर्वोत्कृष्ट सेवा संकल्पना</span>
-                </div>
-              </motion.div>
             </div>
           </motion.div>
         </div>
 
-        {/* ====================================
-            3. STATS STRIP
-        ==================================== */}
-        <motion.div 
-          className="as-stats-strip"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          {stats.map((st, idx) => (
-            <div key={idx} className="as-stat-card">
-              <div className="as-stat-icon-wrapper">
-                {st.icon}
-              </div>
-              <div className="as-stat-details">
-                <h4 className="as-stat-value">{st.value}</h4>
-                <p className="as-stat-label">{st.label}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
+
 
         {/* ====================================
             4. FOUR PILLARS GRID (FULL-WIDTH 1600px CANVAS - ZERO WASTED WHITESPACE)
         ==================================== */}
-        <div className="as-pillars-section w-full max-w-[1600px] mx-auto bg-gradient-to-b from-slate-50/90 via-pink-50/50 to-purple-50/60 p-5 sm:p-8 lg:p-10 rounded-[3rem] border-2 border-pink-200/80 shadow-2xl my-12">
-          <div className="as-pillars-header text-center mb-8">
-            <motion.span 
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-pink-100/80 text-[#be185d] font-black text-sm mb-3 shadow-sm border border-pink-200"
-            >
-              <Sparkles size={16} className="text-pink-600 animate-pulse" />
-              <span>आमची प्रमुख वैशिष्ट्ये</span>
-            </motion.span>
+        {/* REPLACEMENT SECTION: "प्रीतम यांची मदत करण्याची कार्य पद्धती" (UNIQUE PINK THEME INTERLOCKING TIMELINE PATHWAY) */}
+        <div className="w-full max-w-7xl mx-auto my-16 px-4 sm:px-6 relative z-10" id="philanthropy">
+          <div className="bg-gradient-to-br from-[#fdf0f5] via-[#fce7f3] to-[#fbcfe8] border-4 border-pink-300 rounded-[3rem] p-6 sm:p-12 shadow-[0_20px_50px_rgba(244,114,182,0.25)] relative text-slate-900 overflow-hidden isolate font-sans">
+            
+            {/* FLOATING SOFT AMBIENT LIGHT ORBS */}
+            <div className="pointer-events-none absolute -top-24 -left-24 size-96 rounded-full bg-pink-300/40 blur-[120px]" />
+            <div className="pointer-events-none absolute -bottom-24 -right-24 size-96 rounded-full bg-rose-300/40 blur-[120px]" />
 
-            <motion.h3 
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="as-pillars-title font-black text-3xl sm:text-4xl lg:text-5xl text-[#0f172a]"
-            >
-              आनंदशाळेचे <span className="bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">चार मुख्य स्तंभ</span>
-            </motion.h3>
-
-            <p className="text-slate-600 text-sm sm:text-lg font-black max-w-2xl mx-auto mt-3 leading-relaxed">
-              ज्येष्ठ नागरिकांच्या सुखी, निरामय व सन्मानजनक आयुष्यासाठी उभारलेले ४ भक्कम आधारस्तंभ
-            </p>
-          </div>
-
-          {/* FULL-WIDTH 4-COLUMN CARDS GRID (EXPANDS TO FILL 1600px SCREEN) */}
-          <div className="as-pillars-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 w-full">
-            {pillars.map((item, index) => (
+            {/* SECTION HEADER BADGE & TITLE (PINK THEME) */}
+            <div className="text-center mb-12 relative z-10 space-y-4">
               <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 55 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.7, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ y: -14 }}
-                className="group relative p-[3.5px] rounded-[2.6rem] bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-pink-400 hover:via-purple-400 hover:to-rose-500 shadow-xl hover:shadow-[0_25px_80px_rgba(219,39,119,0.45)] transition-all duration-500 cursor-pointer"
-                onClick={() => setSelectedPillar(item)}
-                title={`${item.title} - सविस्तर माहिती पाहण्यासाठी क्लीक करा`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/90 text-[#810B38] font-black text-xs sm:text-base border-2 border-pink-300 shadow-md backdrop-blur-md"
               >
-                {/* INNER CARD BODY */}
-                <div className="as-pillar-card bg-white rounded-[2.35rem] overflow-hidden size-full flex flex-col justify-between">
-                  <div>
-                    {/* HUGE 320px IMAGE CONTAINER WITH ZOOM HOVER */}
-                    <div className="as-pillar-img-box overflow-hidden relative h-64 sm:h-80 lg:h-[320px]">
-                      <img 
-                        src={item.image} 
-                        alt={item.title} 
-                        className="as-pillar-img w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700" 
-                        onError={(e) => { e.currentTarget.src = buildingImage; }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-85 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none" />
-                      
-                      <span className="as-pillar-img-badge absolute top-5 right-5 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white text-sm sm:text-base font-black px-5 py-2.5 rounded-full shadow-2xl border border-white/30 backdrop-blur-md">
-                        ✨ {item.badge}
-                      </span>
-                    </div>
+                <Sparkles size={18} className="text-pink-600 animate-pulse" />
+                <span>✨ मातृभूमी व समाजसेवेचे पवित्र कार्य ✨</span>
+                <Sparkles size={18} className="text-pink-600 animate-pulse" />
+              </motion.div>
 
-                    {/* MASSIVE CARD CONTENT & TYPOGRAPHY */}
-                    <div className="as-pillar-body p-7 sm:p-9">
-                      <div className="as-pillar-header-row flex items-center gap-5 mb-5">
-                        <div className={`as-pillar-icon-badge bg-gradient-to-r ${item.color} size-16 sm:size-20 rounded-3xl flex items-center justify-center text-white shadow-2xl group-hover:rotate-12 group-hover:scale-110 transition-all duration-300 shrink-0`}>
-                          {item.icon}
-                        </div>
-                        <div>
-                          <h4 className="as-pillar-name text-2xl sm:text-3xl lg:text-4xl font-black text-[#0f172a] group-hover:text-pink-600 transition-colors">
-                            {item.title}
-                          </h4>
-                          <span className="as-pillar-subtitle text-sm sm:text-base font-black text-pink-600 block mt-1">
-                            {item.subtitle}
-                          </span>
-                        </div>
-                      </div>
-
-                      <p className="as-pillar-desc text-base sm:text-lg font-extrabold text-slate-700 leading-relaxed">
-                        {item.desc}
-                      </p>
-                      
-                      <div className="mt-4 text-xs sm:text-sm font-black text-pink-600 flex items-center gap-1">
-                        <span>सविस्तर माहिती पहा</span>
-                        <span>→</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* GLOWING ACCENT BOTTOM BAR */}
-                  <div className={`h-2.5 w-0 group-hover:w-full bg-gradient-to-r ${item.color} transition-all duration-500`} />
+              {/* GULABI PINK 3D PILL HEADER */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="relative inline-block max-w-4xl mx-auto"
+              >
+                <div className="bg-gradient-to-r from-[#810B38] via-[#be185d] to-[#e11d48] text-white text-xl sm:text-3xl lg:text-4xl font-black px-8 sm:px-14 py-4 sm:py-5 rounded-full shadow-[0_10px_35px_rgba(190,24,93,0.35)] border-4 border-white tracking-wide drop-shadow-lg relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                  प्रीतम यांची मदत करण्याची कार्य पद्धती
                 </div>
               </motion.div>
-            ))}
+              <p className="text-pink-950/80 text-xs sm:text-sm font-extrabold max-w-2xl mx-auto pt-1">
+                गोरगरीब, आपद्ग्रस्त, गरजू विद्यार्थी व रुग्णांना पारदर्शक व प्रत्यक्ष स्वरूपात आधार देण्याचा उपक्रम.
+              </p>
+            </div>
+
+            {/* UNIQUE DESIGN: VERTICAL INTERLOCKING TIMELINE PATHWAY (NO BOX CARDS!) */}
+            <div className="relative max-w-5xl mx-auto z-10 py-6">
+              
+              {/* VERTICAL CONNECTING DASHED RIBBON LINE */}
+              <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1.5 bg-gradient-to-b from-pink-400 via-rose-500 to-pink-600 rounded-full hidden md:block opacity-60 shadow-sm" />
+
+              <div className="space-y-8 sm:space-y-12 relative">
+                {[
+                  {
+                    num: "१",
+                    icon: GraduationCap,
+                    title: "🎓 शैक्षणिक मदत & सुसंस्कार",
+                    color: "from-pink-500 to-rose-600",
+                    badgeColor: "bg-pink-100 text-[#810B38] border-pink-300",
+                    text: "गरजू विद्यार्थ्यांना शैक्षणिक मदत करणे, शाळेची, कोर्सेसची फी भरणे, शालेय साहित्य, सायकल देणे, योग्य मार्गदर्शन करणे, चुकीच्या वळणावर जाण्यापासून रोखणे असे कार्य सुद्धा खूप समाधान, सुख, समृद्धी देणारे ठरते."
+                  },
+                  {
+                    num: "२",
+                    icon: Stethoscope,
+                    title: "🏥 औषधोपचार व वैद्यकीय मदत",
+                    color: "from-rose-600 to-red-600",
+                    badgeColor: "bg-rose-100 text-rose-900 border-rose-300",
+                    text: "आमच्याकडे ऑपरेशन, औषधोपचार, आजारपणासाठी मदत मागायला बरेच लोक येत असतात आम्ही त्यांची सविस्तर माहिती घेतो, खरंच जर त्याला मदतीची गरज आहे असे जाणवले तर आम्ही पेशंट ॲडमिट असेल तर त्याला बघायला जातो, जर ऑपरेशनसाठी पैसा गोळा करत असेल तर त्यांच्याकडील कागदपत्रावरून डॉक्टरांना फोन करून खात्रीशीर माहिती विचारतो व डॉक्टरांच्या किंवा हॉस्पिटलच्या नावे चेक देतो व गरजेनुसार चिठ्ठी प्रमाणे औषध स्वतः आणून देतो त्यामुळे मदत सत्कर्मी लागते."
+                  },
+                  {
+                    num: "३",
+                    icon: Bus,
+                    title: "🚌 आपत्कालीन व प्रवासाची मदत",
+                    color: "from-amber-500 to-rose-500",
+                    badgeColor: "bg-amber-100 text-amber-900 border-amber-300",
+                    text: "आमच्याकडे पाकीट हरवले, मुलगा सापडत नाही, गावाला जायला पैसे नाहीत असे मदत मागणारे बऱ्याच व्यक्ती येतात आम्ही त्यांना माहिती विचारून खरंच अडचण असेल तर आमचा माणूस एसटी स्टैंड ला पाठवून तिकीट काढून थोडे फार खर्चाला पैसे देऊन गरजवंतांनाच थोडा वेळ खर्च करून मदत करतो."
+                  },
+                  {
+                    num: "४",
+                    icon: Utensils,
+                    title: "🍲 क्षुधाशांती व अन्नदान मदत",
+                    color: "from-emerald-600 to-teal-600",
+                    badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300",
+                    text: "आमच्याकडे उपाशी आहे, भूक लागली आहे, मदत करा असेही लोक येतात आम्ही त्यांना खरोखरच जर भूक लागली असेल जेवण किंवा नाष्टा करणार असतील तर शेजारच्या हॉटेल मध्ये त्याला पाठवून त्याचे बिल आमचा माणूस देऊन मदत करतो. रोख रक्कम न देता त्याचा दारू, मटका, सिगरेट इत्यादीसाठी होणारा गैरवापर टाळतो."
+                  },
+                  {
+                    num: "५",
+                    icon: HeartHandshake,
+                    title: "🤝 मानवता व आपुलकीचा आधार",
+                    color: "from-purple-600 to-[#810B38]",
+                    badgeColor: "bg-purple-100 text-purple-900 border-purple-300",
+                    text: "अपंग, वयोवृद्ध, लाचार, गोर गरीब, गरीब विद्यार्थी यांना आप-आपल्या परिस्थितीनुसार मदत करा सदर मदत आपण जी मंदिर, नवस, हार, फुले यासाठी खर्च करतो त्यापेक्षा कितीतरी पटीने आशीर्वाद व शुभेच्छा देणारी भावनिक व माणुसकीची मन प्रसन्न करणारी ठरेल."
+                  },
+                  {
+                    num: "६",
+                    icon: Gift,
+                    title: "🎂 वाढदिवस & समाजसेवा संकल्प",
+                    color: "from-[#810B38] to-[#be185d]",
+                    badgeColor: "bg-pink-100 text-[#810B38] border-pink-300",
+                    text: "आपल्या वाढदिवसा दिवशी आपण जेवढा खर्च करणार आहात त्यातील ५ ते १० % खर्च गरजू ज्येष्ठ नागरिकांसाठी करा त्यांना चॉकलेट, नाष्टा, भेटवस्तू, जेवण किंवा कपडे दान करा व त्यांनी दिलेल्या आशीर्वादात न्हाऊन त्यांचे आशीर्वाद घेऊन पुण्यवान बना. उत्पन्नातील १ ते ५ % खर्च सत्कर्म, समाज सेवेसाठी खर्च करणे. ही नम्र विनंती."
+                  }
+                ].map((step, idx) => {
+                  const IconComponent = step.icon;
+                  const isEven = idx % 2 === 0;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: isEven ? -40 : 40 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, amount: 0.2 }}
+                      transition={{ duration: 0.6, delay: idx * 0.08 }}
+                      className={`flex flex-col md:flex-row items-center gap-6 ${
+                        isEven ? "md:flex-row" : "md:flex-row-reverse"
+                      }`}
+                    >
+                      {/* CONTENT RIBBON STEP */}
+                      <div className="w-full md:w-1/2">
+                        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-7 border-2 border-pink-200 shadow-lg hover:shadow-2xl hover:border-pink-400 transition-all duration-300 space-y-3 relative group">
+                          
+                          {/* BADGE ROW */}
+                          <div className="flex items-center justify-between gap-3">
+                            <span className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-black border shadow-sm ${step.badgeColor}`}>
+                              {step.title}
+                            </span>
+                            <span className="size-8 rounded-full bg-pink-100 text-[#810B38] font-black text-xs flex items-center justify-center border border-pink-300">
+                              #{step.num}
+                            </span>
+                          </div>
+
+                          {/* TEXT CONTENT */}
+                          <p className="text-slate-800 font-extrabold text-sm sm:text-base leading-relaxed">
+                            "{step.text}"
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* CENTER TIMELINE NODE WITH STEP NUMBER */}
+                      <div className="shrink-0 size-14 sm:size-16 rounded-full bg-gradient-to-r from-[#810B38] to-[#be185d] text-white flex items-center justify-center text-xl sm:text-2xl font-black shadow-xl border-4 border-white z-20 group-hover:scale-110 transition-transform">
+                        <IconComponent size={26} />
+                      </div>
+
+                      {/* EMPTY SPACE FOR ALTERNATING LAYOUT */}
+                      <div className="hidden md:block w-1/2" />
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* FOOTER SIGNOFF SEAL BADGE (PINK THEME) */}
+            <div className="mt-12 flex items-center justify-end relative z-10">
+              <motion.div
+                whileHover={{ scale: 1.03 }}
+                className="inline-flex items-center gap-3.5 bg-gradient-to-r from-[#810B38] via-[#be185d] to-[#e11d48] text-white px-8 py-4 rounded-full shadow-2xl border-2 border-white"
+              >
+                <span className="text-2xl animate-bounce">✍️</span>
+                <span className="text-base sm:text-xl font-black italic tracking-wide">
+                  आपला : अभिनव ज. कामाजी
+                </span>
+              </motion.div>
+            </div>
+
           </div>
         </div>
 

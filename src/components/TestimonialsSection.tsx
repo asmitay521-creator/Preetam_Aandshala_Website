@@ -142,13 +142,28 @@ export default function TestimonialsSection() {
             </div>
 
             <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black border border-white/10 shadow-inner">
-              <iframe
-                src={`${formatEmbedUrl(activeVideo.videoUrl)}?autoplay=1`}
-                title={activeVideo.name}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
+              {activeVideo.videoUrl && (
+                activeVideo.videoUrl.includes("firebasestorage") ||
+                activeVideo.videoUrl.includes(".mp4") ||
+                activeVideo.videoUrl.includes(".webm") ||
+                activeVideo.videoUrl.includes(".mov") ||
+                activeVideo.videoUrl.startsWith("data:video") ? (
+                  <video
+                    src={activeVideo.videoUrl}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <iframe
+                    src={`${formatEmbedUrl(activeVideo.videoUrl)}?autoplay=1`}
+                    title={activeVideo.name}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                )
+              )}
             </div>
 
             {activeVideo.text && (

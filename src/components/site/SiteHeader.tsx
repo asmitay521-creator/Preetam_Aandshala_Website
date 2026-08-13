@@ -63,7 +63,7 @@ export function SiteHeader() {
           <div className="leading-tight">
             <span
               className="block font-display text-xs sm:text-base lg:text-base font-black tracking-tight"
-              style={{ color: "#1A05A2" }}
+              style={{ color: "#810B38" }}
             >
               {isMr ? "प्रीतम ज्येष्ठ नागरिक आनंदशाळा व स्पोर्ट्स अँड फिटनेस क्लब" : "Preetam Anandshala & Sports Fitness Club"}
             </span>
@@ -91,7 +91,7 @@ export function SiteHeader() {
                   }
                 }}
                 className="group relative rounded-full px-3.5 py-1.5 text-sm font-extrabold transition-all duration-300 hover:text-[#db2777]"
-                style={{ color: isActive ? "#db2777" : "#1A05A2" }}
+                style={{ color: isActive ? "#db2777" : "#810B38" }}
               >
                 {isMr ? l.label : l.en}
                 <span
@@ -107,9 +107,9 @@ export function SiteHeader() {
             onClick={toggleLanguage}
             className="ml-2 inline-flex items-center gap-1.5 rounded-full border-2 px-3.5 py-1.5 text-xs font-black transition-all duration-300 cursor-pointer shadow-sm hover:scale-105"
             style={{
-              borderColor: "rgba(12, 35, 112, 0.3)",
+              borderColor: "rgba(244, 114, 182, 0.4)",
               background: "#FFFFFF",
-              color: "#1A05A2",
+              color: "#810B38",
             }}
             title="Switch Language / भाषा बदला"
           >
@@ -122,7 +122,7 @@ export function SiteHeader() {
             href="tel:+919370237633"
             className="ml-2 inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs sm:text-sm font-black text-white shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #db2777 0%, #1A05A2 100%)",
+              background: "linear-gradient(135deg, #db2777 0%, #810B38 100%)",
             }}
           >
             <span className="text-sm">🏛️</span>
@@ -131,15 +131,15 @@ export function SiteHeader() {
         </nav>
 
         {/* MOBILE ACTIONS */}
-        <div className="flex items-center gap-3 lg:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           {/* MOBILE LANGUAGE TOGGLE BUTTON */}
           <button
             onClick={toggleLanguage}
             className="inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-black cursor-pointer shadow-sm hover:scale-105 transition-all"
             style={{
-              borderColor: "rgba(12, 35, 112, 0.3)",
+              borderColor: "rgba(244, 114, 182, 0.4)",
               background: "#FFFFFF",
-              color: "#1A05A2",
+              color: "#810B38",
             }}
             title="Switch Language / भाषा बदला"
           >
@@ -155,9 +155,9 @@ export function SiteHeader() {
             aria-label="Menu"
             className="grid size-11 place-items-center rounded-2xl transition-all duration-200 cursor-pointer shadow-sm"
             style={{
-              border: "2px solid rgba(12, 35, 112, 0.25)",
+              border: "2px solid rgba(244, 114, 182, 0.4)",
               background: "#FFFFFF",
-              color: "#1A05A2",
+              color: "#810B38",
             }}
           >
             <span className="text-xl font-black">{open ? "✕" : "☰"}</span>
@@ -170,12 +170,12 @@ export function SiteHeader() {
         <div
           className="animate-fade-up border-t lg:hidden"
           style={{
-            borderColor: "rgba(12, 35, 112, 0.15)",
+            borderColor: "rgba(244, 114, 182, 0.2)",
             background: "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(20px)",
           }}
         >
-          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, #1A05A2, #db2777, #0284C7)" }} />
+          <div className="h-1 w-full" style={{ background: "linear-gradient(90deg, #810B38, #db2777, #f472b6)" }} />
           <nav className="w-full px-6 py-6 flex flex-col gap-2">
             {navLinks.map((l) => {
               const isActive = l.to === "/" ? pathname === "/" : pathname.startsWith(l.to);
@@ -192,7 +192,7 @@ export function SiteHeader() {
                   }}
                   className="rounded-2xl px-5 py-3.5 text-base font-black transition-all"
                   style={{
-                    color: isActive ? "#db2777" : "#1A05A2",
+                    color: isActive ? "#db2777" : "#810B38",
                     background: isActive ? "rgba(219, 39, 119, 0.08)" : "transparent",
                   }}
                 >
@@ -205,7 +205,7 @@ export function SiteHeader() {
               href="tel:+919370237633"
               className="mt-3 flex items-center justify-center gap-2 rounded-2xl py-4 text-base font-black text-white shadow-lg"
               style={{
-                background: "linear-gradient(135deg, #db2777 0%, #1A05A2 100%)",
+                background: "linear-gradient(135deg, #db2777 0%, #810B38 100%)",
               }}
             >
               <span>🏛️</span>

@@ -7,8 +7,8 @@ const timelineData = [
     id: 1,
     date: "२६ जानेवारी, २०००",
     titleNormal: "श्री. अभिनव जगन्नाथ कामाजी यांची",
-    titleHighlight: "प्रतिष्ठान व्यवस्था",
-    description: "माझ्या जन्माची बीजे रुजली ती श्री. अभिनव जगन्नाथ कामाजी या सांगली यांच्या स्वप्नातून.",
+    titleHighlight: "व्यवसाय सुरुवात & आनंद मेळावा",
+    description: "माझ्या जन्माची बीजे रुजली गेली ती श्री. अभिनव जगन्नाथ कामाजी, रा. सांगली यांच्या स्वप्न प्रकल्पातून. अभिनव यांनी २६ जानेवारी २००० रोजी व्यवसाय सुरु केला व प्रत्येक वर्षी वर्धापन दिन, वाढदिवस, ज्येष्ठ नागरिक आनंद मेळावा व सहलीचे आयोजन करुन साजरा करतात.",
     color: "#f472b6",
     bgColor: "#FDE8F3",
     borderColor: "#FCCEE4",
@@ -19,9 +19,9 @@ const timelineData = [
   {
     id: 2,
     date: "१५ ऑगस्ट, २०२३",
-    titleNormal: "नागरिक आनंद मेळाव्याचा",
-    titleHighlight: "यशस्वी शुभारंभ",
-    description: "ज्येष्ठ नागरिकांचे मानसिक, शारीरिक आणि सामाजिक आनंदवर्धक म्हणून आनंदशाळेची भूमिका बळकट झाली.",
+    titleNormal: "स्वातंत्र्य दिन & ज्येष्ठ नागरिक आनंद मेळावा",
+    titleHighlight: "भूमीपूजन संपन्न",
+    description: "दि. १५ ऑगस्ट २०२३ रोजी स्वातंत्र्य दिनाच्या व ज्येष्ठ नागरिक आनंद मेळाव्याच्या शुभ मुहूर्तावर भूमिपूजन संपन्न झाले.",
     color: "#1D4ED8",
     bgColor: "#EFF6FF",
     borderColor: "#BFDBFE",
@@ -31,29 +31,16 @@ const timelineData = [
   },
   {
     id: 3,
-    date: "०१ जानेवारी, २०२५",
-    titleNormal: "प्रतीतम अत्याधुनिक इमारत व",
-    titleHighlight: "नवीन सुविधांचा शुभारंभ",
-    description: "प्रतीतम अत्याधुनिक इमारत, ज्येष्ठ नागरिकांसाठी ताज्या सुविधांची उभारणी पूर्ण.",
+    date: "२६ जानेवारी, २०२६",
+    titleNormal: "माझा जन्म म्हणजेच भव्य",
+    titleHighlight: "शुभारंभ सोहळा",
+    description: "माझा जन्म म्हणजेच शुभारंभ दि. २६ जानेवारी २०२६ आपल्या उपस्थितीत होईलच, परंतु आतापासूनच सर्व ज्येष्ठ नागरिकांनी प्रवेशाची तयारी करुन स्वतःचे व इतरांचे म्हातारपण आनंदाने, उत्साहाने व निरोगी घालवण्यासाठी प्रवेश घेऊन माझ्या कुशीत यायचे आहे हे विसरु नये.",
     color: "#EA580C",
     bgColor: "#FFF7ED",
     borderColor: "#FFEDD5",
     nodeIcon: Building2,
     cardIcon: Building2,
     side: "left",
-  },
-  {
-    id: 4,
-    date: "२०२५ आणि पुढे...",
-    titleNormal: "मुंबई व कोल्हापूर येथे विस्तार",
-    titleHighlight: "नवीन पर्वाची सुरुवात",
-    description: "सेवेचा विस्तार, समाजासाठी समर्पण व आणखी उत्कृष्ट कार्याचा संकल्प.",
-    color: "#15803D",
-    bgColor: "#F0FDF4",
-    borderColor: "#DCFCE7",
-    nodeIcon: Target,
-    cardIcon: Target,
-    side: "right",
   },
 ];
 
@@ -116,7 +103,7 @@ export default function JourneyTimeline() {
           <motion.div
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
+            transition={{ delay: 0.8 }}
             viewport={{ once: true }}
             className="journey-ornament"
           >
@@ -295,82 +282,8 @@ export default function JourneyTimeline() {
 
             <div className="journey-row-empty" />
           </div>
-
-          {/* ROW 4: Card 4 (Right) */}
-          <div className="journey-row-item row-right">
-            <div className="journey-row-empty" />
-
-            {/* Center Node 4 */}
-            <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="center-node-box relative"
-              style={{ borderColor: timelineData[3].color }}
-            >
-              <Target className="size-6" style={{ color: timelineData[3].color }} />
-            </motion.div>
-
-            {/* Card 4 (Right) */}
-            <motion.div
-              initial={{ opacity: 0, x: 50, y: 20 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              whileHover={{ y: -6, scale: 1.015 }}
-              className="journey-card-box right-box"
-            >
-              {/* Date Badge */}
-              <div className="card-date-badge" style={{ backgroundColor: timelineData[3].color }}>
-                {timelineData[3].date}
-              </div>
-
-              <div className="card-inner flex items-center justify-between gap-4">
-                {/* Left Floating Icon Box */}
-                <div
-                  className="card-icon-wrapper"
-                  style={{ backgroundColor: timelineData[3].bgColor }}
-                >
-                  <Target className="size-7 sm:size-8" style={{ color: timelineData[3].color }} />
-                </div>
-
-                <div className="card-text-content">
-                  <h3 className="card-title">
-                    {timelineData[3].titleNormal}{" "}
-                    <span style={{ color: timelineData[3].color }}>
-                      {timelineData[3].titleHighlight}
-                    </span>
-                  </h3>
-                  <p className="card-desc">{timelineData[3].description}</p>
-                </div>
-              </div>
-
-              {/* Triangle Arrow */}
-              <div className="arrow-left" style={{ borderRightColor: timelineData[3].color }} />
-            </motion.div>
-          </div>
         </div>
 
-        {/* DEDICATED BOTTOM STANDALONE QUOTE CARD (FURTHER DOWN BELOW ALL CARDS) */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-          whileHover={{ y: -6, scale: 1.01 }}
-          className="quote-standalone-container"
-        >
-          <div className="quote-standalone-card">
-            <div className="quote-mark quote-start">“</div>
-            <p className="quote-text">
-              आनंदात जगायचं, आरोग्य जपायचं,<br />
-              आनंदशाळेत येऊन स्वप्न साकारायचं.
-            </p>
-            <p className="quote-author">– डॉ. नितीन ओक, अभिनेते</p>
-            <div className="quote-mark quote-end">”</div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

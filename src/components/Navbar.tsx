@@ -31,7 +31,13 @@ export default function Navbar() {
         <div className="navbar-inner">
 
           {/* ── LOGO ── */}
-          <Link to="/" className="navbar-logo">
+          <Link 
+            to="/" 
+            className="navbar-logo"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("reset-section"));
+            }}
+          >
             <div className="navbar-logo-icon">
               <span>P</span>
             </div>
@@ -61,8 +67,18 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* ── DESKTOP CTA BUTTON ── */}
-          <div className="navbar-cta-wrap">
+          {/* ── DESKTOP CTA BUTTON & SECTION SWITCHER ── */}
+          <div className="navbar-cta-wrap flex items-center gap-3">
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("reset-section"));
+              }}
+              className="bg-white/20 hover:bg-white/35 text-white font-black text-xs sm:text-sm px-4 py-2.5 rounded-full border border-white/50 shadow-md backdrop-blur-md transition-all hover:scale-105 cursor-pointer flex items-center gap-1.5"
+              title="विभाग १ व विभाग २ निवडा"
+            >
+              <span>✨ २ मुख्य विभाग</span>
+            </button>
+
             <a href="tel:+919370237633" className="navbar-cta-btn">
               <Phone size={17} />
               <span>संपर्क साधा</span>

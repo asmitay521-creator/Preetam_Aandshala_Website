@@ -16,6 +16,7 @@ import SportsPricingSection from "@/components/SportsPricingSection/SportsPricin
 import ScheduleSection from "@/components/ScheduleSection";
 import ActivityHallsSection from "@/components/ActivityHallsSection/ActivityHallsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import preetamWelcomeImg from "@/assets/preetam-welcome.png";
 
 
 const publicImages = [
@@ -207,22 +208,38 @@ function IndexComponent() {
   const { isEn } = useLanguage();
   const store = useAdminStore();
 
-  const welcomePosterUrl = store.siteData.welcomePosterUrl || "/images/preetam-welcome.png";
+  const welcomePosterUrl = store.siteData.welcomePosterUrl || preetamWelcomeImg;
 
   // Clean Pure Architectural Renders & Photos (ZERO brochure/poster text)
   const card1Images = useMemo(() => {
-    return [
-      "/images/slider4.JPG",
-      "/images/slider3.png"
-    ];
-  }, []);
+    if (store.siteData.aanandshalaCardImage === "NO_IMAGE") {
+      return ["/images/anandshala_building_sky.jpg"];
+    }
+    if (store.siteData.aanandshalaCardImage) {
+      return [store.siteData.aanandshalaCardImage];
+    }
+    if (Array.isArray(store.siteData.aanandshalaImages)) {
+      return store.siteData.aanandshalaImages.length > 0
+        ? store.siteData.aanandshalaImages
+        : ["/images/anandshala_building_sky.jpg"];
+    }
+    return ["/images/anandshala_building_sky.jpg", "/images/slider4.JPG", "/images/aandshala_img.png"];
+  }, [store.siteData.aanandshalaCardImage, store.siteData.aanandshalaImages]);
 
   const card2Images = useMemo(() => {
-    return [
-      "/images/sports img.png",
-      "/images/pickleball-court.png"
-    ];
-  }, []);
+    if (store.siteData.sportsCardImage === "NO_IMAGE") {
+      return ["/images/sports img.png"];
+    }
+    if (store.siteData.sportsCardImage) {
+      return [store.siteData.sportsCardImage];
+    }
+    if (Array.isArray(store.siteData.sportsImages)) {
+      return store.siteData.sportsImages.length > 0
+        ? store.siteData.sportsImages
+        : ["/images/sports img.png"];
+    }
+    return ["/images/sports img.png", "/images/pickleball-court.png"];
+  }, [store.siteData.sportsCardImage, store.siteData.sportsImages]);
 
   const [card1Idx, setCard1Idx] = useState(0);
   const [card2Idx, setCard2Idx] = useState(0);
@@ -260,7 +277,8 @@ function IndexComponent() {
   useEffect(() => {
     const handleReset = () => {
       setSelectedSection(null);
-      setShowIntroBanner(true);
+      setShowIntroBanner(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
     window.addEventListener("reset-section", handleReset);
     return () => window.removeEventListener("reset-section", handleReset);
@@ -268,7 +286,7 @@ function IndexComponent() {
 
   // Lock body scroll when intro banner modal is active
   useEffect(() => {
-    if (showIntroBanner) {
+    if (showIntroBanner && selectedSection === null) {
       document.body.style.overflow = "hidden";
       document.documentElement.style.overflow = "hidden";
     } else {
@@ -279,15 +297,18 @@ function IndexComponent() {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
-  }, [showIntroBanner]);
+  }, [showIntroBanner, selectedSection]);
 
   useEffect(() => {
-    if (selectedSection === null) {
-      document.body.classList.add("hide-footer");
-      document.body.classList.add("hide-nav-links");
-    } else {
+    if (selectedSection !== null) {
+      setShowIntroBanner(false);
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
       document.body.classList.remove("hide-footer");
       document.body.classList.remove("hide-nav-links");
+    } else {
+      document.body.classList.add("hide-footer");
+      document.body.classList.add("hide-nav-links");
     }
     return () => {
       document.body.classList.remove("hide-footer");
@@ -335,6 +356,9 @@ function IndexComponent() {
 
   const handleSectionSelect = (sec: "aanandshala" | "sports" | null) => {
     setSelectedSection(sec);
+    setShowIntroBanner(false);
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -342,14 +366,14 @@ function IndexComponent() {
     <div className="min-h-screen bg-gradient-to-br from-[#1a0429] via-[#2d0739] to-[#150424] animate-fade-up">
 
       <AnimatePresence>
-        {showIntroBanner && store.siteData.showWelcomePoster !== false && (
+        {showIntroBanner && (
           <motion.div
             key="preetam-intro"
 
             initial={{
               opacity: 0,
-              y: "100%",
-              scale: 0.98,
+              y: "-100%",
+              scale: 0.95,
             }}
 
             animate={{
@@ -365,7 +389,7 @@ function IndexComponent() {
             }}
 
             transition={{
-              duration: 1.2,
+              duration: 1.4,
               ease: [0.16, 1, 0.3, 1],
             }}
 
@@ -374,26 +398,22 @@ function IndexComponent() {
               inset-0
               z-[999999]
 
-              w-screen
-              h-screen
-              h-[100dvh]
+              w-full
+              h-full
+              min-h-[100dvh]
 
               flex
               flex-col
               items-center
               justify-center
-              gap-4
-              sm:gap-6
 
               overflow-y-auto
-              overflow-x-hidden
 
-              bg-[#0c0216]
+              bg-[#0c0216]/95
+              backdrop-blur-md
 
               p-3
               sm:p-6
-              py-4
-              sm:py-8
             "
           >
 
@@ -401,131 +421,65 @@ function IndexComponent() {
             <button
               onClick={() => setShowIntroBanner(false)}
               aria-label="Close"
-              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-[101] size-9 sm:size-11 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white font-extrabold text-base sm:text-lg flex items-center justify-center border border-white/30 cursor-pointer shadow-lg transition-all hover:scale-110 active:scale-95"
+              className="fixed top-2.5 right-2.5 sm:top-4 sm:right-6 z-[1000000] size-8 sm:size-11 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white font-extrabold text-sm sm:text-lg flex items-center justify-center border border-white/30 cursor-pointer shadow-lg transition-all hover:scale-110 active:scale-95"
             >
               ✕
             </button>
 
-            {/* ========================================= */}
-            {/* TOP WELCOME HEADER TEXT ABOVE IMAGE       */}
-            {/* ========================================= */}
-            <div className="relative z-10 text-center px-2 max-w-4xl shrink-0 space-y-1 mb-1 sm:mb-3 pt-1 sm:pt-2">
-              <div>
-                <h2
-                  onClick={() => setShowIntroBanner(false)}
-                  className="font-serif italic font-black text-base sm:text-2xl lg:text-3xl tracking-wide bg-gradient-to-r from-amber-200 via-yellow-300 to-rose-300 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(251,191,36,0.5)] leading-snug cursor-pointer transition-all duration-500 hover:scale-105 hover:drop-shadow-[0_0_35px_rgba(251,191,36,0.85)] inline-block"
-                >
-                  <span className="block">Welcome to Preetam Anandshala &amp;</span>
-                  <span className="block text-amber-300 font-extrabold not-italic mt-0.5">Sports Fitness Club</span>
-                </h2>
+            {/* CENTERED CONTAINER FOR TEXT AND POSTER IMAGE */}
+            <div className="my-auto flex flex-col items-center justify-center w-full max-w-[900px] text-center">
+
+              {/* ========================================= */}
+              {/* TOP WELCOME HEADER TEXT ABOVE IMAGE       */}
+              {/* ========================================= */}
+              <div className="relative z-10 text-center px-2 max-w-4xl shrink-0 space-y-0.5 mb-2 sm:mb-3">
+                <div>
+                  <h2
+                    onClick={() => setShowIntroBanner(false)}
+                    className="font-serif italic font-black text-base sm:text-xl lg:text-2xl tracking-wide bg-gradient-to-r from-amber-200 via-yellow-300 to-rose-300 bg-clip-text text-transparent drop-shadow-[0_2px_15px_rgba(251,191,36,0.5)] leading-tight cursor-pointer transition-all duration-500 hover:scale-105 hover:drop-shadow-[0_0_35px_rgba(251,191,36,0.85)] inline-block"
+                  >
+                    <span className="block">Welcome to Preetam Anandshala &amp;</span>
+                    <span className="block text-amber-300 font-extrabold not-italic mt-0.5">Preetam Fitness Sports Club Sangli</span>
+                  </h2>
+                </div>
+                <p className="text-[10px] sm:text-xs font-black text-amber-200/90 tracking-widest uppercase drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)] mt-0.5">
+                  आपले सहर्ष स्वागत आहे • सांगली
+                </p>
               </div>
-              <p className="text-[10px] sm:text-xs font-black text-amber-200/90 tracking-widest uppercase drop-shadow-[0_2px_10px_rgba(245,158,11,0.4)] mt-1">
-                आपले सहर्ष स्वागत आहे • सांगली
-              </p>
+
+              {/* ========================================= */}
+              {/* EXACT GENERATED POSTER - AS IS            */}
+              {/* ========================================= */}
+
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="relative w-full max-w-[900px] mx-auto flex flex-col items-center justify-center p-0 shrink"
+              >
+                <img
+                  src={welcomePosterUrl}
+                  alt="Preetam Anandshala and Sports Fitness Club Welcome Poster"
+                  onClick={() => {
+                    setShowIntroBanner(false);
+                  }}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== preetamWelcomeImg) {
+                      target.src = preetamWelcomeImg;
+                    }
+                  }}
+                  className="w-full max-w-[850px] max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-160px)] lg:max-h-[calc(100vh-170px)] h-auto object-contain rounded-2xl drop-shadow-[0_25px_65px_rgba(219,39,119,0.35)] cursor-pointer transition-all duration-500 hover:scale-[1.01]"
+                />
+              </motion.div>
+
             </div>
-
-            {/* ========================================= */}
-            {/* EXACT GENERATED POSTER - PERFECT FIT     */}
-            {/* ========================================= */}
-
-            <motion.div
-              initial={{
-                opacity: 0,
-                scale: 0.96,
-              }}
-
-              animate={{
-                opacity: 1,
-                scale: 1,
-              }}
-
-              transition={{
-                duration: 0.8,
-                delay: 0.15,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-
-              className="
-                relative
-
-                w-full
-                max-w-[1100px]
-                max-h-[65vh]
-                sm:max-h-[75vh]
-
-                mx-auto
-
-                flex
-                items-center
-                justify-center
-                shrink-0
-                py-1
-              "
-            >
-
-              <img
-                src={welcomePosterUrl}
-                alt="Preetam Anandshala and Sports Fitness Club"
-                onClick={() => setShowIntroBanner(false)}
-
-                className="
-                  block
-
-                  max-w-full
-                  max-h-full
-
-                  w-auto
-                  h-auto
-
-                  object-contain
-                  object-center
-
-                  select-none
-                  rounded-2xl
-                  drop-shadow-[0_15px_50px_rgba(219,39,119,0.35)]
-                  cursor-pointer
-                  transition-all
-                  duration-500
-                  hover:scale-[1.02]
-                  hover:drop-shadow-[0_20px_60px_rgba(219,39,119,0.55)]
-                "
-              />
-
-              {/* ================= TRANSPARENT VISIT CLICK OVERLAY ================= */}
-
-              <button
-                onClick={() => setShowIntroBanner(false)}
-                aria-label="Visit Website"
-                className="
-                  absolute
-
-                  bottom-0
-
-                  left-1/2
-                  -translate-x-1/2
-
-                  z-[100]
-
-                  w-full
-                  max-w-[450px]
-
-                  h-[65px]
-                  sm:h-[85px]
-
-                  bg-transparent
-                  border-none
-                  outline-none
-                  cursor-pointer
-                "
-              />
-
-            </motion.div>
 
           </motion.div>
         )}
       </AnimatePresence>
       {/* ============================================================== */}
-      {selectedSection === null && !showIntroBanner && (
+      {selectedSection === null && (
         <section id="sections" className="relative py-4 sm:py-7 px-3 sm:px-4 overflow-hidden bg-gradient-to-br from-[#1a0429] via-[#2d0739] to-[#150424] min-h-screen min-h-[100dvh] w-full flex flex-col justify-center items-center">
           {/* FLOATING RICH AMBIENT LIGHT ORBS */}
           <div className="pointer-events-none absolute top-10 left-10 size-[450px] rounded-full bg-[#db2777]/25 blur-[120px] animate-pulse" />
@@ -534,24 +488,24 @@ function IndexComponent() {
 
           {/* BRAND HEADER */}
           <div className="animate-fade-up text-center max-w-5xl mx-auto mb-2 sm:mb-4 relative z-10 px-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-purple-500/20 backdrop-blur-xl border border-amber-300/40 text-amber-200 font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(251,191,36,0.3)] tracking-wide">
-              <span className="inline-block size-2 rounded-full bg-amber-400 animate-ping" />
-              <span>✨ {isEn ? "Sangli's Grand Landmark Project" : "सांगलीतील भव्य मानचिन्ह प्रकल्प"}</span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-amber-600/30 to-amber-500/20 backdrop-blur-xl border border-amber-400/50 text-amber-200 font-extrabold text-xs sm:text-sm shadow-[0_0_25px_rgba(251,191,36,0.3)] tracking-wide">
+              <span className="inline-block size-2.5 rounded-full bg-amber-400 animate-ping" />
+              <span>{isEn ? "The doorway to healthy health & joyful life for senior citizens opens here...." : (store.siteData.tagline || "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते....")}</span>
             </div>
-            <h1 className="font-display font-black text-lg sm:text-3xl lg:text-4xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 via-rose-200 to-emerald-200 bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(251,191,36,0.7)] leading-snug py-0.5 mt-2.5 sm:mt-5 max-w-3xl mx-auto">
+            <h1 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 via-rose-200 to-amber-200 bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(251,191,36,0.7)] leading-snug py-0.5 mt-2.5 sm:mt-5 max-w-4xl mx-auto">
               {isEn ? (
                 <>
                   <span className="block">Preetam Senior Citizen Anandshala</span>
-                  <span className="block text-amber-200 mt-0.5">& Sports Fitness Club</span>
+                  <span className="block text-amber-200 mt-0.5">&amp; Preetam Sports &amp; Fitness Club Sangli</span>
                 </>
               ) : (
                 <>
                   <span className="block">प्रीतम ज्येष्ठ नागरिक आनंदशाळा</span>
-                  <span className="block text-amber-200 mt-0.5">व स्पोर्ट्स अँड फिटनेस क्लब</span>
+                  <span className="block text-amber-200 mt-1 font-black text-xl sm:text-3xl lg:text-4xl">व प्रीतम स्पोर्ट्स अँड फिटनेस क्लब</span>
                 </>
               )}
             </h1>
-            <div className="flex items-center justify-center gap-1.5 pt-1">
+            <div className="flex items-center justify-center gap-1.5 pt-1.5">
               <span className="text-amber-300 text-sm sm:text-base animate-bounce">📍</span>
               <span className="font-display font-black text-lg sm:text-2xl lg:text-3xl bg-gradient-to-r from-yellow-300 via-amber-200 to-rose-300 bg-clip-text text-transparent tracking-widest drop-shadow-[0_2px_10px_rgba(251,191,36,0.6)] uppercase">
                 {isEn ? "Sangli" : "सांगली"}
@@ -577,7 +531,7 @@ function IndexComponent() {
                 <motion.img
                   key={card1Idx}
                   src={card1Images[card1Idx] || card1Images[0]}
-                  alt={isEn ? site.nameEn : site.nameMr}
+                  alt={isEn ? site.nameEn : (store.siteData.aanandshalaTitle || site.nameMr)}
                   loading="eager"
                   decoding="async"
                   initial={{ opacity: 0, scale: 1.05 }}
@@ -611,16 +565,13 @@ function IndexComponent() {
                       className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === card1Idx ? "w-6 bg-pink-400 shadow-md shadow-pink-500/50" : "w-2.5 bg-white/40 hover:bg-white/70"}`}
                     />
                   ))}
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-md px-3 py-1 text-[11px] sm:text-xs font-black text-white border border-white/20 ml-1">
-                    ✨ {isEn ? "1.5 Acre Anandshala" : "१.५ एकर आनंदधाम"}
-                  </span>
                 </div>
               </div>
 
               {/* BOTTOM TITLE & BUTTON */}
               <div className="relative z-10 space-y-2 pt-2">
                 <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
-                  {isEn ? site.nameEn : site.nameMr}
+                  {isEn ? site.nameEn : (store.siteData.aanandshalaTitle || site.nameMr)}
                 </h3>
 
                 <div className="pt-0.5 flex items-center justify-between gap-4">
@@ -683,9 +634,6 @@ function IndexComponent() {
                       className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === card2Idx ? "w-6 bg-purple-400 shadow-md shadow-purple-500/50" : "w-2.5 bg-white/40 hover:bg-white/70"}`}
                     />
                   ))}
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-black/50 backdrop-blur-md px-3 py-1 text-[11px] sm:text-xs font-black text-white border border-white/20 ml-1">
-                    🏊‍♂️ {isEn ? "Sports & Fitness Club" : "ऑलिंपिक स्पोर्ट्स क्लब"}
-                  </span>
                 </div>
               </div>
 
@@ -727,7 +675,7 @@ function IndexComponent() {
                   <span className="text-amber-200 font-extrabold">
                     {isEn
                       ? "“The gateway to healthy living & blissful golden years opens right here...” — Preetam Anandashram"
-                      : "“ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते...” — प्रीतम आनंदशाळा"}
+                      : "“प्रीतम ज्येष्ठ नागरिक आनंदशाळा व प्रीतम फिटनेस स्पोर्ट्स क्लब — सांगली”"}
                   </span>
                   <span className="text-[#DCC3AA] font-black">&bull;</span>
                   <span className="text-white font-bold">
@@ -778,9 +726,6 @@ function IndexComponent() {
 
           {/* ── PREETAM SPORTS RATE CARD & FACILITIES ── */}
           <SportsPricingSection />
-
-          {/* ── PREETAM SPORTS CLUB DAILY TIMETABLE SCHEDULE ── */}
-          <ScheduleSection type="sports" />
 
           {/* VIDEO & MEMBER TESTIMONIALS */}
           <TestimonialsSection />

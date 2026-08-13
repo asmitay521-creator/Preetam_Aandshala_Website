@@ -302,10 +302,10 @@
 }
 
 .ps-card-book-btn {
-  background: linear-gradient(135deg, #541A1A 0%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #be185d 0%, #e11d48 100%);
   color: #ffffff;
   font-weight: 900;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   padding: 0.85rem 1.25rem;
   border-radius: 1.25rem;
   display: flex;
@@ -313,15 +313,17 @@
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(84, 26, 26, 0.2);
+  box-shadow: 0 4px 15px rgba(190, 24, 93, 0.35);
   border: none;
   cursor: pointer;
 }
 
+.ps-card-book-btn:hover,
 .ps-overview-card:hover .ps-card-book-btn,
 .ps-package-card:hover .ps-card-book-btn {
-  background: linear-gradient(135deg, #db2777 0%, #7c3aed 100%);
-  box-shadow: 0 8px 25px rgba(219, 39, 119, 0.4);
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+  box-shadow: 0 8px 25px rgba(29, 78, 216, 0.45);
+  transform: translateY(-2px);
 }
 
 /* ── MASTER TABLE STYLES (ENLARGED CONTRAST TYPOGRAPHY) ── */

@@ -18,41 +18,38 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
     <section className="w-full bg-[#fdfafb] py-16 px-4 md:px-8 font-sans" id="schedule">
       <div className="max-w-7xl mx-auto">
         
-        {/* HEADER AREA */}
-        <div className="flex flex-col items-center text-center mb-10">
+        {/* HEADER AREA (MATCHING IMAGE 1 EXACTLY) */}
+        <div className="flex flex-col items-center text-center mb-8">
+          {/* TOP OVAL BRAND LOGO BADGE */}
           <div className="mb-3">
-            <span className={`inline-flex items-center gap-2 px-5 py-2 rounded-full font-black text-xs sm:text-sm shadow-sm border ${
+            <span className={`inline-flex items-center justify-center px-6 py-1.5 rounded-full font-black text-xs sm:text-sm tracking-wider shadow-md ${
               type === "sports" 
-                ? "bg-indigo-50 border-indigo-200 text-[#1A05A2]" 
-                : "bg-pink-50 border-pink-200 text-[#810B38]"
+                ? "bg-[#1A05A2] text-white" 
+                : "bg-[#70092b] text-white"
             }`}>
-              <span>{type === "sports" ? (isEn ? "🏋️‍♂️ Preetam Sports & Fitness Club" : "🏋️‍♂️ प्रीतम स्पोर्ट्स अँड फिटनेस क्लब") : (isEn ? "🌸 Preetam Senior Citizen Anandshala" : "🌸 प्रीतम ज्येष्ठ नागरिक आनंदशाळा")}</span>
+              {type === "sports" ? (isEn ? "PREETAM SPORTS ®" : "PREETAM SPORTS ®") : "PREETAM ®"}
             </span>
           </div>
 
-          <h2 className={`text-2xl sm:text-4xl md:text-5xl font-black tracking-tight drop-shadow-md flex items-center justify-center flex-wrap gap-2 md:gap-3 py-1.5 bg-gradient-to-r bg-clip-text text-transparent ${
+          {/* MAIN TITLE (CLEAN MAROON HEADING) */}
+          <h2 className={`text-2xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4 text-center ${
             type === "sports"
-              ? "from-[#1A05A2] via-purple-700 to-[#db2777]"
-              : "from-[#810B38] via-rose-700 to-amber-700"
+              ? "text-[#1A05A2]"
+              : "text-[#70092b]"
           }`}>
-            <span className="text-amber-500 opacity-90 text-2xl sm:text-3xl">✨</span>
-            <span>
-              {isEn
-                ? (type === "sports" ? "Preetam Sports Club Timetable" : "Preetam Senior Citizen Anandshala Timetable")
-                : (config.headerTitle || (type === "sports" ? "प्रीतम स्पोर्ट्स क्लब वेळापत्रक" : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक"))}
-            </span>
-            <span className="text-amber-500 opacity-90 text-2xl sm:text-3xl">✨</span>
+            {isEn
+              ? (type === "sports" ? "Preetam Sports Club Timetable" : "Preetam Senior Citizen Anandshala Timetable")
+              : (config.headerTitle || (type === "sports" ? "प्रीतम स्पोर्ट्स क्लब वेळापत्रक" : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक"))}
           </h2>
 
-          <p className="mt-3 text-slate-800 font-black text-sm sm:text-lg md:text-xl flex items-center justify-center flex-wrap gap-2 max-w-4xl leading-relaxed">
-            <span className="text-pink-600 text-base sm:text-xl">💖</span> 
-            <span>
-              {isEn
-                ? (type === "sports" ? "Complete experience of fitness, sports and wellness... Modern gym, swimming pool & all sports facilities." : "Joyful life, beautiful thoughts... Ideal center of health, entertainment, values and togetherness.")
-                : (config.subtitle || (type === "sports" ? "फिटनेस, क्रीडा आणि आरोग्याचा परिपूर्ण अनुभव... आधुनिक जिम, स्विमिंग पुल व सर्व खेळांची सोय." : "आनंदी जीवन, सुंदर विचार... आरोग्य, मनोरंजन, संस्कार आणि सहवास यांचं आदर्श केंद्र."))}
-            </span>
-            <span className="text-pink-600 text-base sm:text-xl">💖</span>
-          </p>
+          {/* SUB-PILL BADGE */}
+          <div className={`inline-block text-white text-xs sm:text-base md:text-lg font-extrabold px-6 py-2 sm:px-8 sm:py-2.5 rounded-full shadow-lg border border-white/40 ${
+            type === "sports"
+              ? "bg-gradient-to-r from-indigo-600 via-indigo-800 to-[#1A05A2]"
+              : "bg-gradient-to-r from-[#d91b5c] via-[#b80045] to-[#70092b]"
+          }`}>
+            {config.daysText || (type === "sports" ? "सोमवार ते शनिवार (सकाळी ६ ते रात्री ९)" : "सोमवार ते शनिवार (सकाळी ११ ते सायंकां. ५ - तुकडी अ)")}
+          </div>
 
           {/* UPLOADED TIMETABLE POSTER / DOCUMENT BANNER BUTTON (IF UPLOADED BY ADMIN) */}
           {config.posterUrl && (
@@ -62,7 +59,7 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
                 className={`inline-flex items-center gap-3 px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base shadow-xl hover:scale-105 transition-all cursor-pointer border-2 border-white/40 ${
                   type === "sports"
                     ? "bg-gradient-to-r from-[#1A05A2] to-purple-700 hover:shadow-indigo-500/40"
-                    : "bg-gradient-to-r from-[#810B38] to-pink-700 hover:shadow-pink-500/40"
+                    : "bg-gradient-to-r from-[#70092b] to-pink-700 hover:shadow-pink-500/40"
                 }`}
               >
                 <span>📜</span>
@@ -119,145 +116,88 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
           </div>
         )}
 
-        {/* DATE & TIME BADGES */}
-        <div className="flex flex-col sm:flex-row items-center justify-between bg-white rounded-t-3xl border-b-4 border-[#1A05A2] shadow-sm p-4 px-6 md:px-12 z-10 relative mt-8">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-[#f472b6] text-white flex items-center justify-center text-2xl shadow-md">
-              📅
-            </div>
-            <div>
-              <div className="text-[#f472b6] font-extrabold text-sm">वेळापत्रक</div>
-              <div className="text-[#1a1a40] font-black text-base sm:text-lg">{config.daysText || "सोमवार ते शुक्रवार (दैनिक हजेरी)"}</div>
-            </div>
-          </div>
-          
-          <div className="hidden lg:flex bg-[#1A05A2] text-white rounded-full px-8 py-2.5 items-center gap-2 shadow-md">
-            <span className="opacity-70">🌿</span>
-            <span className="font-black text-lg">{config.headerTitle || "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक"}</span>
-            <span className="opacity-70">🌿</span>
-          </div>
+        {/* ANANDSHALA BROCHURE TIMETABLE GRID LAYOUT (EXACTLY MATCHING PRINTED PAMPHLET) */}
+        {type === "anandshala" ? (
+          <div className="bg-[#fdf0f5] border-4 border-[#f472b6]/40 rounded-[2.5rem] p-5 sm:p-8 shadow-2xl relative my-6 text-center">
 
-          <div className="flex items-center gap-3 mt-4 sm:mt-0">
-            <div className="w-12 h-12 rounded-full border-4 border-[#1A05A2] text-[#1A05A2] flex items-center justify-center text-xl font-bold bg-[#e8eaf6]">
-              🕐
-            </div>
-            <div>
-              <div className="text-[#1A05A2] font-extrabold text-sm">सकाळी वेळ</div>
-              <div className="text-[#1a1a40] font-black text-base sm:text-lg">{config.timeRange || "05:30 ते 09:30"}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* TABLE BODY */}
-        <div className="overflow-x-auto bg-white rounded-b-3xl shadow-xl border border-slate-100">
-          <table className="w-full min-w-[900px] text-center border-collapse">
-            <thead>
-              <tr className="bg-gradient-to-r from-[#f472b6] via-[#1A05A2] to-[#6a0dad] text-white">
-                <th className="py-2.5 px-2 font-black text-base border-r border-white/20 w-[15%]">वेळ</th>
-                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">सोमवार</th>
-                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">मंगळवार</th>
-                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">बुधवार</th>
-                <th className="py-2.5 px-2 font-black text-base border-r border-white/20">गुरुवार</th>
-                <th className="py-2.5 px-2 font-black text-base">शुक्रवार</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((row, i) => (
-                <tr key={row.id || i} className={`border-b border-slate-200 hover:bg-pink-50/40 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]'}`}>
-                  <td className="py-2.5 px-2 border-r border-slate-200">
-                    <div className="flex flex-col items-center justify-center gap-0.5">
-                      <span className="text-xl text-[#1A05A2]">{row.icon}</span>
-                      <span className="font-extrabold text-[#1a1a40] text-xs sm:text-sm">{row.time}</span>
+            {/* 8-CARD GRID LAYOUT */}
+            <div className="bg-white/95 rounded-3xl p-4 sm:p-6 border-2 border-pink-200 shadow-inner">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                {[
+                  { time: "११ ते ११.३०", title: "प्रार्थना व राष्ट्रगीत" },
+                  { time: "११:१५ ते १२:००", title: "पहिला तास" },
+                  { time: "१२:१५ ते ०१:००", title: "दुसरा तास" },
+                  { time: "०१:१५ ते ०२:००", title: "स्नेहभोजन" },
+                  { time: "०२:१५ ते ०३:००", title: "तिसरा तास" },
+                  { time: "०३:१५ ते ०४:००", title: "चौथा तास" },
+                  { time: "०४:१५ ते ०५:००", title: "पाचवा तास" },
+                  { time: "१२:१५ ते ०१:००", title: "तुकडी 'ब' चे स्नेहभोजन" },
+                ].map((card, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col items-center justify-center p-5 rounded-2xl bg-white border-2 border-pink-100 shadow-sm hover:shadow-md hover:border-[#810B38] transition-all"
+                  >
+                    <div className="text-base sm:text-lg font-black text-[#810B38] mb-1">
+                      {card.time}
                     </div>
-                  </td>
-                  <td className="py-2 px-2 border-r border-slate-200">
-                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.mon?.main || ""}</div>
-                    <div className="text-xs font-medium text-slate-500">{row.mon?.sub || ""}</div>
-                  </td>
-                  <td className="py-2 px-2 border-r border-slate-200">
-                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.tue?.main || ""}</div>
-                    <div className="text-xs font-medium text-slate-500">{row.tue?.sub || ""}</div>
-                  </td>
-                  <td className="py-2 px-2 border-r border-slate-200">
-                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.wed?.main || ""}</div>
-                    <div className="text-xs font-medium text-slate-500">{row.wed?.sub || ""}</div>
-                  </td>
-                  <td className="py-2 px-2 border-r border-slate-200">
-                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.thu?.main || ""}</div>
-                    <div className="text-xs font-medium text-slate-500">{row.thu?.sub || ""}</div>
-                  </td>
-                  <td className="py-2 px-2">
-                    <div className="font-extrabold text-[#1a1a40] text-sm sm:text-base leading-tight mb-0.5">{row.fri?.main || ""}</div>
-                    <div className="text-xs font-medium text-slate-500">{row.fri?.sub || ""}</div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* BOTTOM 3 SECTIONS */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
-          
-          {/* Features */}
-          <div className="col-span-1 lg:col-span-4 bg-white rounded-[24px] shadow-lg border-2 border-pink-200 overflow-hidden relative flex flex-col justify-between">
-            <div className="bg-[#f472b6] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-8 rounded-b-xl absolute top-0 inset-x-0 shadow-sm z-10">
-              <span className="text-xs">✦</span> {isEn ? "Our Key Features" : "आमच्या वैशिष्ट्ये"} <span className="text-xs">✦</span>
-            </div>
-            <div className="pt-14 pb-5 px-4 grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-3 gap-2.5 sm:gap-3.5 items-center justify-center h-full">
-              <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-pink-50/60 hover:bg-pink-100/60 transition-colors border border-pink-100">
-                <div className="w-11 h-11 rounded-full bg-[#1A05A2] text-white flex items-center justify-center text-xl shadow-md">🏢</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Modern Facilities" : "आधुनिक सुविधा"}</div>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-blue-50/60 hover:bg-blue-100/60 transition-colors border border-blue-100">
-                <div className="w-11 h-11 rounded-full bg-[#208dd7] text-white flex items-center justify-center text-xl shadow-md">🛡️</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Safety First" : "सुरक्षा प्रथम"}</div>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-rose-50/60 hover:bg-rose-100/60 transition-colors border border-rose-100">
-                <div className="w-11 h-11 rounded-full bg-[#f472b6] text-white flex items-center justify-center text-xl shadow-md">❤️</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Health Care" : "आरोग्याची काळजी"}</div>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-purple-50/60 hover:bg-purple-100/60 transition-colors border border-purple-100">
-                <div className="w-11 h-11 rounded-full bg-[#1A05A2] text-white flex items-center justify-center text-xl shadow-md">🎭</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Arts & Culture" : "मनोरंजन व संस्कृती"}</div>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1.5 p-2 rounded-xl bg-pink-50/60 hover:bg-pink-100/60 transition-colors border border-pink-100 col-span-2 sm:col-span-1 lg:col-span-2">
-                <div className="w-11 h-11 rounded-full bg-[#f472b6] text-white flex items-center justify-center text-xl shadow-md">🧘</div>
-                <div className="text-xs sm:text-sm font-black text-[#1a1a40] leading-tight">{isEn ? "Expert Trainers" : "अनुभवी मार्गदर्शक"}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Rules */}
-          <div className="col-span-1 lg:col-span-5 bg-white rounded-[24px] shadow-lg border-2 border-indigo-200 relative pt-16 pb-6 px-5 sm:px-6">
-            <div className="bg-[#1A05A2] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-8 sm:px-10 rounded-b-xl absolute top-0 inset-x-0 shadow-sm z-10">
-              <span className="text-xs">🌿</span> {isEn ? "Club Rules & Guidelines" : "क्लबाचे नियम व सूचना"} <span className="text-xs">🌿</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-1">
-              {rules.map((rule, idx) => (
-                <div key={idx} className="flex items-start gap-2">
-                  <div className="w-5 h-5 rounded-full bg-[#f472b6] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                    <div className="text-lg sm:text-2xl font-black text-[#810B38] leading-tight">
+                      {card.title}
+                    </div>
                   </div>
-                  <span className="text-xs sm:text-sm font-black text-[#1a1a40] leading-snug">{rule}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Happy Moments */}
-          <div className="col-span-1 lg:col-span-3 bg-white rounded-[24px] shadow-lg border-2 border-pink-200 overflow-hidden relative flex flex-col justify-between min-h-[300px]">
-             <div className="bg-[#f472b6] text-white text-center py-2.5 font-black text-base flex justify-center items-center gap-2 w-max mx-auto px-6 rounded-b-xl absolute top-0 inset-x-0 z-10 shadow-sm">
-              <span className="text-xs">✦</span> {isEn ? "Moments of Happiness" : "आनंदी जीवनाचे सुंदर क्षण"} <span className="text-xs">✦</span>
-            </div>
-            <div className="w-full flex-1 pt-14 p-3 flex flex-col">
-               <div className="w-full flex-1 min-h-[220px] rounded-2xl overflow-hidden border-2 border-pink-100 relative shadow-inner">
-                  <img src="/images/aandmelav 10.jpeg" alt="Happy Seniors" className="absolute inset-0 w-full h-full object-cover" />
-               </div>
-            </div>
+        ) : (
+          /* SPORTS CLUB TIMETABLE MATRIX */
+          <div className="overflow-x-auto bg-white rounded-3xl shadow-xl border border-pink-100 mt-6">
+            <table className="w-full min-w-[900px] text-center border-collapse">
+              <thead>
+                <tr className="bg-gradient-to-r from-[#f472b6] via-[#810B38] to-[#db2777] text-white">
+                  <th className="py-2.5 px-2 font-black text-base border-r border-white/20 w-[15%]">वेळ</th>
+                  <th className="py-2.5 px-2 font-black text-base border-r border-white/20">सोमवार</th>
+                  <th className="py-2.5 px-2 font-black text-base border-r border-white/20">मंगळवार</th>
+                  <th className="py-2.5 px-2 font-black text-base border-r border-white/20">बुधवार</th>
+                  <th className="py-2.5 px-2 font-black text-base border-r border-white/20">गुरुवार</th>
+                  <th className="py-2.5 px-2 font-black text-base">शुक्रवार</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((row, i) => (
+                  <tr key={row.id || i} className={`border-b border-pink-100 hover:bg-pink-50/40 transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-[#fff5f8]'}`}>
+                    <td className="py-2.5 px-2 border-r border-pink-100">
+                      <div className="flex flex-col items-center justify-center gap-0.5">
+                        <span className="text-xl text-[#810B38]">{row.icon}</span>
+                        <span className="font-extrabold text-[#810B38] text-xs sm:text-sm">{row.time}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-3 border-r border-pink-100">
+                      <div className="font-extrabold text-[#810B38] text-sm sm:text-base leading-snug">{row.mon?.main || ""}</div>
+                      {row.mon?.sub ? <div className="text-xs font-medium text-pink-600 mt-0.5">{row.mon.sub}</div> : null}
+                    </td>
+                    <td className="py-3 px-3 border-r border-pink-100">
+                      <div className="font-extrabold text-[#810B38] text-sm sm:text-base leading-snug">{row.tue?.main || ""}</div>
+                      {row.tue?.sub ? <div className="text-xs font-medium text-pink-600 mt-0.5">{row.tue.sub}</div> : null}
+                    </td>
+                    <td className="py-3 px-3 border-r border-pink-100">
+                      <div className="font-extrabold text-[#810B38] text-sm sm:text-base leading-snug">{row.wed?.main || ""}</div>
+                      {row.wed?.sub ? <div className="text-xs font-medium text-pink-600 mt-0.5">{row.wed.sub}</div> : null}
+                    </td>
+                    <td className="py-3 px-3 border-r border-pink-100">
+                      <div className="font-extrabold text-[#810B38] text-sm sm:text-base leading-snug">{row.thu?.main || ""}</div>
+                      {row.thu?.sub ? <div className="text-xs font-medium text-pink-600 mt-0.5">{row.thu.sub}</div> : null}
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="font-extrabold text-[#810B38] text-sm sm:text-base leading-snug">{row.fri?.main || ""}</div>
+                      {row.fri?.sub ? <div className="text-xs font-medium text-pink-600 mt-0.5">{row.fri.sub}</div> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        )}
 
-        </div>
 
       </div>
     </section>

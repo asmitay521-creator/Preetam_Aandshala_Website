@@ -205,18 +205,13 @@ const PricingSection: React.FC = () => {
       {/* ── HEADER BANNER ── */}
       <Reveal>
         <div className="ps-official-header text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-pink-100 border-2 border-pink-300 text-pink-700 font-black text-sm sm:text-base mb-4 shadow-sm">
-            <Sparkles size={20} className="text-pink-600 animate-pulse" />
-            <span>भारतातील पहिलीच • ॲडव्हान्स् बुकींग शुभारंभ ऑफर</span>
-          </div>
-
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mb-4 tracking-tight">
-            <span className="bg-gradient-to-r from-amber-300 via-pink-300 to-rose-300 bg-clip-text text-transparent drop-shadow-sm">प्रीतम ज्येष्ठ नागरिक आनंदशाळा</span> — <span className="text-pink-500 font-extrabold drop-shadow">अधिकृत दरपत्रक</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mb-4 tracking-tight flex flex-col items-center gap-1.5">
+            <span className="bg-gradient-to-r from-amber-300 via-pink-300 to-rose-300 bg-clip-text text-transparent drop-shadow-sm">प्रीतम ज्येष्ठ नागरिक आनंदशाळा</span>
+            <span className="text-pink-400 font-extrabold drop-shadow">— अधिकृत दरपत्रक —</span>
           </h2>
 
           <p className="text-base sm:text-xl font-extrabold text-slate-200 leading-relaxed max-w-4xl mx-auto">
-            आनंदात जगायच, आरोग्य जपायच, आनंदशाळेत येऊन स्वप्न साकारायच! <br className="hidden sm:inline" />
-            <span className="text-pink-400 font-black">आपल्या आवडीचा कालावधी निवडून सविस्तर दरपत्रक पाहण्यासाठी खालील कोणत्याही पर्यायावर क्लीक करा:</span>
+            आनंदात जगायच, आरोग्य जपायच, आनंदशाळेत येऊन स्वप्न साकारायच!
           </p>
         </div>
       </Reveal>
@@ -257,16 +252,7 @@ const PricingSection: React.FC = () => {
       {activeTab === "overview" && (
         <Reveal delay={200}>
           <div className="ps-overview-section">
-            <div className="ps-tab-banner mb-6">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-black text-[#541A1A]">
-                  🌟 ४ मुख्य दर प्रकार (कालावधीनुसार निवड करा)
-                </h3>
-                <p className="text-xs sm:text-sm font-bold text-slate-600">
-                  खालील ४ मुख्य कालावधींपैकी कोणत्याही एका पॅकेजवर क्लीक करा व त्याचे सर्व ९ सविस्तर दर पहा:
-                </p>
-              </div>
-            </div>
+
 
             <div className="ps-overview-4grid">
               
@@ -379,29 +365,7 @@ const PricingSection: React.FC = () => {
         <Reveal delay={200}>
           <div className="ps-packages-container">
 
-            {/* TAB TITLE BANNER WITH BACK BUTTON */}
-            <div className="ps-tab-banner">
-              <div className="flex items-center gap-3">
-                <button 
-                  onClick={() => {
-                    setActiveTab("overview");
-                    setClickedTab(null);
-                  }}
-                  className="bg-white border-2 border-pink-300 text-pink-700 hover:bg-pink-100 font-extrabold text-xs sm:text-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-sm transition"
-                >
-                  <ArrowLeft size={16} />
-                  <span>सर्व ४ पर्यायांवर परत जा</span>
-                </button>
-                <h3 className="text-xl sm:text-2xl font-black text-[#541A1A] flex items-center gap-2">
-                  <span>{tabLabels.find(t => t.key === activeTab)?.icon}</span>
-                  <span>{tabLabels.find(t => t.key === activeTab)?.label} (सर्व ९ दर)</span>
-                </h3>
-              </div>
-
-              <span className="text-sm font-black text-pink-700 bg-pink-100 border border-pink-200 px-4 py-1.5 rounded-full shadow-sm">
-                पॉपअप माहितीसाठी खालील कोणत्याही कार्डवर क्लीक करा
-              </span>
-            </div>
+            {/* IF DAILY TAB: SHOW SPECIAL 1-DAY PASS FIRST */}
 
             {/* IF DAILY TAB: SHOW SPECIAL 1-DAY PASS FIRST */}
             {activeTab === "daily" && (

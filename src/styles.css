@@ -70,85 +70,85 @@
 :root {
   --radius: 0.75rem;
 
-  /* ── PINK & BLUE BRAND PALETTE ── */
+  /* ── BABY PINK BRAND PALETTE ── */
   --pink: #f472b6;
-  /* Vibrant Royal Pink Accent     */
-  --blue: #1A05A2;
-  /* Deep Navy Royal Blue          */
-  --sky: #0284C7;
-  /* Bright Sky Blue Accent        */
-  --ivory: #F0F6FF;
-  /* Crisp Soft Light Blue White   */
-  --sand: #CBD5E1;
-  /* Slate Border                  */
-  --mahogany: #1A05A2;
-  /* Deep Navy Text                */
+  /* Vibrant Royal Baby Pink Accent */
+  --blue: #810B38;
+  /* Deep Maroon/Magenta for Contrast */
+  --sky: #db2777;
+  /* Bright Rose Pink Accent        */
+  --ivory: #fdf0f5;
+  /* Soft Baby Pink Background      */
+  --sand: #fbcfe8;
+  /* Soft Pink Border               */
+  --mahogany: #810B38;
+  /* Deep Maroon Text               */
 
-  /* ── LIGHT BLUE & WHITE BACKGROUND COMBINATION ── */
-  --background: #F0F6FF;
-  /* crisp ice blue-white backdrop */
-  --foreground: #1A05A2;
-  /* deep royal navy blue text */
+  /* ── BABY PINK & WHITE BACKGROUND COMBINATION ── */
+  --background: #fdf5f8;
+  /* soft baby pink backdrop */
+  --foreground: #810B38;
+  /* deep rich maroon text */
   --card: #FFFFFF;
   /* pure crisp white cards */
-  --card-foreground: #1A05A2;
+  --card-foreground: #810B38;
 
   --popover: #FFFFFF;
-  --popover-foreground: #1A05A2;
+  --popover-foreground: #810B38;
 
   /* primary = Vibrant Pink Accent */
   --primary: #f472b6;
   --primary-foreground: #FFFFFF;
-  --primary-glow: #1A05A2;
+  --primary-glow: #db2777;
 
-  /* secondary = Light Soft Blue Container */
-  --secondary: #E0F2FE;
-  --secondary-foreground: #1A05A2;
+  /* secondary = Light Soft Baby Pink Container */
+  --secondary: #fce7f3;
+  --secondary-foreground: #810B38;
 
-  --muted: #E2E8F0;
-  --muted-foreground: #475569;
+  --muted: #fbcfe8;
+  --muted-foreground: #9f1239;
 
-  /* accent = Pink & Blue */
+  /* accent = Baby Pink */
   --accent: #f472b6;
   --accent-foreground: #FFFFFF;
-  --accent-soft: #1A05A2;
+  --accent-soft: #810B38;
 
-  --destructive: #f472b6;
+  --destructive: #be185d;
   --destructive-foreground: #ffffff;
 
-  --border: #CBD5E1;
-  --input: #E2E8F0;
+  --border: #fbcfe8;
+  --input: #fce7f3;
   --ring: #f472b6;
 
   --chart-1: #f472b6;
-  --chart-2: #1A05A2;
-  --chart-3: #0284C7;
-  --chart-4: #E2E8F0;
-  --chart-5: #050E2E;
+  --chart-2: #db2777;
+  --chart-3: #810B38;
+  --chart-4: #fbcfe8;
+  --chart-5: #701a75;
 
   --font-display: "Mukta", "Poppins", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Poppins", "Mukta", ui-sans-serif, system-ui, sans-serif;
 
-  /* ── RICH MIXED GRADIENTS ── */
-  --gradient-hero: linear-gradient(145deg, #1A05A2 0%, #1E40AF 60%, #3B82F6 100%);
-  --gradient-brand: linear-gradient(135deg, #1A05A2 0%, #f472b6 100%);
-  --gradient-pink: linear-gradient(135deg, #f472b6 0%, #FF2A85 100%);
-  --gradient-blue: linear-gradient(135deg, #1A05A2 0%, #1E40AF 100%);
-  --gradient-card-border: linear-gradient(135deg, rgba(230, 0, 103, 0.4) 0%, rgba(12, 35, 112, 0.4) 100%);
+  /* ── BABY PINK GRADIENTS ── */
+  --gradient-hero: linear-gradient(145deg, #810B38 0%, #be185d 60%, #f472b6 100%);
+  --gradient-brand: linear-gradient(135deg, #810B38 0%, #f472b6 100%);
+  --gradient-pink: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+  --gradient-blue: linear-gradient(135deg, #be185d 0%, #f472b6 100%);
+  --gradient-card-border: linear-gradient(135deg, rgba(244, 114, 182, 0.4) 0%, rgba(129, 11, 56, 0.4) 100%);
 
   /* ── SHADOWS ── */
-  --shadow-soft: 0 10px 40px -12px rgba(12, 35, 112, 0.18);
-  --shadow-lift: 0 24px 60px -16px rgba(230, 0, 103, 0.25);
-  --shadow-glow: 0 0 0 1px rgba(230, 0, 103, 0.3), 0 14px 40px -10px rgba(12, 35, 112, 0.25);
-  --shadow-fire: 0 0 25px rgba(230, 0, 103, 0.35), 0 0 50px rgba(2, 132, 199, 0.25);
+  --shadow-soft: 0 10px 40px -12px rgba(129, 11, 56, 0.18);
+  --shadow-lift: 0 24px 60px -16px rgba(244, 114, 182, 0.25);
+  --shadow-glow: 0 0 0 1px rgba(244, 114, 182, 0.3), 0 14px 40px -10px rgba(129, 11, 56, 0.25);
+  --shadow-fire: 0 0 25px rgba(244, 114, 182, 0.35), 0 0 50px rgba(219, 39, 119, 0.25);
 
-  --sidebar: #F0F6FF;
-  --sidebar-foreground: #1A05A2;
+  --sidebar: #fdf5f8;
+  --sidebar-foreground: #810B38;
   --sidebar-primary: #f472b6;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #E2E8F0;
-  --sidebar-accent-foreground: #1A05A2;
-  --sidebar-border: #CBD5E1;
+  --sidebar-accent: #fce7f3;
+  --sidebar-accent-foreground: #810B38;
+  --sidebar-border: #fbcfe8;
   --sidebar-ring: #f472b6;
 }
 

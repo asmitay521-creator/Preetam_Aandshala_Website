@@ -4,19 +4,29 @@ import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export async function uploadImageToFirebase(file: File, pathFolder = "admin_uploads"): Promise<string> {
-  try {
-    const fileRef = ref(storage, `${pathFolder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`);
-    const snapshot = await uploadBytes(fileRef, file);
-    const downloadUrl = await getDownloadURL(snapshot.ref);
-    return downloadUrl;
-  } catch (err) {
-    console.warn("Firebase Storage Upload fallback to base64:", err);
-    return new Promise((resolve) => {
+  return new Promise((resolve) => {
+    try {
+      const fileRef = ref(storage, `${pathFolder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "_")}`);
+      const uploadPromise = uploadBytes(fileRef, file).then((snapshot) => getDownloadURL(snapshot.ref));
+      const timeoutPromise = new Promise<string>((_, reject) =>
+        setTimeout(() => reject(new Error("Firebase Storage Timeout")), 1200)
+      );
+
+      Promise.race([uploadPromise, timeoutPromise])
+        .then((url) => resolve(url))
+        .catch(() => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve((e.target?.result as string) || "");
+          reader.onerror = () => resolve("");
+          reader.readAsDataURL(file);
+        });
+    } catch (err) {
       const reader = new FileReader();
-      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.onload = (e) => resolve((e.target?.result as string) || "");
+      reader.onerror = () => resolve("");
       reader.readAsDataURL(file);
-    });
-  }
+    }
+  });
 }
 
 // ============================================================================
@@ -107,9 +117,11 @@ export type SiteData = {
   showWelcomePoster?: boolean;
   aanandshalaTitle?: string;
   aanandshalaBadge?: string;
+  aanandshalaCardImage?: string;
   aanandshalaImages?: string[];
   sportsTitle?: string;
   sportsBadge?: string;
+  sportsCardImage?: string;
   sportsImages?: string[];
   sportsBrochureUrl?: string;
   sportsBrochureType?: "image" | "pdf";
@@ -256,8 +268,9 @@ const initialSiteData: SiteData = {
   aanandshalaTitle: "प्रीतम ज्येष्ठ नागरिक आनंदशाळा व निवारा",
   aanandshalaBadge: "भारतातील पहिली ज्येष्ठ नागरिक आनंदशाळा",
   aanandshalaImages: [
+    "/images/anandshala_building_sky.jpg",
     "/images/slider4.JPG",
-    "/images/slider3.png",
+    "/images/aandshala_img.png",
   ],
   sportsTitle: "प्रीतम स्पोर्ट्स अँड फिटनेस क्लब",
   sportsBadge: "अद्ययावत १.५ एकर स्पोर्ट्स संकुल",
@@ -512,83 +525,87 @@ export type ScheduleConfig = {
 
 export const initialScheduleConfig: ScheduleConfig = {
   headerTitle: "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक",
-  daysText: "सोमवार ते शुक्रवार (दैनिक हजेरी)",
-  timeRange: "05:30 ते 09:30",
-  subtitle: "आनंदी जीवन, सुंदर विचार... आरोग्य, मनोरंजन, संस्कार आणि सहवास यांचं आदर्श केंद्र.",
+  daysText: "सोमवार ते शनिवार (सकाळी ११ ते सायंकां. ५ - तुकडी अ)",
+  timeRange: "सकाळी ११:०० ते सायंकाळी ०५:००",
+  subtitle: "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते...",
   posterUrl: "",
   posterType: "image",
   rules: [
     "क्लबाचे वेळापत्रक हे सदस्यांनी नियमित पाळावे.",
     "वेळेवर हजेरी लावणे सर्व सदस्यांसाठी अनिवार्य आहे.",
-    "योग वर्गात योग ड्रेस व स्वच्छ चटई आणणे आवश्यक आहे.",
-    "वेट ट्रेनिंग करताना प्रशिक्षकांच्या मार्गदर्शनाखाली व्यायाम करावा.",
-    "जिम मध्ये मोबाईल वापरण्यास संपूर्ण बंदी आहे.",
-    "क्लब परिसर स्वच्छ व नीटनेटका ठेवणे ही सर्वांची जबाबदारी आहे.",
-    "क्लबांमध्ये धुम्रपान, तंबाखू व मद्यपान सक्त मनाई आहे.",
-    "जिममध्ये मोठ्याने बोलणे किंवा गोंधळ करणे टाळावे.",
-    "कोणत्याही प्रकारची दुखापत झाल्यास व्यवस्थापन जबाबदार राहणार नाही.",
-    "वैयक्तिक वस्तूंची काळजी स्वतः घ्यावी."
+    "तुकडी 'अ' व तुकडी 'ब' च्या वेळेनुसार स्नेहभोजन व तासांना उपस्थित राहावे.",
+    "आनंदशाळा परिसरात स्वच्छता व सौहार्दाचे वातावरण ठेवावे."
   ],
   items: [
     {
       id: "sch-1",
-      icon: "🧘‍♂️",
-      time: "सकाळी ०५:३० ते ०६:१५",
-      mon: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-      tue: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-      wed: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-      thu: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
-      fri: { main: "योग व प्राणायाम", sub: "आसने, प्राणायाम व हास्ययोग" },
+      icon: "🙏",
+      time: "११:०० ते ११:३०",
+      mon: { main: "प्रार्थना व राष्ट्रगीत", sub: "" },
+      tue: { main: "प्रार्थना व राष्ट्रगीत", sub: "" },
+      wed: { main: "प्रार्थना व राष्ट्रगीत", sub: "" },
+      thu: { main: "प्रार्थना व राष्ट्रगीत", sub: "" },
+      fri: { main: "प्रार्थना व राष्ट्रगीत", sub: "" },
     },
     {
       id: "sch-2",
-      icon: "🧠",
-      time: "सकाळी ०६:१५ ते ०७:००",
-      mon: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-      tue: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-      wed: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-      thu: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
-      fri: { main: "ध्यानधारणा & निसर्गोपचार", sub: "ओमकार जप व ध्यान" },
+      icon: "📚",
+      time: "११:१५ ते १२:००",
+      mon: { main: "पहिला तास", sub: "" },
+      tue: { main: "पहिला तास", sub: "" },
+      wed: { main: "पहिला तास", sub: "" },
+      thu: { main: "पहिला तास", sub: "" },
+      fri: { main: "पहिला तास", sub: "" },
     },
     {
       id: "sch-3",
-      icon: "🚶‍♂️",
-      time: "सकाळी ०७:०० ते ०७:४५",
-      mon: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-      tue: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-      wed: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-      thu: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
-      fri: { main: "मॉर्निंग वॉक & वॉर्मअप", sub: "१.५ एकर परिसरात फिरणे" },
+      icon: "📖",
+      time: "१२:१५ ते ०१:००",
+      mon: { main: "दुसरा तास", sub: "तुकडी 'ब' चे स्नेहभोजन" },
+      tue: { main: "दुसरा तास", sub: "तुकडी 'ब' चे स्नेहभोजन" },
+      wed: { main: "दुसरा तास", sub: "तुकडी 'ब' चे स्नेहभोजन" },
+      thu: { main: "दुसरा तास", sub: "तुकडी 'ब' चे स्नेहभोजन" },
+      fri: { main: "दुसरा तास", sub: "तुकडी 'ब' चे स्नेहभोजन" },
     },
     {
       id: "sch-4",
-      icon: "☕",
-      time: "सकाळी ०७:४५ ते ०८:१५",
-      mon: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-      tue: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-      wed: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-      thu: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
-      fri: { main: "आरोग्यदायी चहा & काढा", sub: "गप्पागोष्टी व संवाद" },
+      icon: "🍱",
+      time: "०१:१५ ते ०२:००",
+      mon: { main: "स्नेहभोजन", sub: "तुकडी 'ब' चा दुसरा तास" },
+      tue: { main: "स्नेहभोजन", sub: "तुकडी 'ब' चा दुसरा तास" },
+      wed: { main: "स्नेहभोजन", sub: "तुकडी 'ब' चा दुसरा तास" },
+      thu: { main: "स्नेहभोजन", sub: "तुकडी 'ब' चा दुसरा तास" },
+      fri: { main: "स्नेहभोजन", sub: "तुकडी 'ब' चा दुसरा तास" },
     },
     {
       id: "sch-5",
-      icon: "💪",
-      time: "सकाळी ०८:१५ ते ०९:००",
-      mon: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-      tue: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-      wed: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-      thu: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
-      fri: { main: "जिम & लाईट कार्डिओ", sub: "फिजिओथेरपिस्ट मार्गदर्शन" },
+      icon: "✏️",
+      time: "०२:१५ ते ०३:००",
+      mon: { main: "तिसरा तास", sub: "" },
+      tue: { main: "तिसरा तास", sub: "" },
+      wed: { main: "तिसरा तास", sub: "" },
+      thu: { main: "तिसरा तास", sub: "" },
+      fri: { main: "तिसरा तास", sub: "" },
     },
     {
       id: "sch-6",
-      icon: "🥗",
-      time: "सकाळी ०९:०० ते ०९:३०",
-      mon: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-      tue: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-      wed: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-      thu: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
-      fri: { main: "पौष्टिक नाश्ता & विश्रांती", sub: "ताजा आहार व फळे" },
+      icon: "🎨",
+      time: "०३:१५ ते ०४:००",
+      mon: { main: "चौथा तास", sub: "" },
+      tue: { main: "चौथा तास", sub: "" },
+      wed: { main: "चौथा तास", sub: "" },
+      thu: { main: "चौथा तास", sub: "" },
+      fri: { main: "चौथा तास", sub: "" },
+    },
+    {
+      id: "sch-7",
+      icon: "🌅",
+      time: "०४:१५ ते ०५:००",
+      mon: { main: "पाचवा तास", sub: "" },
+      tue: { main: "पाचवा तास", sub: "" },
+      wed: { main: "पाचवा तास", sub: "" },
+      thu: { main: "पाचवा तास", sub: "" },
+      fri: { main: "पाचवा तास", sub: "" },
     },
   ]
 };
@@ -664,7 +681,7 @@ const STORAGE_KEYS = {
   packages: "anandshala_packages_data_v2",
   brochures: "anandshala_brochures_data_v1",
   homeNews: "anandshala_homenews_data_v1",
-  schedule: "anandshala_schedule_data_v1",
+  schedule: "anandshala_schedule_data_v4",
   sportsSchedule: "anandshala_sports_schedule_data_v1",
 };
 
@@ -672,7 +689,12 @@ export function getStoredData<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
+    if (!item) return fallback;
+    const parsed = JSON.parse(item);
+    if (key === STORAGE_KEYS.schedule && (parsed.timeRange?.includes("05:30") || parsed.items?.[0]?.sub?.includes("उपासना"))) {
+      return fallback;
+    }
+    return parsed;
   } catch (e) {
     return fallback;
   }
@@ -815,6 +837,14 @@ export function useAdminStore() {
     const updated = { ...siteData, ...newSite };
     setSiteDataState(updated);
     setStoredData(STORAGE_KEYS.site, updated);
+    if (db) {
+      setDoc(doc(db, "app_data", STORAGE_KEYS.site), { data: updated }, { merge: true }).catch((err) =>
+        console.warn("Firestore site sync warning:", err)
+      );
+      setDoc(doc(db, "site_settings", "general"), { siteData: updated }, { merge: true }).catch((err) =>
+        console.warn("Firestore site_settings sync warning:", err)
+      );
+    }
   };
 
   const updateAboutData = (newAbout: Partial<AboutData>) => {

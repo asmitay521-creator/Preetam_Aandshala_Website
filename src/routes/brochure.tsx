@@ -293,32 +293,29 @@ const Brochure: React.FC = () => {
 
             <p className="bcol-2-intro">
               {isEn
-                ? "Founded from the dream of Mr. Abhinav Kakani, Sangli. Founded on 26 January 2000, organizing annual foundation day & senior citizen meetups."
-                : "माझ्या जन्माची बीजे रुजली ती श्री. अभिनव जननायक काकाणी, ता. सांगली यांच्या स्वप्नातून. अभिनव यांनी 26 जानेवारी 2000 रोजी व्यवसाय सुरू केला आणि दरवर्षी वाढदिवस दिन, <span>ज्येष्ठ नागरिक मेळावा व वाढदिवस आयोजन</span> करून तो साजरा करतात."}
+                ? "Founded from the dream of Mr. Abhinav Kamaji, Sangli. Started on 26 January 2000, organizing annual foundation day, birthdays & senior citizen meetups."
+                : "माझ्या जन्माची बीजे रुजली ती श्री. अभिनव जगन्नाथ कामाजी, रा. सांगली यांच्या स्वप्न प्रकल्पातून. अभिनव यांनी २६ जानेवारी २००० रोजी व्यवसाय सुरु केला व प्रत्येक वर्षी वर्धापन दिन, वाढदिवस, ज्येष्ठ नागरिक आनंद मेळावा व सहलीचे आयोजन करून साजरा करतात."}
             </p>
 
-            {/* 6 Photo Grid - CLICKABLE */}
-            <div className="bcol-photo-grid">
+            {/* 6 Feature Pillars - TEXT ONLY CARDS */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 my-4">
               {photoItems.map((item, idx) => (
                 <div 
-                  className="bcol-photo-item"
+                  className="flex flex-col items-center justify-center text-center p-3.5 sm:p-4 rounded-2xl bg-pink-50/90 border-2 border-pink-200 hover:border-[#810B38] hover:bg-pink-100 transition-all cursor-pointer shadow-sm hover:scale-105"
                   key={idx}
                   onClick={() => setSelectedDetail(item)}
-                  title={isEn ? "Click to view details" : "माहिती पाहण्यासाठी क्लीक करा"}
+                  title={isEn ? item.category : item.title}
                 >
-                  <img 
-                    src={item.img} 
-                    alt={item.title} 
-                    onError={(e) => { e.currentTarget.src = buildingImage; }} 
-                  />
-                  <div className="bcol-photo-label">{isEn ? item.category : item.title}</div>
+                  <span className="font-black text-[#810B38] text-xs sm:text-sm leading-tight">
+                    {isEn ? item.category : item.title}
+                  </span>
                 </div>
               ))}
             </div>
 
             {/* Facilities Header */}
             <div className="bcol-section-header-red">
-              {isEn ? "Available Campus Facilities (Click Any)" : "आमच्याकडे उपलब्ध सुविधा (क्लीक करा)"}
+              {isEn ? "Available Campus Facilities" : "आमच्याकडे उपलब्ध सुविधा"}
             </div>
 
             {/* 13 Facilities Grid - CLICKABLE */}
@@ -392,11 +389,9 @@ const Brochure: React.FC = () => {
                   "आनंदविलास निवास फी किमान रु. १२,०००/- *GST Extra."
                 ]
               })}
-              title="प्रवेश योजनेची सविस्तर माहिती पाहण्यासाठी इथे क्लीक करा"
             >
               <div className="flex items-center justify-between mb-3 border-b border-pink-100 pb-2">
                 <h3 className="bcol-rules-title text-base sm:text-lg font-black text-[#881337] m-0">प्रवेश कसा घ्याल ?</h3>
-                <span className="text-xs font-black text-pink-600 bg-pink-100 px-2.5 py-1 rounded-full border border-pink-300 shadow-sm">माहिती पहा →</span>
               </div>
               
               <ul className="space-y-2.5 list-none p-0 m-0">
@@ -427,7 +422,7 @@ const Brochure: React.FC = () => {
               </ul>
             </div>
 
-            {/* Founder Floating Badge - CLICKABLE */}
+            {/* Founder Floating Badge */}
             <div 
               className="bcol-founder-badge-wrapper cursor-pointer hover:scale-[1.02] transition-transform shadow-lg"
               onClick={() => setSelectedDetail({
@@ -442,7 +437,6 @@ const Brochure: React.FC = () => {
                   "सर्व सुविधायुक्त वातानुकूलित दालने"
                 ]
               })}
-              title="माहिती पाहण्यासाठी क्लीक करा"
             >
               <img 
                 src="/images/founderimg.png" 
@@ -451,7 +445,7 @@ const Brochure: React.FC = () => {
                 onError={(e) => { e.currentTarget.src = buildingImage; }} 
               />
               <div className="bcol-founder-badge-text">
-                भारतातील पहिलेच ज्येष्ठ नागरिकांची 'आनंदशाळा' (माहिती पहा →)
+                भारतातील पहिलेच ज्येष्ठ नागरिकांची 'आनंदशाळा'
               </div>
             </div>
           </div>
