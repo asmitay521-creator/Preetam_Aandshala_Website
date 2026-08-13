@@ -409,7 +409,7 @@ function IndexComponent() {
               h-full
               min-h-[100dvh]
 
-              flex flex-col items-center justify-center overflow-y-auto bg-[#0c0216]/95 backdrop-blur-md p-3 sm:p-6 pt-8 sm:pt-10"
+              flex flex-col items-center justify-center overflow-y-auto bg-[#0c0216]/95 backdrop-blur-md px-3 sm:px-6 pt-2 pb-4"
           >
 
             {/* TOP RIGHT CLOSE BUTTON */}
@@ -422,7 +422,7 @@ function IndexComponent() {
             </button>
 
             {/* CENTERED CONTAINER FOR TEXT AND POSTER IMAGE */}
-            <div className="flex flex-col items-center justify-center w-full max-w-[960px] text-center my-auto">
+            <div className="flex flex-col items-center justify-center w-full max-w-[960px] text-center my-auto gap-2">
 
               {/* TOP WELCOME HEADER TEXT ABOVE IMAGE */}
               <div className="relative z-10 text-center px-2 max-w-4xl shrink-0 space-y-1 mb-2 sm:mb-3">
@@ -457,7 +457,7 @@ function IndexComponent() {
                       target.src = preetamWelcomeImg;
                     }
                   }}
-                  className="w-full max-w-[900px] max-h-[calc(100vh-160px)] sm:max-h-[calc(100vh-175px)] lg:max-h-[calc(100vh-185px)] h-auto object-contain rounded-2xl drop-shadow-[0_25px_65px_rgba(219,39,119,0.35)] cursor-pointer transition-all duration-500 hover:scale-[1.01]"
+                  className="w-full max-w-[860px] max-h-[62vh] sm:max-h-[66vh] lg:max-h-[68vh] h-auto object-contain rounded-2xl drop-shadow-[0_25px_65px_rgba(219,39,119,0.35)] cursor-pointer transition-all duration-500 hover:scale-[1.01]"
                 />
               </motion.div>
 
