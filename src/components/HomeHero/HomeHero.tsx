@@ -1,51 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./HomeHero.css";
 import { useLanguage } from "@/lib/use-language";
 import { useAdminStore } from "@/lib/admin-store";
-import { 
-  Users, Calendar, Award, ShieldCheck, 
-  ArrowRight, Landmark, Flower2, 
-  Dumbbell, BookOpen, Music, Utensils, 
-  Bus, HeartHandshake, PhoneCall, Sparkles,
-  ChevronLeft, ChevronRight
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const HomeHero: React.FC = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const { isEn } = useLanguage();
   const store = useAdminStore();
 
-  const storeImages = (store.siteData.aanandshalaImages || []).filter(Boolean);
+  const sliderImages = useMemo(() => {
+    const custom = (store.siteData.aanandshalaImages || []).filter(Boolean);
+    // If custom images exist and are not old defaults containing slider4
+    if (custom.length > 0 && !custom.includes("/images/slider4.JPG")) {
+      return custom;
+    }
+    return ["/images/slider1.JPG", "/images/slider2.JPG", "/images/slider3.png"];
+  }, [store.siteData.aanandshalaImages]);
 
-  const defaultSlides = [
+  const defaultSlidesInfo = [
     {
-      image: "/images/slider1.JPG",
       tag: isEn ? "🏛️ Main Anandshala Campus" : "🏛️ मुख्य आनंदशाळा वास्तू",
       title: isEn ? "1.5 Acre Scenic Campus" : "१.५ एकर निसर्गरम्य परिसर",
       subtitle: isEn ? "Sangli's premier & fully equipped senior citizen hub" : "सांगली जिल्ह्यातील भव्य व सर्व सोयींनी युक्त ज्येष्ठ नागरिक संकूल",
     },
     {
-      image: "/images/slider2.JPG",
       tag: isEn ? "🏊‍♂️ Preetam Sports & Fitness Club" : "🏊‍♂️ प्रीतम क्रीडा & फिटनेस क्लब",
       title: isEn ? "Olympic Pool & AC Gym" : "ऑलिंपिक स्विमिंग पूल व AC जिम",
       subtitle: isEn ? "Badminton, Pickleball, Table Tennis, Library & Modern Halls" : "बॅडमिंटन, पिकलबॉल, टेबल टेनिस, वाचनालय व अत्याधुनिक हॉल्स",
     },
     {
-      image: "/images/aandshala_img.png",
       tag: isEn ? "🌸 Joyful Golden Years" : "🌸 आनंदी सुवर्णवर्षे",
       title: isEn ? "Warm Belonging & Family Bond" : "आपुलकीचे नाते व कौटुंबिक आनंद",
       subtitle: isEn ? "Vibrant, joyful & secure golden years with peer friends" : "आपल्या वयाच्या मित्र-मैत्रिणींसोबत उत्साही व सुरक्षित जीवन सोहळा",
     },
   ];
 
-  const customSlides = storeImages.map((imgUrl, i) => ({
-    image: imgUrl,
-    tag: isEn ? `📸 Anandshala Photo ${i + 1}` : `📸 आनंदशाळा फोटो ${i + 1}`,
-    title: store.siteData.nameMr || "प्रीतम ज्येष्ठ नागरिक आनंदशाळा",
-    subtitle: store.siteData.tagline || "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते....",
-  }));
-
-  const heroSlides = customSlides.length > 0 ? customSlides : defaultSlides;
+  const heroSlides = useMemo(() => {
+    return sliderImages.map((imgUrl, i) => {
+      const info = defaultSlidesInfo[i % defaultSlidesInfo.length];
+      return {
+        image: imgUrl,
+        tag: info.tag,
+        title: info.title,
+        subtitle: info.subtitle,
+      };
+    });
+  }, [sliderImages, isEn]);
 
   // Preload all slider images in browser memory for zero delay
   useEffect(() => {
@@ -55,9 +56,10 @@ export const HomeHero: React.FC = () => {
         img.src = s.image;
       }
     });
-  }, [JSON.stringify(heroSlides.map(s => s.image))]);
+  }, [JSON.stringify(heroSlides.map((s) => s.image))]);
 
   useEffect(() => {
+    if (heroSlides.length <= 1) return;
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % heroSlides.length);
     }, 4500);

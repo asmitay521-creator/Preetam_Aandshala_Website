@@ -207,13 +207,15 @@ const PricingSection: React.FC = () => {
       {/* ── HEADER BANNER ── */}
       <Reveal>
         <div className="ps-official-header text-center mb-8">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mb-4 tracking-tight flex flex-col items-center gap-1.5">
-            <span className="bg-gradient-to-r from-amber-300 via-pink-300 to-rose-300 bg-clip-text text-transparent drop-shadow-sm">प्रीतम ज्येष्ठ नागरिक आनंदशाळा</span>
-            <span className="text-pink-400 font-extrabold drop-shadow">— अधिकृत दरपत्रक —</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight mb-4 tracking-tight flex flex-col items-center gap-1.5 text-[#831843]">
+            <span className="text-[#831843] font-black drop-shadow-sm">
+              प्रीतम ज्येष्ठ नागरिक <span className="text-[#be185d] font-black">आनंदशाळा</span>
+            </span>
+            <span className="text-[#be185d] font-black drop-shadow">— अधिकृत दरपत्रक —</span>
           </h2>
 
-          <p className="text-base sm:text-xl font-extrabold text-slate-200 leading-relaxed max-w-4xl mx-auto">
-            आनंदात जगायच, आरोग्य जपायच, आनंदशाळेत येऊन स्वप्न साकारायच!
+          <p className="text-base sm:text-xl font-extrabold text-[#70092b] leading-relaxed max-w-4xl mx-auto">
+            आनंदात जगायच, आरोग्य जपायच, <span className="text-[#be185d] font-black">आनंदशाळेत</span> येऊन स्वप्न साकारायच!
           </p>
         </div>
       </Reveal>

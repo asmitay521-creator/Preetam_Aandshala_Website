@@ -659,7 +659,7 @@ export default function SportsSection() {
         <section className="sp-facilities-sec">
           <div className="sp-sec-header">
             <div className="sp-sec-badge">✨ प्रिमियम सोयी सुविधा</div>
-            <h2 className="sp-sec-title-center">आमच्या सुविधा (विस्तृत माहितीसाठी कार्डवर क्लिक करा)</h2>
+            <h2 className="sp-sec-title-center">आमच्या सुविधा</h2>
             <p className="sp-sec-subtitle">प्रीतम स्पोर्ट्स क्लबमधील जागतिक दर्जाच्या क्रीडा व फिटनेस सुविधा</p>
           </div>
 

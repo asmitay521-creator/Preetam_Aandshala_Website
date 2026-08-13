@@ -77,8 +77,8 @@ const activityHalls = [
 const dailySchedule = [
   {
     step: "01",
-    timeMr: "११:०० ते ११:३०",
-    timeEn: "11:00 to 11:30 AM",
+    timeMr: "११:०० ते ११:१०",
+    timeEn: "11:00 to 11:10 AM",
     titleMr: "प्रार्थना व प्रार्थनायोग",
     titleEn: "Prayer & Yoga Meditation",
     textMr: "विद्यार्थी एकत्र येऊन प्रार्थना व सकारात्मक ऊर्जा घेणे.",
@@ -97,7 +97,7 @@ const dailySchedule = [
     titleMr: "कला, संगीत व वाचन",
     titleEn: "Arts, Music & Reading",
     textMr: "आवडीनुसार विविध हॉलमध्ये उपक्रम.",
-    textEn: "Activity sessions across 15 specialized halls.",
+    textEn: "Activity sessions across 18 specialized halls.",
     iconSvg: (
       <svg className="size-7 stroke-[#B8860B] fill-none stroke-[2]" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="3" width="20" height="12" rx="2" />
@@ -206,40 +206,47 @@ function IndexComponent() {
   const [showIntroBanner, setShowIntroBanner] = useState(true);
   const [selectedGalleryCategory, setSelectedGalleryCategory] = useState("सर्व");
   const { isEn } = useLanguage();
-  const store = useAdminStore();
+  const { siteData } = useAdminStore();
 
-  const welcomePosterUrl = store.siteData.welcomePosterUrl || preetamWelcomeImg;
+  const welcomePosterUrl =
+    siteData.welcomePosterUrl && siteData.welcomePosterUrl.startsWith("http")
+      ? siteData.welcomePosterUrl
+      : preetamWelcomeImg;
 
-  // Clean Pure Architectural Renders & Photos (ZERO brochure/poster text)
+  const handleVisitNow = () => {
+    setShowIntroBanner(false);
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+    if (selectedSection === null) {
+      document.body.classList.add("hide-footer");
+      document.body.classList.add("hide-nav-links");
+    }
+    setTimeout(() => {
+      const sectionElem = document.getElementById("sections");
+      if (sectionElem) {
+        sectionElem.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
+  // Only real building & gate photos — no event/poster images
   const card1Images = useMemo(() => {
-    if (store.siteData.aanandshalaCardImage === "NO_IMAGE") {
-      return ["/images/anandshala_building_sky.jpg"];
+    const defaultList = [
+      "/images/anandshala_building_sky.jpg",
+      "/images/slider4.JPG",
+    ];
+    if (Array.isArray(siteData.aanandshalaImages) && siteData.aanandshalaImages.length > 1) {
+      if (!siteData.aanandshalaImages.includes("/images/anandshala_building_sky.jpg")) {
+        return [...siteData.aanandshalaImages, "/images/anandshala_building_sky.jpg"];
+      }
+      return siteData.aanandshalaImages;
     }
-    if (store.siteData.aanandshalaCardImage) {
-      return [store.siteData.aanandshalaCardImage];
-    }
-    if (Array.isArray(store.siteData.aanandshalaImages)) {
-      return store.siteData.aanandshalaImages.length > 0
-        ? store.siteData.aanandshalaImages
-        : ["/images/anandshala_building_sky.jpg"];
-    }
-    return ["/images/anandshala_building_sky.jpg", "/images/slider4.JPG", "/images/aandshala_img.png"];
-  }, [store.siteData.aanandshalaCardImage, store.siteData.aanandshalaImages]);
+    return defaultList;
+  }, [siteData.aanandshalaImages]);
 
   const card2Images = useMemo(() => {
-    if (store.siteData.sportsCardImage === "NO_IMAGE") {
-      return ["/images/sports img.png"];
-    }
-    if (store.siteData.sportsCardImage) {
-      return [store.siteData.sportsCardImage];
-    }
-    if (Array.isArray(store.siteData.sportsImages)) {
-      return store.siteData.sportsImages.length > 0
-        ? store.siteData.sportsImages
-        : ["/images/sports img.png"];
-    }
     return ["/images/sports img.png", "/images/pickleball-court.png"];
-  }, [store.siteData.sportsCardImage, store.siteData.sportsImages]);
+  }, []);
 
   const [card1Idx, setCard1Idx] = useState(0);
   const [card2Idx, setCard2Idx] = useState(0);
@@ -402,24 +409,12 @@ function IndexComponent() {
               h-full
               min-h-[100dvh]
 
-              flex
-              flex-col
-              items-center
-              justify-center
-
-              overflow-y-auto
-
-              bg-[#0c0216]/95
-              backdrop-blur-md
-
-              p-3
-              sm:p-6
-            "
+              flex flex-col items-center justify-center overflow-y-auto bg-[#0c0216]/95 backdrop-blur-md p-3 sm:p-6 pt-8 sm:pt-10"
           >
 
             {/* TOP RIGHT CLOSE BUTTON */}
             <button
-              onClick={() => setShowIntroBanner(false)}
+              onClick={handleVisitNow}
               aria-label="Close"
               className="fixed top-2.5 right-2.5 sm:top-4 sm:right-6 z-[1000000] size-8 sm:size-11 rounded-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white font-extrabold text-sm sm:text-lg flex items-center justify-center border border-white/30 cursor-pointer shadow-lg transition-all hover:scale-110 active:scale-95"
             >
@@ -427,49 +422,42 @@ function IndexComponent() {
             </button>
 
             {/* CENTERED CONTAINER FOR TEXT AND POSTER IMAGE */}
-            <div className="my-auto flex flex-col items-center justify-center w-full max-w-[900px] text-center">
+            <div className="flex flex-col items-center justify-center w-full max-w-[960px] text-center my-auto">
 
-              {/* ========================================= */}
-              {/* TOP WELCOME HEADER TEXT ABOVE IMAGE       */}
-              {/* ========================================= */}
-              <div className="relative z-10 text-center px-2 max-w-4xl shrink-0 space-y-0.5 mb-2 sm:mb-3">
+              {/* TOP WELCOME HEADER TEXT ABOVE IMAGE */}
+              <div className="relative z-10 text-center px-2 max-w-4xl shrink-0 space-y-1 mb-2 sm:mb-3">
                 <div>
                   <h2
-                    onClick={() => setShowIntroBanner(false)}
-                    className="font-serif italic font-black text-base sm:text-xl lg:text-2xl tracking-wide bg-gradient-to-r from-amber-200 via-yellow-300 to-rose-300 bg-clip-text text-transparent drop-shadow-[0_2px_15px_rgba(251,191,36,0.5)] leading-tight cursor-pointer transition-all duration-500 hover:scale-105 hover:drop-shadow-[0_0_35px_rgba(251,191,36,0.85)] inline-block"
+                    onClick={handleVisitNow}
+                    className="font-serif italic font-black text-lg sm:text-2xl lg:text-3xl tracking-wide bg-gradient-to-r from-amber-200 via-yellow-300 to-rose-300 bg-clip-text text-transparent drop-shadow-[0_2px_15px_rgba(251,191,36,0.6)] leading-tight cursor-pointer transition-all duration-500 hover:scale-105 hover:drop-shadow-[0_0_35px_rgba(251,191,36,0.85)] inline-block"
                   >
                     <span className="block">Welcome to Preetam Anandshala &amp;</span>
                     <span className="block text-amber-300 font-extrabold not-italic mt-0.5">Preetam Fitness Sports Club Sangli</span>
                   </h2>
                 </div>
-                <p className="text-[10px] sm:text-xs font-black text-amber-200/90 tracking-widest uppercase drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)] mt-0.5">
+                <p className="text-[11px] sm:text-xs font-black text-amber-200/90 tracking-widest uppercase drop-shadow-[0_2px_8px_rgba(245,158,11,0.6)] mt-0.5">
                   आपले सहर्ष स्वागत आहे • सांगली
                 </p>
               </div>
 
-              {/* ========================================= */}
-              {/* EXACT GENERATED POSTER - AS IS            */}
-              {/* ========================================= */}
-
+              {/* POSTER IMAGE */}
               <motion.div
                 initial={{ opacity: 0, y: -20, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="relative w-full max-w-[900px] mx-auto flex flex-col items-center justify-center p-0 shrink"
+                className="relative w-full max-w-[960px] mx-auto flex flex-col items-center justify-center p-0 shrink"
               >
                 <img
                   src={welcomePosterUrl}
                   alt="Preetam Anandshala and Sports Fitness Club Welcome Poster"
-                  onClick={() => {
-                    setShowIntroBanner(false);
-                  }}
+                  onClick={handleVisitNow}
                   onError={(e) => {
                     const target = e.currentTarget;
                     if (target.src !== preetamWelcomeImg) {
                       target.src = preetamWelcomeImg;
                     }
                   }}
-                  className="w-full max-w-[850px] max-h-[calc(100vh-140px)] sm:max-h-[calc(100vh-160px)] lg:max-h-[calc(100vh-170px)] h-auto object-contain rounded-2xl drop-shadow-[0_25px_65px_rgba(219,39,119,0.35)] cursor-pointer transition-all duration-500 hover:scale-[1.01]"
+                  className="w-full max-w-[900px] max-h-[calc(100vh-160px)] sm:max-h-[calc(100vh-175px)] lg:max-h-[calc(100vh-185px)] h-auto object-contain rounded-2xl drop-shadow-[0_25px_65px_rgba(219,39,119,0.35)] cursor-pointer transition-all duration-500 hover:scale-[1.01]"
                 />
               </motion.div>
 
@@ -480,34 +468,34 @@ function IndexComponent() {
       </AnimatePresence>
       {/* ============================================================== */}
       {selectedSection === null && (
-        <section id="sections" className="relative py-4 sm:py-7 px-3 sm:px-4 overflow-hidden bg-gradient-to-br from-[#1a0429] via-[#2d0739] to-[#150424] min-h-screen min-h-[100dvh] w-full flex flex-col justify-center items-center">
+        <section id="sections" className="relative py-6 sm:py-10 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-[#fff0f6] via-[#fce7f3] via-[#fbcfe8] to-[#fff0f6] min-h-screen min-h-[100dvh] w-full flex flex-col justify-center items-center text-slate-900">
           {/* FLOATING RICH AMBIENT LIGHT ORBS */}
-          <div className="pointer-events-none absolute top-10 left-10 size-[450px] rounded-full bg-[#db2777]/25 blur-[120px] animate-pulse" />
-          <div className="pointer-events-none absolute bottom-10 right-10 size-[450px] rounded-full bg-[#7c3aed]/25 blur-[120px] animate-float" />
-          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] rounded-full bg-[#f472b6]/15 blur-[140px]" />
+          <div className="pointer-events-none absolute top-10 left-10 size-[450px] rounded-full bg-pink-300/40 blur-[120px] animate-pulse" />
+          <div className="pointer-events-none absolute bottom-10 right-10 size-[450px] rounded-full bg-rose-300/30 blur-[120px] animate-float" />
+          <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] rounded-full bg-pink-400/20 blur-[140px]" />
 
           {/* BRAND HEADER */}
-          <div className="animate-fade-up text-center max-w-5xl mx-auto mb-2 sm:mb-4 relative z-10 px-2">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-amber-600/30 to-amber-500/20 backdrop-blur-xl border border-amber-400/50 text-amber-200 font-extrabold text-xs sm:text-sm shadow-[0_0_25px_rgba(251,191,36,0.3)] tracking-wide">
-              <span className="inline-block size-2.5 rounded-full bg-amber-400 animate-ping" />
-              <span>{isEn ? "The doorway to healthy health & joyful life for senior citizens opens here...." : (store.siteData.tagline || "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते....")}</span>
+          <div className="animate-fade-up text-center max-w-5xl mx-auto mb-3 sm:mb-5 relative z-10 px-2">
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/90 backdrop-blur-xl border-2 border-pink-300 text-[#be185d] font-black text-xs sm:text-sm shadow-md tracking-wide">
+              <span className="inline-block size-2.5 rounded-full bg-[#be185d] animate-ping" />
+              <span>{isEn ? "The doorway to healthy health & joyful life for senior citizens opens here...." : (siteData.tagline || "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते....")}</span>
             </div>
-            <h1 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 via-rose-200 to-amber-200 bg-clip-text text-transparent drop-shadow-[0_4px_25px_rgba(251,191,36,0.7)] leading-snug py-0.5 mt-2.5 sm:mt-5 max-w-4xl mx-auto">
+            <h1 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl tracking-tight leading-snug py-0.5 mt-3 sm:mt-5 max-w-4xl mx-auto text-[#831843]">
               {isEn ? (
                 <>
-                  <span className="block">Preetam Senior Citizen Anandshala</span>
-                  <span className="block text-amber-200 mt-0.5">&amp; Preetam Sports &amp; Fitness Club Sangli</span>
+                  <span className="block text-[#831843]">Preetam Senior Citizen <span className="text-[#be185d] font-black">Anandshala</span></span>
+                  <span className="block text-[#be185d] mt-1 font-black text-xl sm:text-3xl lg:text-4xl">&amp; Preetam Sports &amp; Fitness Club</span>
                 </>
               ) : (
                 <>
-                  <span className="block">प्रीतम ज्येष्ठ नागरिक आनंदशाळा</span>
-                  <span className="block text-amber-200 mt-1 font-black text-xl sm:text-3xl lg:text-4xl">व प्रीतम स्पोर्ट्स अँड फिटनेस क्लब</span>
+                  <span className="block text-[#831843]">प्रीतम ज्येष्ठ नागरिक <span className="text-[#be185d] font-black">आनंदशाळा</span></span>
+                  <span className="block text-[#be185d] mt-1 font-black text-xl sm:text-3xl lg:text-4xl">व प्रीतम स्पोर्ट्स अँड फिटनेस क्लब</span>
                 </>
               )}
             </h1>
-            <div className="flex items-center justify-center gap-1.5 pt-1.5">
-              <span className="text-amber-300 text-sm sm:text-base animate-bounce">📍</span>
-              <span className="font-display font-black text-lg sm:text-2xl lg:text-3xl bg-gradient-to-r from-yellow-300 via-amber-200 to-rose-300 bg-clip-text text-transparent tracking-widest drop-shadow-[0_2px_10px_rgba(251,191,36,0.6)] uppercase">
+            <div className="flex items-center justify-center gap-1.5 pt-2">
+              <span className="text-[#be185d] text-base sm:text-lg animate-bounce">📍</span>
+              <span className="font-display font-black text-xl sm:text-2xl lg:text-3xl text-[#be185d] tracking-widest uppercase">
                 {isEn ? "Sangli" : "सांगली"}
               </span>
             </div>
@@ -523,7 +511,7 @@ function IndexComponent() {
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => handleSectionSelect("aanandshala")}
-              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-white/30 hover:border-pink-400 flex flex-col justify-between p-4 sm:p-6 ${selectedSection === "aanandshala" ? "ring-4 ring-pink-500 scale-[1.02]" : ""
+              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-pink-400/40 border-4 border-pink-300 hover:border-pink-500 flex flex-col justify-between p-4 sm:p-6 ${selectedSection === "aanandshala" ? "ring-4 ring-pink-500 scale-[1.02]" : ""
                 }`}
             >
               {/* ANIMATED IMAGE SLIDER BACKGROUND */}
@@ -531,7 +519,7 @@ function IndexComponent() {
                 <motion.img
                   key={card1Idx}
                   src={card1Images[card1Idx] || card1Images[0]}
-                  alt={isEn ? site.nameEn : (store.siteData.aanandshalaTitle || site.nameMr)}
+                  alt={isEn ? site.nameEn : (siteData.aanandshalaTitle || site.nameMr)}
                   loading="eager"
                   decoding="async"
                   initial={{ opacity: 0, scale: 1.05 }}
@@ -553,7 +541,7 @@ function IndexComponent() {
 
               {/* TOP BADGES & SLIDER DOTS */}
               <div className="relative z-10 flex items-center justify-between gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1.5 text-xs sm:text-sm font-black text-[#541A1A] shadow-lg group-hover:bg-pink-600 group-hover:text-white transition-all duration-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white backdrop-blur-md px-3.5 py-1.5 text-xs sm:text-sm font-black text-[#be185d] border border-pink-300 shadow-md group-hover:bg-[#be185d] group-hover:text-white transition-all duration-300">
                   🏠 {isEn ? "Section 1" : "विभाग १"}
                 </span>
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -570,14 +558,18 @@ function IndexComponent() {
 
               {/* BOTTOM TITLE & BUTTON */}
               <div className="relative z-10 space-y-2 pt-2">
-                <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
-                  {isEn ? site.nameEn : (store.siteData.aanandshalaTitle || site.nameMr)}
+                <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+                  {isEn ? (
+                    <>Preetam Senior Citizen <span className="text-pink-400 font-black">Anandshala</span> &amp; Living</>
+                  ) : (
+                    <>प्रीतम ज्येष्ठ नागरिक <span className="text-pink-400 font-black">आनंदशाळा</span> व निवारा</>
+                  )}
                 </h3>
 
                 <div className="pt-0.5 flex items-center justify-between gap-4">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-black text-white shadow-xl group-hover:shadow-pink-500/60 group-hover:scale-105 transition-all duration-300 border border-white/30">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ec4899] via-[#be185d] to-[#9d174d] px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-black text-white shadow-xl shadow-pink-500/30 group-hover:shadow-pink-500/60 group-hover:scale-105 transition-all duration-300 border border-pink-200">
                     <span>{isEn ? "Open Anandashram Details" : "आनंदआश्रम माहिती उघडा"}</span>
-                    <span className="grid size-5 place-items-center rounded-full bg-white text-pink-600 text-xs font-black group-hover:translate-x-1 transition-transform">
+                    <span className="grid size-5 place-items-center rounded-full bg-white text-[#be185d] text-xs font-black group-hover:translate-x-1 transition-transform">
                       →
                     </span>
                   </span>
@@ -592,7 +584,7 @@ function IndexComponent() {
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.85, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => handleSectionSelect("sports")}
-              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-white/30 hover:border-purple-400 flex flex-col justify-between p-4 sm:p-6 ${selectedSection === "sports" ? "ring-4 ring-purple-500 scale-[1.02]" : ""
+              className={`group relative overflow-hidden rounded-[1.8rem] sm:rounded-[2.2rem] h-[300px] sm:h-[360px] lg:h-[395px] bg-slate-950 cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-pink-400/40 border-4 border-pink-300 hover:border-pink-500 flex flex-col justify-between p-4 sm:p-6 ${selectedSection === "sports" ? "ring-4 ring-pink-500 scale-[1.02]" : ""
                 }`}
             >
               {/* ANIMATED IMAGE SLIDER BACKGROUND */}
@@ -618,11 +610,11 @@ function IndexComponent() {
               </AnimatePresence>
 
               {/* RICH DARK GRADIENT OVERLAY FOR READABILITY */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#12042b]/90 via-black/25 to-black/10 pointer-events-none transition-opacity duration-500 group-hover:opacity-80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2a0410]/95 via-black/25 to-black/10 pointer-events-none transition-opacity duration-500 group-hover:opacity-90" />
 
               {/* TOP BADGES & SLIDER DOTS */}
               <div className="relative z-10 flex items-center justify-between gap-2 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 backdrop-blur-md px-3.5 py-1.5 text-xs sm:text-sm font-black text-[#541A1A] shadow-lg group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white backdrop-blur-md px-3.5 py-1.5 text-xs sm:text-sm font-black text-[#be185d] border border-pink-300 shadow-md group-hover:bg-[#be185d] group-hover:text-white transition-all duration-300">
                   🏋️‍♂️ {isEn ? "Section 2" : "विभाग २"}
                 </span>
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -631,7 +623,7 @@ function IndexComponent() {
                       key={i}
                       onClick={() => setCard2Idx(i)}
                       aria-label={`Slide ${i + 1}`}
-                      className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === card2Idx ? "w-6 bg-purple-400 shadow-md shadow-purple-500/50" : "w-2.5 bg-white/40 hover:bg-white/70"}`}
+                      className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${i === card2Idx ? "w-6 bg-pink-400 shadow-md shadow-pink-500/50" : "w-2.5 bg-white/40 hover:bg-white/70"}`}
                     />
                   ))}
                 </div>
@@ -639,14 +631,14 @@ function IndexComponent() {
 
               {/* BOTTOM TITLE & BUTTON */}
               <div className="relative z-10 space-y-2 pt-2">
-                <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
+                <h3 className="font-display text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
                   {isEn ? sportsClub.nameEn : sportsClub.nameMr}
                 </h3>
 
                 <div className="pt-0.5 flex items-center justify-between gap-4">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-black text-white shadow-xl group-hover:shadow-purple-500/60 group-hover:scale-105 transition-all duration-300 border border-white/30">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#ec4899] via-[#be185d] to-[#9d174d] px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-black text-white shadow-xl shadow-pink-500/30 group-hover:shadow-pink-500/60 group-hover:scale-105 transition-all duration-300 border border-pink-200">
                     <span>{isEn ? "Open Sports Club Details" : "क्रीडा संकुल माहिती उघडा"}</span>
-                    <span className="grid size-5 place-items-center rounded-full bg-white text-purple-600 text-xs font-black group-hover:translate-x-1 transition-transform">
+                    <span className="grid size-5 place-items-center rounded-full bg-white text-[#be185d] text-xs font-black group-hover:translate-x-1 transition-transform">
                       →
                     </span>
                   </span>
@@ -662,7 +654,7 @@ function IndexComponent() {
       {/* 2. SECTION 1 DETAILS: PREETAM AANANDSHALA (DEDICATED VIEW)     */}
       {/* ============================================================== */}
       {selectedSection === "aanandshala" && (
-        <div id="aanandshala-section" className="animate-fade-up">
+        <div id="aanandshala-section" className="animate-fade-up bg-gradient-to-b from-[#fff0f6] via-[#fce7f3] via-[#fbcfe8] to-[#fff0f6] text-slate-900 min-h-screen">
 
           {/* HOME HERO BANNER */}
           <HomeHero />

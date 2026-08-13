@@ -66,16 +66,16 @@
 }
 
 .journey-exact-title {
-  font-size: 48px;
+  font-size: 56px;
   font-weight: 900;
-  color: #1F2B8D;
+  color: #be185d !important;
   margin-top: 10px;
   letter-spacing: -0.5px;
 }
 
 @media (min-width: 768px) {
   .journey-exact-title {
-    font-size: 56px;
+    font-size: 68px;
   }
 }
 

@@ -41,7 +41,7 @@ export default function TestimonialsSection() {
             मान्यवर व सभासदांचे <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-rose-300 bg-clip-text text-transparent">व्हिडिओ अभिप्राय</span>
           </h2>
           <p className="text-slate-300 text-sm sm:text-base font-semibold">
-            प्रीतम आनंदशाळा व स्पोर्ट्स क्लबबद्दल प्रसिद्ध अभिनेते, क्रीडापटू व सभासदांचे उत्स्फूर्त अनुभव व संदेश.
+            प्रीतम <span className="text-[#be185d] font-black">आनंदशाळा</span> व स्पोर्ट्स क्लबबद्दल प्रसिद्ध अभिनेते, क्रीडापटू व सभासदांचे उत्स्फूर्त अनुभव व संदेश.
           </p>
         </div>
 

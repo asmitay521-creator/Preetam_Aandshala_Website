@@ -25,7 +25,7 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
             <span className={`inline-flex items-center justify-center px-6 py-1.5 rounded-full font-black text-xs sm:text-sm tracking-wider shadow-md ${
               type === "sports" 
                 ? "bg-[#1A05A2] text-white" 
-                : "bg-[#70092b] text-white"
+                : "bg-gradient-to-r from-[#1A05A2] to-[#1e3a8a] text-white"
             }`}>
               {type === "sports" ? (isEn ? "PREETAM SPORTS ®" : "PREETAM SPORTS ®") : "PREETAM ®"}
             </span>
@@ -38,17 +38,19 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
               : "text-[#70092b]"
           }`}>
             {isEn
-              ? (type === "sports" ? "Preetam Sports Club Timetable" : "Preetam Senior Citizen Anandshala Timetable")
-              : (config.headerTitle || (type === "sports" ? "प्रीतम स्पोर्ट्स क्लब वेळापत्रक" : "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक"))}
+              ? (type === "sports" ? "Preetam Sports Club Timetable" : <>Preetam Senior Citizen <span className="text-[#be185d] font-black">Anandshala</span> Timetable</>)
+              : (config.headerTitle || (type === "sports" ? "प्रीतम स्पोर्ट्स क्लब वेळापत्रक" : <>प्रीतम ज्येष्ठ नागरिक <span className="text-[#be185d] font-black">आनंदशाळा</span> वेळापत्रक</>))}
           </h2>
 
-          {/* SUB-PILL BADGE */}
-          <div className={`inline-block text-white text-xs sm:text-base md:text-lg font-extrabold px-6 py-2 sm:px-8 sm:py-2.5 rounded-full shadow-lg border border-white/40 ${
+          {/* SUB-PILL BADGE (BABY PINK GRADIENT) */}
+          <div className={`inline-block text-xs sm:text-base md:text-lg font-black px-6 py-2 sm:px-8 sm:py-2.5 rounded-full shadow-md border ${
             type === "sports"
-              ? "bg-gradient-to-r from-indigo-600 via-indigo-800 to-[#1A05A2]"
-              : "bg-gradient-to-r from-[#d91b5c] via-[#b80045] to-[#70092b]"
+              ? "bg-gradient-to-r from-indigo-600 via-indigo-800 to-[#1A05A2] text-white border-white/40"
+              : "bg-gradient-to-r from-[#1A05A2] via-[#1e40af] to-[#1e3a8a] text-white border-blue-200"
           }`}>
-            {config.daysText || (type === "sports" ? "सोमवार ते शनिवार (सकाळी ६ ते रात्री ९)" : "सोमवार ते शनिवार (सकाळी ११ ते सायंकां. ५ - तुकडी अ)")}
+            {type === "sports"
+              ? (isEn ? "Monday to Saturday (6 AM to 9 PM)" : "सोमवार ते शनिवार (सकाळी ६ ते रात्री ९)")
+              : (isEn ? "Monday to Saturday (11 AM to 5 PM)" : "सोमवार ते शनिवार स. ११ ते ५")}
           </div>
 
           {/* UPLOADED TIMETABLE POSTER / DOCUMENT BANNER BUTTON (IF UPLOADED BY ADMIN) */}
@@ -59,7 +61,7 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
                 className={`inline-flex items-center gap-3 px-6 py-3.5 rounded-2xl text-white font-extrabold text-sm sm:text-base shadow-xl hover:scale-105 transition-all cursor-pointer border-2 border-white/40 ${
                   type === "sports"
                     ? "bg-gradient-to-r from-[#1A05A2] to-purple-700 hover:shadow-indigo-500/40"
-                    : "bg-gradient-to-r from-[#70092b] to-pink-700 hover:shadow-pink-500/40"
+                    : "bg-gradient-to-r from-[#be185d] to-pink-600 hover:shadow-pink-500/40"
                 }`}
               >
                 <span>📜</span>
@@ -118,30 +120,35 @@ export default function ScheduleSection({ type = "anandshala" }: ScheduleSection
 
         {/* ANANDSHALA BROCHURE TIMETABLE GRID LAYOUT (EXACTLY MATCHING PRINTED PAMPHLET) */}
         {type === "anandshala" ? (
-          <div className="bg-[#fdf0f5] border-4 border-[#f472b6]/40 rounded-[2.5rem] p-5 sm:p-8 shadow-2xl relative my-6 text-center">
+          <div className="bg-[#fff0f6] border-4 border-[#f472b6]/40 rounded-[2.5rem] p-5 sm:p-8 shadow-2xl relative my-6 text-center">
 
-            {/* 8-CARD GRID LAYOUT */}
-            <div className="bg-white/95 rounded-3xl p-4 sm:p-6 border-2 border-pink-200 shadow-inner">
+            {/* 8-CARD GRID LAYOUT WITH ANIMATED BORDERS */}
+            <div className="bg-white/90 rounded-3xl p-4 sm:p-6 border-2 border-pink-200 shadow-inner">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 {[
-                  { time: "११ ते ११.३०", title: "प्रार्थना व राष्ट्रगीत" },
-                  { time: "११:१५ ते १२:००", title: "पहिला तास" },
-                  { time: "१२:१५ ते ०१:००", title: "दुसरा तास" },
-                  { time: "०१:१५ ते ०२:००", title: "स्नेहभोजन" },
-                  { time: "०२:१५ ते ०३:००", title: "तिसरा तास" },
-                  { time: "०३:१५ ते ०४:००", title: "चौथा तास" },
-                  { time: "०४:१५ ते ०५:००", title: "पाचवा तास" },
-                  { time: "१२:१५ ते ०१:००", title: "तुकडी 'ब' चे स्नेहभोजन" },
+                  { time: "११:०० ते ११:१०", title: "राष्ट्रगीत व प्रार्थना" },
+                  { time: "११:१५ ते १२:००", title: "म्युझिक इन्स्ट्रुमेंट हॉल, कराओके गाणे म्हणणे व वाद्य वाजवणे याचा आनंद घेणे, विनोद, कविता, वाचन" },
+                  { time: "१२:१५ ते ०१:००", title: "बैठे खेळ हॉलमध्ये विविध खेळांचा आनंद घेणे" },
+                  { time: "०१:१५ ते ०२:००", title: "स्नेहभोजन अन्नपूर्णा भोजनकक्ष" },
+                  { time: "०२:१५ ते ०३:००", title: "निवांत विश्रांती" },
+                  { time: "०३:१५ ते ०४:००", title: "माहिती तंत्रज्ञान हॉल, वाचनालय व बैठे खेळ हॉल मध्ये आनंद घेणे" },
+                  { time: "०४:१५ ते ०५:००", title: "करमणूक हॉल, टेबल टेनिस व स्नूकर हॉल येथे आनंद घेणे" },
                 ].map((card, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col items-center justify-center p-5 rounded-2xl bg-white border-2 border-pink-100 shadow-sm hover:shadow-md hover:border-[#810B38] transition-all"
+                    className="group relative rounded-2xl p-[2px] overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 cursor-pointer"
                   >
-                    <div className="text-base sm:text-lg font-black text-[#810B38] mb-1">
-                      {card.time}
-                    </div>
-                    <div className="text-lg sm:text-2xl font-black text-[#810B38] leading-tight">
-                      {card.title}
+                    {/* ANIMATED GLOWING GRADIENT BORDER */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400 via-rose-300 to-amber-300 rounded-2xl opacity-75 group-hover:opacity-100 transition-all duration-500 animate-pulse" />
+
+                    {/* INNER CARD CONTENT */}
+                    <div className="relative flex flex-col items-center justify-center p-4 sm:p-5 rounded-[14px] bg-white text-center min-h-[135px] w-full h-full z-10 transition-all group-hover:bg-gradient-to-b group-hover:from-white group-hover:to-pink-50/60">
+                      <div className="text-xs sm:text-sm font-black text-[#be185d] mb-2 bg-gradient-to-r from-pink-100 to-rose-100 px-3.5 py-1 rounded-full border border-pink-200 shadow-xs">
+                        {card.time}
+                      </div>
+                      <div className="text-xs sm:text-sm md:text-base font-extrabold text-[#70092b] leading-snug group-hover:text-[#be185d] transition-colors">
+                        {card.title}
+                      </div>
                     </div>
                   </div>
                 ))}

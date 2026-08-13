@@ -54,7 +54,8 @@ function JourneyHeader() {
           viewport={{
             once: true,
           }}
-          className="mt-8 text-6xl font-black text-[#1F2B8D] md:text-7xl"
+          className="mt-6 text-6xl sm:text-7xl md:text-8xl font-black text-[#be185d] tracking-tight drop-shadow-sm"
+          style={{ color: "#be185d" }}
         >
           आमचा प्रवास
         </motion.h2>
@@ -73,9 +74,9 @@ function JourneyHeader() {
           viewport={{
             once: true,
           }}
-          className="mx-auto mt-8 max-w-3xl text-xl leading-10 text-gray-600"
+          className="mx-auto mt-4 max-w-3xl text-xl sm:text-2xl font-bold leading-relaxed text-slate-800"
         >
-          प्रेम, विश्वास आणि सेवांचा प्रवास — आनंदशाळेच्या सोबत...
+          प्रेम, विश्वास आणि सेवांचा प्रवास — <span className="text-[#be185d] font-black">आनंदशाळेच्या</span> सोबत...
         </motion.p>
 
         {/* Divider */}

@@ -189,9 +189,13 @@ const AnandshalaStory: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            {isEn ? "The Inspiring " : "आनंदशाळेची "}
+            {isEn ? (
+              <>The Inspiring <span className="text-[#be185d] font-black">Anandshala</span> </>
+            ) : (
+              <><span className="text-[#be185d] font-black">आनंदशाळेची</span> </>
+            )}
             <span className="as-title-gradient">
-              {isEn ? "Story of Anandshala" : "प्रेरणादायी कहाणी"}
+              {isEn ? "Story" : "प्रेरणादायी कहाणी"}
             </span>
           </motion.h2>
 

@@ -83,7 +83,8 @@ export default function JourneyTimeline() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
             viewport={{ once: true }}
-            className="journey-exact-title"
+            className="journey-exact-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[#be185d] drop-shadow-sm tracking-tight my-4"
+            style={{ color: "#be185d" }}
           >
             आमचा प्रवास
           </motion.h2>
@@ -94,9 +95,9 @@ export default function JourneyTimeline() {
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             viewport={{ once: true }}
-            className="journey-exact-subtitle"
+            className="journey-exact-subtitle text-lg sm:text-2xl font-extrabold text-slate-800"
           >
-            प्रेम, विश्वास आणि सेवांचा प्रवास – आनंदशाळेच्या सोबत...
+            प्रेम, विश्वास आणि सेवांचा प्रवास – <span className="text-[#be185d] font-black">आनंदशाळेच्या</span> सोबत...
           </motion.p>
 
           {/* Ornamental Divider */}

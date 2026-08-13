@@ -456,9 +456,9 @@ const initialSiteData: SiteData = {
   aanandshalaTitle: "प्रीतम ज्येष्ठ नागरिक आनंदशाळा व निवारा",
   aanandshalaBadge: "भारतातील पहिली ज्येष्ठ नागरिक आनंदशाळा",
   aanandshalaImages: [
-    "/images/anandshala_building_sky.jpg",
-    "/images/slider4.JPG",
-    "/images/aandshala_img.png",
+    "/images/slider1.JPG",
+    "/images/slider2.JPG",
+    "/images/slider3.png",
   ],
   sportsTitle: "प्रीतम स्पोर्ट्स अँड फिटनेस क्लब",
   sportsBadge: "अद्ययावत १.५ एकर स्पोर्ट्स संकुल",
@@ -592,72 +592,6 @@ const initialGallery: GalleryItem[] = [
     caption: "आनंदशाळा विशेष सोहळा ८",
     category: ["रौप्य महोत्सव व प्रकाशन"],
   },
-  {
-    id: "g1",
-    url: "/images/Screenshot 2026-07-31 103107.png",
-    caption: "आनंदशाळा मुखपृष्ठ माहिती पत्रक व प्रवेश माहिती",
-    category: ["ज्येष्ठ नागरिक आनंदशाळा माहिती", "रौप्य महोत्सव व प्रकाशन", "प्रीतम व्यावसायिक माहिती"],
-  },
-  {
-    id: "g2",
-    url: "/images/Screenshot 2026-07-31 103131.png",
-    caption: "आनंदशाळेतील ५ तासांचे वेळापत्रक व १५ उपक्रम हॉल्स",
-    category: ["ज्येष्ठ नागरिक आनंदशाळा माहिती", "ज्येष्ठ नागरिक विरंगुळा केंद्र"],
-  },
-  {
-    id: "g3",
-    url: "/images/Screenshot 2026-07-31 103152.png",
-    caption: "आनंदशाळा १.५ एकर विहंगम परिसर व बांधकाम दृश्य",
-    category: ["आनंदशाळा भूमिपूजन व बांधकाम", "ज्येष्ठ नागरिक आनंदशाळा माहिती"],
-  },
-  {
-    id: "g4",
-    url: "/images/Screenshot 2026-07-31 103213.png",
-    caption: "५५ फुटांची राधाकृष्ण मूर्ती, नियोजित मंदिर व गोशाळा",
-    category: ["आनंदशाळा भूमिपूजन व बांधकाम", "ज्येष्ठ नागरिक आनंदशाळा माहिती"],
-  },
-  {
-    id: "g5",
-    url: "/images/Screenshot 2026-07-31 103238.png",
-    caption: "१ दिवस सहल भेट पास (रु. ६००/-) सोहळा व व्हॅन सेवा",
-    category: ["ज्येष्ठ नागरिक आनंद सहल", "रौप्य महोत्सव व प्रकाशन"],
-  },
-  {
-    id: "g6",
-    url: "/images/aandshala sahal 1.jpeg",
-    caption: "आनंद सहलीतील ज्येष्ठ नागरिकांचे आनंदी क्षण",
-    category: ["ज्येष्ठ नागरिक आनंद सहल", "ज्येष्ठ नागरिक विरंगुळा केंद्र"],
-  },
-  {
-    id: "g7",
-    url: "/images/Screenshot 2026-07-31 103517.png",
-    caption: "ज्येष्ठ नागरिक आनंद मेळावा व स्नेहमेलन सांगली",
-    category: ["ज्येष्ठ नागरिक आनंद मेळावा", "सामाजिक कार्य माहिती"],
-  },
-  {
-    id: "g8",
-    url: "/images/Screenshot 2026-07-31 103545.png",
-    caption: "आनंद मेळावा सांस्कृतिक व करमणूक कार्यक्रम",
-    category: ["ज्येष्ठ नागरिक आनंद मेळावा", "ज्येष्ठ नागरिक विरंगुळा केंद्र"],
-  },
-  {
-    id: "g9",
-    url: "/images/Screenshot 2026-07-31 103659.png",
-    caption: "विरंगुळा केंद्र - कॅरम, बुद्धिबळ, वाचनालय व आर्ट हॉल्स",
-    category: ["ज्येष्ठ नागरिक विरंगुळा केंद्र", "ज्येष्ठ नागरिक आनंदशाळा माहिती"],
-  },
-  {
-    id: "g10",
-    url: "/images/Screenshot 2026-07-31 103712.png",
-    caption: "स्विमिंग पूल, स्पोर्ट्स कॉम्प्लेक्स व योग केंद्र",
-    category: ["ज्येष्ठ नागरिक विरंगुळा केंद्र", "आनंदशाळा भूमिपूजन व बांधकाम"],
-  },
-  {
-    id: "g11",
-    url: "/images/Screenshot 2026-07-31 103842.png",
-    caption: "प्रीतम आपुलकी व जिव्हाळा ट्रस्ट - सामाजिक कार्य व सन्मान",
-    category: ["सामाजिक कार्य माहिती", "प्रीतम व्यावसायिक माहिती", "रौप्य महोत्सव व प्रकाशन"],
-  },
 ];
 
 const initialInquiries: InquiryItem[] = [
@@ -717,7 +651,7 @@ export type ScheduleConfig = {
 
 export const initialScheduleConfig: ScheduleConfig = {
   headerTitle: "प्रीतम ज्येष्ठ नागरिक आनंदशाळा वेळापत्रक",
-  daysText: "सोमवार ते शनिवार (सकाळी ११ ते सायंकां. ५ - तुकडी अ)",
+  daysText: "सोमवार ते शनिवार स. ११ ते ५",
   timeRange: "सकाळी ११:०० ते सायंकाळी ०५:००",
   subtitle: "ज्येष्ठ नागरिकांच्या निरोगी आरोग्य व आनंददायी आयुष्याचे दार येथेच उघडते...",
   posterUrl: "",
@@ -867,7 +801,7 @@ export const initialSportsScheduleConfig: ScheduleConfig = {
 const STORAGE_KEYS = {
   site: "anandshala_site_data",
   about: "anandshala_about_data",
-  gallery: "anandshala_gallery_distinguished_v3",
+  gallery: "anandshala_gallery_distinguished_v5",
   inquiries: "anandshala_inquiries_data",
   testimonials: "anandshala_testimonials_data_v2",
   packages: "anandshala_packages_data_v2",

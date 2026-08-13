@@ -19,14 +19,14 @@ import { useAdminStore } from "@/lib/admin-store";
 
 // ===== Fallback Gallery Data =====
 const fallbackGalleryImages = [
-  { id: "1", titleEn: "Inauguration Ceremony", titleMr: "भव्य शुभारंभ व दीपप्रज्वलन सोहळा", date: "26 Jan 2026", url: "/images/gallery imgage1.JPG", category: ["सर्व", "सोहळा"] },
-  { id: "2", titleEn: "Senior Citizens Anandshala Gathering", titleMr: "ज्येष्ठ नागरिक आनंद मेळावा", date: "26 Jan 2026", url: "/images/gallery image2.JPG", category: ["सर्व", "उपक्रम"] },
-  { id: "3", titleEn: "Cultural Performance & Event", titleMr: "सांस्कृतिक कार्यक्रम व नृत्य सादरीकरण", date: "26 Jan 2026", url: "/images/gallery image3.JPG", category: ["सर्व", "सांस्कृतिक"] },
-  { id: "4", titleEn: "Annual Function Celebration", titleMr: "वार्षिक स्नेहसंमेलन सोहळा", date: "26 Jan 2026", url: "/images/gallery image4.JPG", category: ["सर्व", "सोहळा"] },
-  { id: "5", titleEn: "Dignitaries & Chief Guests Visit", titleMr: "प्रमुख पाहुणे व मान्यवर सत्कार", date: "26 Jan 2026", url: "/images/gallery image5.JPG", category: ["सर्व", "सत्कार"] },
-  { id: "6", titleEn: "Sports & Fitness Activities", titleMr: "क्रीडा व विरंगुळा उपक्रम", date: "26 Jan 2026", url: "/images/gallery image6.JPG", category: ["सर्व", "स्पोर्ट्स"] },
-  { id: "7", titleEn: "Anandshala Campus Architecture", titleMr: "आनंदशाळा संकुल व निसर्गरम्य परिसर", date: "26 Jan 2026", url: "/images/gallery image7.JPG", category: ["सर्व", "परिसर"] },
-  { id: "8", titleEn: "Felicitation & Senior Meet", titleMr: "ज्येष्ठ नागरिक सत्कार सोहळा", date: "26 Jan 2026", url: "/images/gallery image8.JPG", category: ["सर्व", "सत्कार"] },
+  { id: "g-img1", titleEn: "Anandshala Gallery Photo 1", titleMr: "आनंदशाळा गॅलरी चित्र १", date: "26 Jan 2026", url: "/images/gallery imgage1.JPG", category: ["सर्व"] },
+  { id: "g-img2", titleEn: "Anandshala Gallery Photo 2", titleMr: "आनंदशाळा गॅलरी चित्र २", date: "26 Jan 2026", url: "/images/gallery image2.JPG", category: ["सर्व"] },
+  { id: "g-img3", titleEn: "Anandshala Gallery Photo 3", titleMr: "आनंदशाळा गॅलरी चित्र ३", date: "26 Jan 2026", url: "/images/gallery image3.JPG", category: ["सर्व"] },
+  { id: "g-img4", titleEn: "Anandshala Gallery Photo 4", titleMr: "आनंदशाळा गॅलरी चित्र ४", date: "26 Jan 2026", url: "/images/gallery image4.JPG", category: ["सर्व"] },
+  { id: "g-img5", titleEn: "Anandshala Gallery Photo 5", titleMr: "आनंदशाळा गॅलरी चित्र ५", date: "26 Jan 2026", url: "/images/gallery image5.JPG", category: ["सर्व"] },
+  { id: "g-img6", titleEn: "Anandshala Gallery Photo 6", titleMr: "आनंदशाळा गॅलरी चित्र ६", date: "26 Jan 2026", url: "/images/gallery image6.JPG", category: ["सर्व"] },
+  { id: "g-img7", titleEn: "Anandshala Gallery Photo 7", titleMr: "आनंदशाळा गॅलरी चित्र ७", date: "26 Jan 2026", url: "/images/gallery image7.JPG", category: ["सर्व"] },
+  { id: "g-img8", titleEn: "Anandshala Gallery Photo 8", titleMr: "आनंदशाळा गॅलरी चित्र ८", date: "26 Jan 2026", url: "/images/gallery image8.JPG", category: ["सर्व"] },
 ];
 
 function Gallery() {
@@ -38,7 +38,23 @@ function Gallery() {
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const rawImages = store.gallery && store.gallery.length > 0 ? store.gallery : fallbackGalleryImages;
+  // Clear old cached gallery localStorage keys so old Screenshot images don't show
+  useEffect(() => {
+    const oldKeys = [
+      "anandshala_gallery_distinguished_v1",
+      "anandshala_gallery_distinguished_v2",
+      "anandshala_gallery_distinguished_v3",
+      "anandshala_gallery_distinguished_v4",
+    ];
+    oldKeys.forEach((k) => localStorage.removeItem(k));
+  }, []);
+
+  // Only use the defined 8 gallery images — filter store.gallery to only show gallery image files
+  const ALLOWED_GALLERY_URLS = new Set(fallbackGalleryImages.map((f) => f.url));
+  const storeGalleryFiltered = (store.gallery || []).filter((item: any) =>
+    ALLOWED_GALLERY_URLS.has(item.url || item.image)
+  );
+  const rawImages = storeGalleryFiltered.length > 0 ? storeGalleryFiltered : fallbackGalleryImages;
 
   // Compute unique categories
   const categoriesSet = new Set<string>(["सर्व"]);
@@ -182,11 +198,11 @@ function Gallery() {
             {isEn ? "Photo Gallery • GALLERY" : "फोटो गॅलरी • GALLERY"}
           </span>
 
-          <h1 className="mt-3 text-3xl sm:text-5xl font-black text-[#541A1A]">
+          <h1 className="mt-3 text-3xl sm:text-5xl font-black text-[#be185d]">
             {isEn ? "Anandshala Photo Gallery" : "आनंदशाळा फोटो गॅलरी"}
           </h1>
 
-          <p className="mt-2 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-medium">
+          <p className="mt-2 text-sm sm:text-base text-[#f472b6] max-w-2xl mx-auto font-medium">
             सांगलीच्या कुशीत, निसर्गरम्य १५ एकर परिसरात साकारलेल्या आनंदी क्षणांची सुंदर चित्रे.
           </p>
 
@@ -197,24 +213,6 @@ function Gallery() {
 
 
 
-          {/* CATEGORY FILTER PILLS */}
-          {categoriesList.length > 1 && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-              {categoriesList.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                    selectedCategory === cat
-                      ? "bg-[#810B38] text-white shadow-md scale-105"
-                      : "bg-white text-slate-700 hover:bg-pink-50 border border-slate-200"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          )}
 
         {/* ===== GALLERY CARDS GRID ===== */}
         {filteredImages.length === 0 ? (

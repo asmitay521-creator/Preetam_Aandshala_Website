@@ -360,8 +360,12 @@ export default function SpecialReasons() {
           <span className="miniLine reverse"></span>
         </div>
         <h2>
-          {isEn ? "Why Join Anandshala? " : "आनंदशाळेतच प्रवेश का घ्यायचा? "}
-          <span>{isEn ? "(23 Special Reasons)" : "(२३ विशेष कारणे)"}</span>
+          {isEn ? (
+            <>Why Join <span className="text-[#be185d] font-black">Anandshala</span>? </>
+          ) : (
+            <><span className="text-[#be185d] font-black">आनंदशाळेतच</span> प्रवेश का घ्यायचा? </>
+          )}
+          <span className="text-[#831843]">{isEn ? "(23 Special Reasons)" : "(२३ विशेष कारणे)"}</span>
         </h2>
         <div className="headingOrnament">
           <span></span>

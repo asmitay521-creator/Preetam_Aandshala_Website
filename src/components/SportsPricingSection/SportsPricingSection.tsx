@@ -179,7 +179,7 @@ const SportsPricingSection = () => {
         {/* ============================================================== */}
         {/* SECTION I. INDIVIDUAL FACILITY PACKAGES (CREATIVE PRICING MATRIX) */}
         {/* ============================================================== */}
-        <div className="relative my-8 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-pink-50/80 via-white to-rose-50/80 border-2 border-pink-300 shadow-2xl text-slate-900 overflow-hidden">
+        <div className="relative my-8 p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[#fce7f3] via-[#fdf2f8] to-[#fbcfe8] border-2 border-pink-300 shadow-2xl text-slate-900 overflow-hidden">
           
           {/* Subtle Ambient Background Orbs */}
           <div className="absolute -top-24 -left-24 size-96 bg-pink-300/30 rounded-full blur-3xl pointer-events-none" />

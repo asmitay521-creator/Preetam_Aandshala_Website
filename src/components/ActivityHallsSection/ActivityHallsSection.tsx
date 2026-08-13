@@ -148,13 +148,13 @@ const ActivityHallsSection = () => {
             <span style={{ color: '#f472b6' }}>❖</span> {isEn ? "Anandshala's" : "आनंदशाळेतील"} <span style={{ color: '#f472b6' }}>❖</span>
           </div>
           <h2 className="ah-header-title">
-            {isEn ? "15 Specialized " : "१५ विशेष "}
+            {isEn ? "18 Specialized " : "१८ विशेष "}
             <span className="blue-text">{isEn ? "Activity Halls" : "उपक्रम हॉल्स"}</span>
           </h2>
           <div className="ah-header-desc">
             {isEn
-              ? "15 fully equipped luxury activity halls for daily joy, recreation and wellness! (Click card to view details)"
-              : "आनंदशाळेत दररोज तुमच्या आवडीनुसार मनोरंजक आनंद घेता येईल असे 15 समृद्ध आणि सुसज्जीत हॉल्स! (माहिती पाहण्यासाठी कार्डवर क्लीक करा)"}
+              ? "18 fully equipped luxury activity halls for daily joy, recreation and wellness!"
+              : (<><span className="text-[#be185d] font-black">आनंदशाळेत</span> दररोज तुमच्या आवडीनुसार मनोरंजक आनंद घेता येईल असे १८ समृद्ध आणि सुसज्जीत हॉल्स!</>)}
           </div>
         </div>
       </Reveal>
@@ -177,10 +177,6 @@ const ActivityHallsSection = () => {
                 <div className="ah-card-content">
                   <div className="ah-card-icon">{hall.icon}</div>
                   <h3 className="ah-card-title">{hall.title}</h3>
-                  <div className="ah-card-action-btn">
-                    <span>माहिती उघडा</span>
-                    <ArrowRight size={14} />
-                  </div>
                 </div>
               </div>
             </Reveal>

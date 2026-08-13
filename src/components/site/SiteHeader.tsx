@@ -36,15 +36,16 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-500 ${
+      className={`sticky top-0 z-50 transition-all duration-500 border-b-2 ${
         scrolled
-          ? "shadow-[0_6px_28px_rgba(12,35,112,0.15)] border-b"
-          : "border-b"
+          ? "shadow-[0_6px_28px_rgba(236,72,153,0.15)] border-pink-300/80"
+          : "border-pink-300/60"
       }`}
       style={{
-        background: scrolled ? "rgba(255, 255, 255, 0.97)" : "rgba(240, 246, 255, 0.95)",
+        background: scrolled
+          ? "rgba(253, 242, 248, 0.98)"
+          : "linear-gradient(90deg, #fff0f5 0%, #fce7f3 50%, #fbcfe8 100%)",
         backdropFilter: "blur(20px)",
-        borderColor: "rgba(12, 35, 112, 0.15)",
       }}
     >
 
@@ -63,13 +64,21 @@ export function SiteHeader() {
           <div className="leading-tight">
             <span
               className="block font-display text-xs sm:text-base lg:text-base font-black tracking-tight"
-              style={{ color: "#810B38" }}
+              style={{ color: "#831843" }}
             >
-              {isMr ? "प्रीतम ज्येष्ठ नागरिक आनंदशाळा व स्पोर्ट्स अँड फिटनेस क्लब" : "Preetam Anandshala & Sports Fitness Club"}
+              {isMr ? (
+                <>
+                  प्रीतम ज्येष्ठ नागरिक <span className="text-[#be185d] font-black">आनंदशाळा</span> व स्पोर्ट्स क्लब
+                </>
+              ) : (
+                <>
+                  Preetam <span className="text-[#be185d] font-black">Anandshala</span> &amp; Sports Fitness Club
+                </>
+              )}
             </span>
             <span
               className="block text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-black mt-0.5"
-              style={{ color: "#db2777" }}
+              style={{ color: "#be185d" }}
             >
               SANGLI • MAHARASHTRA
             </span>
@@ -90,13 +99,13 @@ export function SiteHeader() {
                     window.dispatchEvent(new CustomEvent("reset-section"));
                   }
                 }}
-                className="group relative rounded-full px-3.5 py-1.5 text-sm font-extrabold transition-all duration-300 hover:text-[#db2777]"
-                style={{ color: isActive ? "#db2777" : "#810B38" }}
+                className="group relative rounded-full px-3.5 py-1.5 text-sm font-extrabold transition-all duration-300 hover:text-[#be185d]"
+                style={{ color: isActive ? "#be185d" : "#831843" }}
               >
                 {isMr ? l.label : l.en}
                 <span
                   className={`absolute inset-x-3 -bottom-0.5 h-0.5 origin-center rounded-full transition-transform duration-300 ${isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`}
-                  style={{ background: "#db2777" }}
+                  style={{ background: "#be185d" }}
                 />
               </Link>
             );
@@ -107,9 +116,9 @@ export function SiteHeader() {
             onClick={toggleLanguage}
             className="ml-2 inline-flex items-center gap-1.5 rounded-full border-2 px-3.5 py-1.5 text-xs font-black transition-all duration-300 cursor-pointer shadow-sm hover:scale-105"
             style={{
-              borderColor: "rgba(244, 114, 182, 0.4)",
+              borderColor: "rgba(244, 114, 182, 0.6)",
               background: "#FFFFFF",
-              color: "#810B38",
+              color: "#831843",
             }}
             title="Switch Language / भाषा बदला"
           >
@@ -122,7 +131,7 @@ export function SiteHeader() {
             href="tel:+919370237633"
             className="ml-2 inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs sm:text-sm font-black text-white shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg"
             style={{
-              background: "linear-gradient(135deg, #db2777 0%, #810B38 100%)",
+              background: "linear-gradient(135deg, #ec4899 0%, #be185d 100%)",
             }}
           >
             <span className="text-sm">🏛️</span>
